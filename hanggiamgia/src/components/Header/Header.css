@@ -1,0 +1,40 @@
+.header {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  max-width: 100%;
+  align-items: center;
+  background-color: #cd6702;
+  margin: 0;
+  height: 60px;
+  padding: 0 10px;
+}
+
+.logo {
+  padding-top: 10px;
+  object-fit: contain;
+}
+
+.search input {
+  height: 100%;
+  border-style: none;
+  width: 200px;
+  padding: 0 10px;
+  font-size: 15px;
+}
+
+.search input:focus {
+  outline: none;
+}
+
+.header__filter {
+  height: 80%;
+  margin-left: auto;
+}
+
+.search {
+  height: 100%;
+  background-color: white;
+  display: inline-block;
+  margin-left: 10px;
+}

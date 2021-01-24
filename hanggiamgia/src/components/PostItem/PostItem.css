@@ -1,0 +1,147 @@
+.post {
+  display: grid;
+  grid-template-columns: 80px minmax(0, 1fr) 150px;
+  border-bottom: 1px solid black;
+  padding: 10px 0;
+}
+
+.post:hover {
+  background-color: #ebe6da;
+}
+
+.post--display-detailed {
+  background-color: white;
+  border-bottom: none;
+}
+
+.post--display-detailed:hover {
+  background-color: white;
+}
+
+.post__meta {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  margin-top: 5px;
+}
+
+.post__meta a {
+  text-decoration: none;
+}
+
+.post__votes {
+  display: flex;
+  flex-wrap: nowrap;
+  margin-top: 10px;
+}
+
+.post__see-votes {
+  font-size: 0.8rem;
+  margin-top: 10px;
+  color: rgb(9, 106, 192);
+}
+
+.post__subheader {
+  display: flex;
+  font-size: 85%;
+  align-items: flex-end;
+}
+
+.post__subheader a {
+  color: rgb(9, 106, 192);
+}
+
+.post__link {
+  margin-left: 3px;
+}
+
+.post__author {
+  font-weight: 500;
+  margin-right: 5px;
+}
+
+.post__coupon {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+  padding: 0;
+  font-size: 120%;
+  border: 1px solid black;
+}
+
+.post__coupon--display-detailed {
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+.post__coupon-code {
+  font-size: 1.3rem;
+  padding: 2px 5px;
+  font-family: monospace;
+}
+
+.post__footer {
+  display: inline-flex;
+  align-items: center;
+  margin-top: auto;
+}
+
+.post__footer div {
+  font-size: 0.8rem;
+  font-style: italic;
+  margin-right: 10px;
+}
+
+.post__content {
+  text-align: left;
+  padding-left: 10px;
+  padding-right: 10px;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+}
+
+.post__title {
+  font-size: 1.2rem;
+  margin-block-start: 5px;
+  margin-block-end: 5px;
+}
+
+.post__title--display-detailed {
+  font-size: 1.8rem;
+}
+
+.post__description {
+  margin-block-start: 7px;
+  margin-block-end: 5px;
+  font-size: 0.9rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.post__description--display-detailed {
+  overflow: visible;
+  white-space: normal;
+  text-overflow: unset;
+  font-size: 1rem;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  line-height: 1.8rem;
+}
+
+.post__content a {
+  text-decoration: none;
+}
+
+.post__content a:hover {
+  text-decoration: underline;
+}
+
+.post__image {
+  object-fit: fill;
+  width: 140px;
+  height: 140px;
+  margin: 0 auto;
+}

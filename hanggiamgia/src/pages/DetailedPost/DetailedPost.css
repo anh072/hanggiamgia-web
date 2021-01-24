@@ -1,0 +1,26 @@
+.detailed-post {
+  margin: 0 0;
+  padding: 0 20px;
+  max-width: 100%;
+}
+
+.comment-loader {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.detailed-post__load {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.comment-loader__button {
+  cursor: pointer;
+}
+
+.comment-loader_text {
+  color: rgb(9, 106, 192);
+  font-size: 1rem;
+}

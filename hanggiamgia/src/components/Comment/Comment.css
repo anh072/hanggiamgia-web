@@ -1,0 +1,47 @@
+.comment {
+  display: grid;
+  grid-template-columns: 50px minmax(0, 1fr);
+  width: 100%;
+  padding: 5px 5px;
+}
+
+.comment a {
+  text-decoration: none;
+}
+
+.comment__block {
+  font-size: 1rem;
+}
+
+.comment__block pre {
+  margin-block-start: 5px;
+  margin-block-end: 5px;
+  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+.comment__header {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: flex-end;
+}
+
+.comment__author {
+  font-size: 0.9rem;
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+.comment__date {
+  font-size: 0.9rem;
+}
+
+.comment__body {
+  background-color: #DADDE1;
+  border-radius: 12px;
+  border: none;
+  padding: 10px 10px;
+  display: inline-block;
+}

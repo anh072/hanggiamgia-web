@@ -1,0 +1,40 @@
+.deal {
+  height: 100%;
+}
+
+.deal__fields label {
+  font-weight: 500;
+}
+
+.deal__fields span {
+  color: red;
+}
+
+.deal__form-error {
+  color: red;
+  font-size: 12px;
+}
+
+.deal__header {
+  font-size: 1.4rem;
+  margin-block-start: 0rem;
+  margin-block-end: 0rem;
+  padding: 10px 40px;
+  background-color: #cd6702;
+}
+
+.deal__fields {
+  margin: 0;
+  padding: 10px 0px 0px;
+  font-size: 1rem;
+  margin-bottom: 5px;
+  margin-left: 40px;
+}
+
+.deal__submit-button {
+  margin-left: 40px;
+}
+
+.deal__submit-error {
+  margin-left: 0;
+}
