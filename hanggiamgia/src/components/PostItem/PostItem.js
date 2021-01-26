@@ -10,12 +10,8 @@ import LinkIcon from '@material-ui/icons/Link';
 import DateRangeIcon from '@material-ui/icons/DateRange';
 import moment from 'moment';
 import { Link } from 'react-router-dom';
-import { useAuth0 } from '@auth0/auth0-react';
 import psl from 'psl';
 import ReportButton from '../ReportButton/ReportButton';
-import axios from 'axios';
-import config from '../../lib/config';
-import { useDataProvider } from '../../GlobalState';
 import './PostItem.css';
 
 
@@ -58,67 +54,9 @@ const useStyles = makeStyles({
   }
 });
 
-export default function PostItem({ post, detailed=false }) {
+export default function PostItem({ post, detailed=false, handleUpVote, handleDownVote }) {
   const classes = useStyles();
   const modifier = detailed ? 'display-detailed' : '';
-
-  const apiBaseUrl = config.apiBaseUrl;
-
-  const { isAuthenticated } = useAuth0();
-  const state = useDataProvider();
-  const [ posts, setPosts ] = state.postApi.posts;
-
-  const handleUpVote = async () => {
-    if (!isAuthenticated) alert("You must be logged in to vote");
-    try {
-      await axios.put(
-        `${apiBaseUrl}/posts/${post.id}/votes`, 
-        { vote_action: 'increment' }, 
-        { 
-          headers: { 
-            'Content-Type': 'application/json',
-            'username': 'testvotes2' // TODO: remove this
-          } 
-        }
-      );
-      const currentPostIndex = posts.findIndex(p => p.id === post.id);
-      posts[currentPostIndex].votes++;
-      setPosts([...posts]);
-    } catch (error) {
-      console.log('error', error);
-      if (error.response && error.response.status === 400) {
-        alert(error.response.data.message);
-      } else {
-        alert("Unexpected error has occured");
-      }
-    }
-  }
-
-  const handleDownVote = async () => {
-    if (!isAuthenticated) alert("You must be logged in to vote");
-    try {
-      await axios.put(
-        `${apiBaseUrl}/posts/${post.id}/votes`, 
-        { vote_action: 'decrement' }, 
-        { 
-          headers: { 
-            'Content-Type': 'application/json',
-            'username': 'testDownVote2' // TODO: remove this
-          } 
-        }
-      );
-      const currentPostIndex = posts.findIndex(p => p.id === post.id);
-      posts[currentPostIndex].votes--;
-      setPosts([...posts]);
-    } catch (error) {
-      console.log('error', error);
-      if (error.response && error.response.status === 400) {
-        alert(error.response.data.message);
-      } else {
-        alert("Unexpected error has occured");
-      }
-    }
-  }
 
   const getDomainName = (url) => {
     var hostname;
@@ -143,12 +81,12 @@ export default function PostItem({ post, detailed=false }) {
       <div className="post__meta">
         <Avatar className={classes.avatar} alt={post.author} src="https://files.ozbargain.com.au/gmask/38.jpg" />
         <div className="post__votes">
-          <AddBoxTwoToneIcon className={classes.upvote} onClick={handleUpVote} />
-          <IndeterminateCheckBoxTwoToneIcon className={classes.downvote} onClick={handleDownVote} />
+          <AddBoxTwoToneIcon className={classes.upvote} onClick={() => handleUpVote(post.id)} />
+          <IndeterminateCheckBoxTwoToneIcon className={classes.downvote} onClick={() => handleDownVote(post.id)} />
         </div>
         <div>{post.votes} votes</div>
         {
-          detailed && isAuthenticated && 
+          detailed && 
             (
               <Link to={{pathname: `/posts/${post.id}/votes`}}>
                 <div className="post__see-votes">See votes</div>

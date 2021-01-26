@@ -5,7 +5,9 @@ import NotFound from '../NotFound/NotFound';
 import Comment from '../../components/Comment/Comment';
 import CommentInput from '../../components/CommentInput/CommentInput';
 import axios from 'axios';
+import { useAuth0 } from '@auth0/auth0-react';
 import PostItem from '../../components/PostItem/PostItem';
+import Loading from '../../components/Loading/Loading';
 import './DetailedPost.css';
 
 
@@ -13,36 +15,55 @@ export default function DetailedPost() {
   const apiBaseUrl = config.apiBaseUrl;
 
   const { id } = useParams();
+  const { isAuthenticated } = useAuth0();
 
-  const [post, setPost] = useState(null);
-  const [comments, setComments] = useState([]);
-  const [newComment, setNewComment] = useState('');
-  const [offset, setOffset] = useState(0);
-  const [count, setCount] = useState(0);
+  const [ post, setPost ] = useState(null);
+  const [ comments, setComments ] = useState([]);
+  const [ newComment, setNewComment ] = useState('');
+  const [ offset, setOffset ] = useState(0);
+  const [ count, setCount ] = useState(0);
+  const [ errors, setErrors ] = useState({});
+  const [ isLoadingPost, setIsLoadingPost ] = useState(false);
+  const [ isLoadingComments, setIsLoadingComments ] = useState(false);
 
   useEffect(() => {
-    const getPostById = async (id) => {
-      try {
-        const res = await axios.get(`${apiBaseUrl}/posts/${id}`);
-        setPost(res.data);
-      } catch (error) {
-        console.log('error', error);
-      }
-    };
-    
     const getCommentsbyPostId = async (id) => {
       try {
+        setIsLoadingComments(true);
         const res = await axios.get(`${apiBaseUrl}/posts/${id}/comments`);
         setComments(res.data.comments);
         setOffset(res.data.comments.length);
         setCount(res.data.count);
+        setIsLoadingComments(false);
       } catch (error) {
         console.log('error', error);
+        setIsLoadingComments(false);
+        setErrors(prevErrors => ({
+          ...prevErrors,
+          comments: 'Unable to get comments'
+        }));
       }
     };
-
-    getPostById(id);
     getCommentsbyPostId(id);
+  }, [id]);
+
+  useEffect(() => {
+    const getPostById = async (id) => {
+      try {
+        setIsLoadingPost(true);
+        const res = await axios.get(`${apiBaseUrl}/posts/${id}`);
+        setPost(res.data);
+        setIsLoadingPost(false);
+      } catch (error) {
+        console.log('error', error);
+        setIsLoadingPost(false);
+        setErrors(prevErrors => ({
+          ...prevErrors,
+          post: 'Error: Unable to get post'
+        }))
+      }
+    };
+    getPostById(id);
   }, [id]);
 
   const handleSubmit = async () => {
@@ -75,27 +96,105 @@ export default function DetailedPost() {
       setOffset(res.data.comments.length);
     } catch (error) {
       console.log('error', error);
+      alert('Error: Unable to load more comments');
     }
   };
 
-  if (post == null) return <NotFound />;
+  const handleUpVote = async (id) => {
+    if (!isAuthenticated) alert("You must be logged in to vote");
+    try {
+      await axios.put(
+        `${apiBaseUrl}/posts/${id}/votes`, 
+        { vote_action: 'increment' }, 
+        { 
+          headers: { 
+            'Content-Type': 'application/json',
+            'username': 'gmanshop' // TODO: remove this
+          } 
+        }
+      );
+      post.votes++;
+      setPost({...post});
+    } catch (error) {
+      console.log('error', error);
+      if (error.response && error.response.status === 400) {
+        alert(error.response.data.message);
+      } else {
+        alert("Unexpected error has occured");
+      }
+    }
+  }
+
+  const handleDownVote = async (id) => {
+    if (!isAuthenticated) alert("You must be logged in to vote");
+    try {
+      await axios.put(
+        `${apiBaseUrl}/posts/${id}/votes`, 
+        { vote_action: 'decrement' }, 
+        { 
+          headers: { 
+            'Content-Type': 'application/json',
+            'username': 'testDownVote3' // TODO: remove this
+          } 
+        }
+      );
+      post.votes--;
+      setPost({...post});
+    } catch (error) {
+      console.log('error', error);
+      if (error.response && error.response.status === 400) {
+        alert(error.response.data.message);
+      } else {
+        alert("Unexpected error has occured");
+      }
+    }
+  }
   
+  // if (post === null) return <NotFound />
   return (
     <div className="detailed-post">
-      <PostItem post={post} detailed={true} />
-      <h2>Comments</h2>
-      <CommentInput onSubmit={handleSubmit} onChange={setNewComment}/>
-      { count > 0 &&
-        comments.map(comment => <Comment comment={comment} key={comment.id} />)
-      }
       {
-        offset < count && (
-          <div className="comment-loader detailed-post__load">
-            <div className="comment-loader__button comment-loader_text" onClick={loadComments}>View more comments</div>
-            <div className="comment-loader_text">{offset}/{count}</div>
-          </div>
-        )
+        isLoadingPost ? 
+          <Loading /> : 
+          (
+            <>
+            {
+              post && (
+                <PostItem post={post} detailed={true} handleUpVote={handleUpVote} handleDownVote={handleDownVote} />
+                )
+            }
+            {
+              errors.post && (<p className='detailed-post__error'>{errors.post}</p>)
+            }
+            </>
+          )
       }
+      
+      <h2>Comments</h2>
+      {
+        isLoadingComments ? 
+          <Loading /> :
+          (
+            <>
+            <CommentInput onSubmit={handleSubmit} onChange={setNewComment}/>
+            { count > 0 &&
+              comments.map(comment => <Comment comment={comment} key={comment.id} />)
+            }
+            {
+              errors.comments && (<p className='detailed-post__error'>{errors.comments}</p>)
+            }
+            {
+              offset < count && (
+                <div className="comment-loader detailed-post__load">
+                  <div className="comment-loader__button comment-loader_text" onClick={loadComments}>View more comments</div>
+                  <div className="comment-loader_text">{offset}/{count}</div>
+                </div>
+              )
+            }
+            </>
+          )
+      }
+
     </div>
   );
 }

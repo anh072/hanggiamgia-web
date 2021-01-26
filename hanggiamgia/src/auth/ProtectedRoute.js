@@ -7,7 +7,7 @@ export default function ProtectedRoute({ component, ...args }) {
   return (
     <Route 
       component={withAuthenticationRequired(component, {
-        onRedirecting: () => <Loading />
+        onRedirecting: () => 'Redirecting ...'
       })}
       {...args}
     />

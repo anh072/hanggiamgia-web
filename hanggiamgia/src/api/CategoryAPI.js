@@ -18,7 +18,5 @@ export default function CategoryAPI() {
     getCategories();
   }, []);
 
-  return {
-    categories: [categories, setCategories]
-  };
+  return [categories, setCategories];
 }

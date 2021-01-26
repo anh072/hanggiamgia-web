@@ -1,15 +1,18 @@
-import React, { useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import CategoryAPI from './api/CategoryAPI';
-import PostAPI from './api/PostAPI';
 import ReasonAPI from './api/ReportAPI';
 
 export const GlobalState = React.createContext();
 
 export function DataProvider({children}) {
+  const [ category, setCategory ] = useState("");
+  const [ searchTerm, setSearchTerm ] = useState("");
+
   const state = {
-    postApi: PostAPI(),
-    categoryApi: CategoryAPI(),
-    reasonApi: ReasonAPI()
+    categoryStore: CategoryAPI(),
+    reasonStore: ReasonAPI(),
+    selectedCategory: [category, setCategory],
+    searchTerm: [searchTerm, setSearchTerm]
   };
   
   return (

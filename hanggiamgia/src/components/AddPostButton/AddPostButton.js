@@ -95,15 +95,16 @@ const validate = (values) => {
 
 function AddPostButton() {
   const classes = useStyles();
-  const [open, setOpen] = useState(false);
-  const [values, setValues] = useState(initialValues);
-  const [errors, setErrors] = useState({});
+  const [ open, setOpen ] = useState(false);
+  const [ values, setValues ] = useState(initialValues);
+  const [ errors, setErrors ] = useState({});
+  const [ isSubmitting, setIsSubmitting ] = useState(false);
 
   const { user } = useAuth0();
   const { name } = user;
 
   const state = useDataProvider();
-  const [categories] = state.categoryApi.categories;
+  const [categories] = state.categoryStore;
 
   const apiBaseUrl = config.apiBaseUrl;
 
@@ -149,6 +150,7 @@ function AddPostButton() {
       return;
     }
     setErrors({});
+    setIsSubmitting(true);
     try {
       let data = {
         title: values.title,
@@ -179,9 +181,11 @@ function AddPostButton() {
         { headers: { 'Content-Type': 'application/json', 'username': 'testuser' } } //TODO: remove this
       );
       setValues(initialValues);
+      setIsSubmitting(false);
       setOpen(false);
     } catch (error) {
       console.log('error', error);
+      setIsSubmitting(false);
       setErrors(prevErrors => ({
         ...prevErrors,
         submit: "Unable to create a new deal. Try again!"
@@ -325,6 +329,7 @@ function AddPostButton() {
                   onClick={handleClose}>
                     Cancel
               </Button>
+              { isSubmitting && (<p className='deal__loading-message'>Creating a new post ...</p>) }
               { errors.submit && <p className="deal__form-error deal__submit-error">{errors.submit}</p> }
             </div>
           </form>

@@ -11,6 +11,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import './Header.css';
 import { Button } from '@material-ui/core';
 import AddPostButton from '../AddPostButton/AddPostButton';
+import logo from './logo192.png';
 
 const useStyles = makeStyles({
   button: {
@@ -26,7 +27,8 @@ const useStyles = makeStyles({
     fontSize: '13px',
     backgroundColor: 'white',
     height: '100%',
-    display: 'inlineBlock'
+    display: 'inlineBlock',
+    minWidth: '200px'
   },
   select: {
     height: '100%',
@@ -46,12 +48,13 @@ function Header() {
   const { isAuthenticated, loginWithPopup, logout } = useAuth0();
   const history = useHistory();
   const state = useDataProvider();
-  const [categories] = state.categoryApi.categories;
-  const [_, setCategory] = state.postApi.category;
+  const [categories] = state.categoryStore;
+  const [_, setCategory] = state.selectedCategory;
 
   const handleSearch = (e) => {
     if (e.key === "Enter") {
       console.log("Sending search request");
+      history.push('/posts/search');
     }
   }
 
@@ -62,7 +65,7 @@ function Header() {
   return (
     <header className="header">
       <Link to="/">
-        <img className="logo" alt="gia re logo" src="logo192.png"/>
+        <img className="logo" alt="gia re logo" src={logo} />
       </Link>
 
       {isAuthenticated ? 

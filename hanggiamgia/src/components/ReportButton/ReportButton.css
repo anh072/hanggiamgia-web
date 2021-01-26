@@ -12,6 +12,12 @@
   margin-left: 20px;
 }
 
+.report__loading-message {
+  font-size: 12px;
+  color: rgb(9, 106, 192);
+  margin: 0px 0px 20px 20px;
+}
+
 .report__fields span {
   color: red;
 }

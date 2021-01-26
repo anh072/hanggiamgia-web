@@ -51,9 +51,10 @@ function ReportButton({ type, post_id = null, comment_id = null }) {
   const [open, setOpen] = useState(false);
   const [values, setValues] = useState(initialValues);
   const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const state = useDataProvider();
-  const [reasons] = state.reasonApi.reasons;
+  const [reasons] = state.reasonStore;
 
   const apiBaseUrl = config.apiBaseUrl;
 
@@ -92,7 +93,7 @@ function ReportButton({ type, post_id = null, comment_id = null }) {
       }));
       return;
     }
-
+    setIsSubmitting(true);
     try {
       const data = {
         reason: values.reason,
@@ -114,9 +115,11 @@ function ReportButton({ type, post_id = null, comment_id = null }) {
       );
       setErrors({});
       setValues(initialValues);
+      setIsSubmitting(false);
       setOpen(false);
     } catch (error) {
       console.log('error', error);
+      setIsSubmitting(false);
       setErrors(prevError => ({
         ...prevError,
         submit: "Cannot submit form right now. Try again!"
@@ -182,6 +185,7 @@ function ReportButton({ type, post_id = null, comment_id = null }) {
                 onClick={handleClose}>
                   Cancel
               </Button>
+              { isSubmitting && (<p className='report__loading-message'>Creating the report...</p>) }
               { errors.submit && <p className="report__form-error report__submit-error">{errors.submit}</p> }
             </div>
           </form>

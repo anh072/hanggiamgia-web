@@ -11,8 +11,12 @@
 }
 
 .logo {
-  padding-top: 10px;
   object-fit: contain;
+  height: 60px;
+  width: 60px;
+  box-sizing: border-box;
+  margin-right: 30px;
+  margin-left: 20px;
 }
 
 .search input {

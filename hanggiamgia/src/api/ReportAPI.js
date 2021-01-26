@@ -18,7 +18,5 @@ export default function CategoryAPI() {
     getReasons();
   }, []);
 
-  return {
-    reasons: [reasons, setReasons]
-  };
+  return [reasons, setReasons];
 }

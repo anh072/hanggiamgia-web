@@ -16,6 +16,10 @@
   margin-bottom: 10px;
 }
 
+.detailed-post__error {
+  color: red;
+}
+
 .comment-loader__button {
   cursor: pointer;
 }
