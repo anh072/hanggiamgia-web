@@ -4,6 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import moment from 'moment-timezone';
 import { Link } from 'react-router-dom';
 import ReportButton from '../ReportButton/ReportButton';
+import config from '../../lib/config';
 import './Comment.css';
 
 const useStyles = makeStyles({
@@ -25,7 +26,7 @@ function Comment({ comment }) {
             <Link to={{pathname: `/users/${comment.author}`}}>
               <div className="comment__author">{comment.author}</div>
             </Link>
-            <div className="comment__date">{moment.tz(comment.created_time, "Asia/Ho_Chi_Minh").format('YYYY/MM/DD HH:MM')}</div>
+            <div className="comment__date">{moment.tz(comment.created_time, config.localTimezone).format('YYYY/MM/DD HH:MM')}</div>
           </div>
           <pre>{comment.text}</pre>
         </div>

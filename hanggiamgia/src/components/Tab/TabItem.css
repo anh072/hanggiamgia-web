@@ -1,0 +1,16 @@
+.tab-item {
+  border: 1px solid gray;
+  border-bottom: none;
+  background-color: #dbd5c5;
+  font-size: 1.2rem;
+  margin-right: 1px;
+}
+
+.tab-item:focus {
+  outline: 0;
+} 
+
+.tab-item_selected {
+  font-weight: 600;
+  background-color: white;
+}

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import config from '../../lib/config';
-import NotFound from '../NotFound/NotFound';
 import Comment from '../../components/Comment/Comment';
 import CommentInput from '../../components/CommentInput/CommentInput';
 import axios from 'axios';
@@ -25,6 +24,7 @@ export default function DetailedPost() {
   const [ errors, setErrors ] = useState({});
   const [ isLoadingPost, setIsLoadingPost ] = useState(false);
   const [ isLoadingComments, setIsLoadingComments ] = useState(false);
+  const [ isLoadingExtraComments, setIsLoadingExtraComments ] = useState(false);
 
   useEffect(() => {
     const getCommentsbyPostId = async (id) => {
@@ -35,6 +35,10 @@ export default function DetailedPost() {
         setOffset(res.data.comments.length);
         setCount(res.data.count);
         setIsLoadingComments(false);
+        setErrors(prevErrors => ({
+          ...prevErrors,
+          comments: ''
+        }));
       } catch (error) {
         console.log('error', error);
         setIsLoadingComments(false);
@@ -54,6 +58,10 @@ export default function DetailedPost() {
         const res = await axios.get(`${apiBaseUrl}/posts/${id}`);
         setPost(res.data);
         setIsLoadingPost(false);
+        setErrors(prevErrors => ({
+          ...prevErrors,
+          post: ''
+        }));
       } catch (error) {
         console.log('error', error);
         setIsLoadingPost(false);
@@ -71,7 +79,7 @@ export default function DetailedPost() {
       const res = await axios.post(
         `${apiBaseUrl}/posts/${id}/comments`,
         { text: newComment.trim().replace(/\n+$/, "") },
-        { headers: { 'Content-Type': 'application/json', 'username': 'com' }} //TODO: remove this
+        { headers: { 'Content-Type': 'application/json', 'username': 'gmanshop' }} //TODO: remove this
       );
       console.log("submitted comment");
       var comment = res.data;
@@ -90,12 +98,15 @@ export default function DetailedPost() {
     const startDate = comments[0].created_time;
 
     try {
+      setIsLoadingExtraComments(true);
       const res = await axios.get(`${apiBaseUrl}/posts/${id}/comments?offset=${newOffset}&start_date=${startDate}`);
       setComments(res.data.comments);
       setCount(res.data.count);
       setOffset(res.data.comments.length);
+      setIsLoadingExtraComments(false);
     } catch (error) {
       console.log('error', error);
+      setIsLoadingExtraComments(false);
       alert('Error: Unable to load more comments');
     }
   };
@@ -155,7 +166,7 @@ export default function DetailedPost() {
     <div className="detailed-post">
       {
         isLoadingPost ? 
-          <Loading /> : 
+          <Loading size='medium' /> : 
           (
             <>
             {
@@ -173,28 +184,28 @@ export default function DetailedPost() {
       <h2>Comments</h2>
       {
         isLoadingComments ? 
-          <Loading /> :
+          <Loading size='medium' /> :
           (
             <>
-            <CommentInput onSubmit={handleSubmit} onChange={setNewComment}/>
-            { count > 0 &&
-              comments.map(comment => <Comment comment={comment} key={comment.id} />)
-            }
-            {
-              errors.comments && (<p className='detailed-post__error'>{errors.comments}</p>)
-            }
-            {
-              offset < count && (
-                <div className="comment-loader detailed-post__load">
-                  <div className="comment-loader__button comment-loader_text" onClick={loadComments}>View more comments</div>
-                  <div className="comment-loader_text">{offset}/{count}</div>
-                </div>
-              )
-            }
+              <CommentInput onSubmit={handleSubmit} onChange={setNewComment}/>
+              { count > 0 &&
+                comments.map(comment => <Comment comment={comment} key={comment.id} />)
+              }
+              {
+                errors.comments && (<p className='detailed-post__error'>{errors.comments}</p>)
+              }
+              {
+                offset < count && (
+                  <div className="comment-loader detailed-post__load">
+                    <div className="comment-loader__button comment-loader_text" onClick={loadComments}>View more comments</div>
+                    <div className="comment-loader_text">{offset}/{count}</div>
+                  </div>
+                )
+              }
+              { isLoadingExtraComments && <Loading size='small' /> }
             </>
           )
       }
-
     </div>
   );
 }

@@ -1,0 +1,14 @@
+.loader--small {
+  height: 40px;
+  width: 40px;
+}
+
+.loader--medium {
+  height: 80px;
+  width: 80px;
+}
+
+.loader--large {
+  height: 120px;
+  width: 120px;
+}

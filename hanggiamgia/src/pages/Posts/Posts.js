@@ -98,7 +98,7 @@ export default function Posts() {
     }
   }
 
-  if (isLoading) return <Loading />;
+  if (isLoading) return <Loading size='large' />;
 
   return (
     <ul className="post-list">

@@ -4,21 +4,23 @@ import Posts from './Posts/Posts';
 import DetailedPost from './DetailedPost/DetailedPost';
 import UserProfile from './UserProfile/UserProfile';
 import NotFound from './NotFound/NotFound';
-import Profile from './UserProfile/UserProfile';
 import PostVotes from './PostVotes/PostVotes';
 import SearchResults from './SearchResults/SearchResults';
 import ProtectedRoute from '../auth/ProtectedRoute';
+import './Pages.css';
 
 export default function Pages() {
   return (
-    <Switch>
-      <Route path="/" exact component={Posts} />
-      <Route path="/posts/search" exact component={SearchResults} />
-      <Route path="/posts/:id" exact component={DetailedPost} />
-      <ProtectedRoute path="/posts/:id/votes" exact component={PostVotes} />
-      <Route path="/users/:username" exact component={UserProfile} />
-      <ProtectedRoute path="/profile" exact component={Profile} />
-      <Route path="*" exact component={NotFound} />
-    </Switch>
+    <div className='pages'>
+      <Switch>
+        <Route path="/" exact component={Posts} />
+        <Route path="/posts/search" exact component={SearchResults} />
+        <Route path="/posts/:id" exact component={DetailedPost} />
+        <ProtectedRoute path="/posts/:id/votes" exact component={PostVotes} />
+        <Route path="/users/:username" exact component={UserProfile} />
+        <ProtectedRoute path="/profile" exact component={UserProfile} />
+        <Route path="*" exact component={NotFound} />
+      </Switch>
+    </div>
   );
 }

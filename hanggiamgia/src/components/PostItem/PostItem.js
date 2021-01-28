@@ -12,6 +12,8 @@ import moment from 'moment';
 import { Link } from 'react-router-dom';
 import psl from 'psl';
 import ReportButton from '../ReportButton/ReportButton';
+import config from '../../lib/config';
+import PropTypes from 'prop-types';
 import './PostItem.css';
 
 
@@ -50,11 +52,12 @@ const useStyles = makeStyles({
     marginLeft: '5px'
   },
   dateRangeIcon: {
-    fontSize: '1rem'
+    fontSize: '1rem',
+    marginRight: '3px'
   }
 });
 
-export default function PostItem({ post, detailed=false, handleUpVote, handleDownVote }) {
+function PostItem({ post, detailed=false, handleUpVote, handleDownVote }) {
   const classes = useStyles();
   const modifier = detailed ? 'display-detailed' : '';
 
@@ -81,10 +84,14 @@ export default function PostItem({ post, detailed=false, handleUpVote, handleDow
       <div className="post__meta">
         <Avatar className={classes.avatar} alt={post.author} src="https://files.ozbargain.com.au/gmask/38.jpg" />
         <div className="post__votes">
-          <AddBoxTwoToneIcon className={classes.upvote} onClick={() => handleUpVote(post.id)} />
-          <IndeterminateCheckBoxTwoToneIcon className={classes.downvote} onClick={() => handleDownVote(post.id)} />
+          <AddBoxTwoToneIcon 
+            className={classes.upvote} 
+            onClick={() => handleUpVote && handleUpVote(post.id)} />
+          <IndeterminateCheckBoxTwoToneIcon 
+            className={classes.downvote} 
+            onClick={() => handleDownVote && handleDownVote(post.id)} />
         </div>
-        <div>{post.votes} votes</div>
+        <div className='post__vote-count'>{post.votes} votes</div>
         {
           detailed && 
             (
@@ -148,7 +155,7 @@ export default function PostItem({ post, detailed=false, handleUpVote, handleDow
           <div>{post.category}</div>
           <DateRangeIcon className={classes.dateRangeIcon}/>
           <div>
-            {moment.tz(post.start_date, 'Asia/Ho_Chi_Minh').format('YYYY/MM/DD HH:MM')} - {moment.tz(post.end_date, 'Asia/Ho_Chi_Minh').format('YYYY/MM/DD HH:MM')}
+            {moment.tz(post.start_date, config.localTimezone).format('YYYY/MM/DD HH:MM')} - {moment.tz(post.end_date, config.localTimezone).format('YYYY/MM/DD HH:MM')}
           </div>
           <ReportButton type="Post" post_id={post.id} />
         </div>
@@ -159,3 +166,12 @@ export default function PostItem({ post, detailed=false, handleUpVote, handleDow
     </div>
   );
 }
+
+PostItem.propTypes = {
+  post: PropTypes.object.isRequired,
+  detailed: PropTypes.bool.isRequired, 
+  handleUpVote: PropTypes.func, 
+  handleDownVote: PropTypes.func
+};
+
+export default PostItem;

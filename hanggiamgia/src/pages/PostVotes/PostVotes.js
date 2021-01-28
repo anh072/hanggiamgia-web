@@ -60,7 +60,6 @@ const useStyles = makeStyles({
 
 function PostVotes() {
   const apiBaseUrl = config.apiBaseUrl;
-  const namespace = 'https://giare.vn/';
 
   const classes = useStyles();
 
@@ -88,6 +87,10 @@ function PostVotes() {
         );
         setVotes(res.data.votes);
         setIsLoadingVotes(false);
+        setErrors(prevErrors => ({
+          ...prevErrors,
+          votes: ''
+        }));
       } catch (error) {
         console.log('error', error);
         setErrors(prevErrors => ({
@@ -107,6 +110,10 @@ function PostVotes() {
         const res = await axios.get(`${apiBaseUrl}/posts/${id}`);
         setPost(res.data);
         setIsLoadingPost(false);
+        setErrors(prevErrors => ({
+          ...prevErrors,
+          post: ''
+        }));
       } catch (error) {
         console.log('error', error);
         setErrors(prevErrors => ({
@@ -138,7 +145,7 @@ function PostVotes() {
     <div className="vote">
       {
         isLoadingPost && isLoadingVotes ? 
-          <Loading /> :
+          <Loading size='large' /> :
           (
             <>
             {
@@ -169,12 +176,12 @@ function PostVotes() {
                                 <RemoveIcon className={classes.removeIcon} />
                             }
                             {
-                              user[namespace+'username'] === vote.voter && 
+                              user[config.claimNamespace+'username'] === vote.voter && 
                                 (<DeleteIcon className={classes.deleteIcon} onClick={() => removeVote(vote.id)} />)
                             }
                             </>
                           </StyledTableCell>
-                          <StyledTableCell align="left">{moment.tz(vote.created_time, 'Asia/Ho_Chi_Minh').format("ddd, MMM DD YYYY HH:MM:ss")}</StyledTableCell>
+                          <StyledTableCell align="left">{moment.tz(vote.created_time, config.localTimezone).format("ddd, MMM DD YYYY HH:MM:ss")}</StyledTableCell>
                         </StyledTableRow>
                       ))}
                     </TableBody>

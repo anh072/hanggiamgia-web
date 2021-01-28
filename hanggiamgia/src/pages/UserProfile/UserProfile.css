@@ -1,0 +1,34 @@
+.profile {
+  margin: 20px 0;
+  padding: 0 20px;
+  max-width: 100%;
+}
+
+.profile__avatar {
+  width: 130px;
+  height: 130px;
+}
+
+.profile__details {
+  display: flex;
+  flex-direction: row;
+}
+
+.profile__avatar-container {
+}
+
+.profile__userinfo {
+  margin-left: 40px;
+}
+
+.profile__label {
+  color: gray;
+  font-weight: 500;
+  width: 150px;
+}
+
+.profile__error {
+  color: red;
+  font-size: 12px;
+}
+
