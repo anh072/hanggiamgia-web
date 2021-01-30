@@ -16,6 +16,23 @@ import config from '../../lib/config';
 import PropTypes from 'prop-types';
 import './PostItem.css';
 
+const getDomainName = (url) => {
+  var hostname;
+
+  if (url.indexOf("//") > -1) {
+      hostname = url.split('/')[2];
+  }
+  else {
+      hostname = url.split('/')[0];
+  }
+
+  //find & remove port number
+  hostname = hostname.split(':')[0];
+  //find & remove "?"
+  hostname = hostname.split('?')[0];
+
+  return psl.get(hostname);
+}
 
 const useStyles = makeStyles({
   avatar: {
@@ -45,7 +62,7 @@ const useStyles = makeStyles({
   couponIcon: {
     margin: 0,
     padding: '2px 2px',
-    borderRight: '1px solid black'
+    fontSize: '1.2rem'
   },
   linkIcon: {
     fontSize: '100%',
@@ -60,24 +77,6 @@ const useStyles = makeStyles({
 function PostItem({ post, detailed=false, handleUpVote, handleDownVote }) {
   const classes = useStyles();
   const modifier = detailed ? 'display-detailed' : '';
-
-  const getDomainName = (url) => {
-    var hostname;
-
-    if (url.indexOf("//") > -1) {
-        hostname = url.split('/')[2];
-    }
-    else {
-        hostname = url.split('/')[0];
-    }
-
-    //find & remove port number
-    hostname = hostname.split(':')[0];
-    //find & remove "?"
-    hostname = hostname.split('?')[0];
-
-    return psl.get(hostname);
-  }
 
   return (
     <div className={`post ${detailed ? `post--${modifier}` : ''}`}>

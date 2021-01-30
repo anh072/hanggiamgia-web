@@ -1,44 +1,60 @@
 import React, { useState, useEffect } from "react";
-import { useAuth0 } from "@auth0/auth0-react";
+import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import moment from 'moment';
+import Pagination from '@material-ui/lab/Pagination';
+import { makeStyles } from '@material-ui/styles';
 import config from '../../lib/config';
 import Tab from '../../components/Tab/Tab';
-import './UserProfile.css';
 import TabItem from "../../components/Tab/TabItem";
 import SimplePostItem from "../../components/SimplePostItem/SimplePostItem";
 import Loading from "../../components/Loading/Loading";
+import { calculatePages } from '../../lib/common';
+import './UserProfile.css';
 
+
+const useStyles = makeStyles({
+  pagination: {
+    margin: '20px auto',
+    width: '33%'
+  },
+  paginationList: {
+    justifyContent: 'center'
+  }
+});
 
 function UserProfile() {
   const apiBaseUrl = config.apiBaseUrl;
+  const classes = useStyles();
 
-  const { user } = useAuth0();
-  const userInfo = [
-    { label: 'Username', value: user[config.claimNamespace+'username'] },
-    { label: 'Email', value: user.email },
-    { label: 'Member since', value: moment.tz(user[config.claimNamespace+'created_time'], config.localTimezone).format('YYYY/MM/DD') }
-  ];
+  const { username } = useParams();
 
+  const [ userInfo, setUserInfo ] = useState({});
+  const [ page, setPage ] = useState(1);
   const [ selectedTab, setSelectedTab ] = useState('Posts');
   const [ posts, setPosts ] = useState({});
   const [ errors, setErrors ] = useState({});
-  const [ isLoading, setIsLoading ] = useState(false);
+  const [ isLoadingPosts, setIsLoadingPosts ] = useState(false);
+  const [ isLoadingUser, setIsLoadingUser ] = useState(false);
 
   useEffect(() => {
     const getPostsByUsername = async (username) => {
       try {
-        setIsLoading(true);
-        const res = await axios.get(`${apiBaseUrl}/users/${username}/posts`);
+        setIsLoadingPosts(true);
+        setPosts({});
+        const res = await axios.get(
+          `${apiBaseUrl}/users/${username}/posts?page=${page}`,
+          { timeout: 20000 }
+        );
         setPosts(res.data);
         setErrors(prevErrors => ({
           ...prevErrors,
           posts: ''
         }));
-        setIsLoading(false);
+        setIsLoadingPosts(false);
       } catch(error) {
         console.error('error', error);
-        setIsLoading(false);
+        setIsLoadingPosts(false);
         setErrors(prevErrors => ({
           ...prevErrors,
           posts: 'Error: Unable to get posts'
@@ -48,17 +64,21 @@ function UserProfile() {
 
     const getCommentedPostsByUsername = async (username) => {
       try {
-        setIsLoading(true);
-        const res = await axios.get(`${apiBaseUrl}/users/${username}/commented_posts`);
+        setPosts({});
+        setIsLoadingPosts(true);
+        const res = await axios.get(
+          `${apiBaseUrl}/users/${username}/commented_posts?page=${page}`,
+          { timeout: 20000 }
+        );
         setPosts(res.data);
         setErrors(prevErrors => ({
           ...prevErrors,
           comments: ''
         }));
-        setIsLoading(false);
+        setIsLoadingPosts(false);
       } catch(error) {
         console.error('error', error);
-        setIsLoading(false);
+        setIsLoadingPosts(false);
         setErrors(prevErrors => ({
           ...prevErrors,
           comments: 'Error: Unable to get posts commented by the user'
@@ -66,39 +86,79 @@ function UserProfile() {
       }
     };
 
-    if (selectedTab === 'Posts') getPostsByUsername(user[config.claimNamespace+'username']);
-    else getCommentedPostsByUsername(user[config.claimNamespace+'username']);
-  }, [selectedTab])
+    if (selectedTab === 'Posts') getPostsByUsername(username);
+    else getCommentedPostsByUsername(username);
+  }, [page, username, selectedTab])
+
+  useEffect(() => {
+    const getUserByUsername = async (username) => {
+      try {
+        setIsLoadingUser(true);
+        const res = await axios.get(
+          `${apiBaseUrl}/users/${username}`,
+          { timeout: 20000 }
+        );
+        setUserInfo(res.data.user);
+        setIsLoadingUser(false);
+        setErrors(prevErrors => ({
+          ...prevErrors,
+          user: ''
+        }));
+      } catch(error) {
+        console.log('error', error);
+        setErrors(prevErrors => ({
+          ...prevErrors,
+          user: 'Error: Unable to get user information'
+        }));
+        setIsLoadingUser(false);
+      }
+    };
+    getUserByUsername(username);
+  }, [username]);
 
   const handleSelectTab = (e, newValue) => {
     setSelectedTab(newValue);
   };
 
+  const handlePageSelect = (e, page) => {
+    setPage(page);
+  };
+
   return (
     <div className='profile'>
       <h2>User Profile</h2>
-      <div className='profile__details'>
-        <div className='profile__avatar-container'>
-          <img className='profile__avatar' src={user.picture} alt={`${user.username} avatar`} />
-        </div>
-        <table className='profile__userinfo'>
-          <tbody>
-            {
-              userInfo.map(info => 
-                (<tr>
-                  <td align='left' className='profile__label'>{info.label}</td>
-                  <td align='left'>{info.value}</td>
-                </tr>))
-            }
-          </tbody>
-        </table>
-      </div>
+      {
+        isLoadingUser ? 
+          <Loading size='medium' /> : (
+            <div className='profile__details'>
+              <div className='profile__avatar-container'>
+                <img className='profile__avatar' src={userInfo.picture} alt={`${userInfo.username} avatar`} />
+              </div>
+              <table className='profile__userinfo'>
+                <tbody>
+                  <tr>
+                    <td align='left' className='profile__label'>Username</td>
+                    <td align='left'>{userInfo.username}</td>
+                  </tr>
+                  <tr>
+                    <td align='left' className='profile__label'>Email</td>
+                    <td align='left'>{userInfo.email}</td>
+                  </tr>
+                  <tr>
+                    <td align='left' className='profile__label'>Member Since</td>
+                    <td align='left'>{moment.tz(userInfo.created_time, config.localTimezone).format('YYYY/MM/DD')}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          )
+      }
       <Tab value={selectedTab} onChange={handleSelectTab}>
         <TabItem value="Posts" label="Posts" />
         <TabItem value="Comments" label="Commented On" />
       </Tab>
       <div className='profile__items'>
-        {isLoading ?
+        {isLoadingPosts ?
           <Loading size='medium' /> : (
             <>
             {
@@ -106,12 +166,22 @@ function UserProfile() {
                 posts.posts.map(post => <SimplePostItem post={post} key={post.id} />)
               )
             }
-            { errors.posts && (<p className='profile__error'>{errors.posts}</p>) }
-            { errors.comments && (<p className='profile__error'>{errors.comments}</p>) }
+            { selectedTab === 'Posts' && errors.posts && (<p className='profile__error'>{errors.posts}</p>) }
+            { selectedTab === 'Comments' && errors.comments && (<p className='profile__error'>{errors.comments}</p>) }
             </>
           )
         }
-
+        <Pagination
+          classes={{ul: classes.paginationList}}
+          className={classes.pagination}
+          count={calculatePages(posts.limit, posts.count)} 
+          shape="rounded"
+          variant="outlined"
+          color="secondary"
+          size="small"
+          page={page}
+          onChange={handlePageSelect}
+        />
       </div>
     </div>
   );

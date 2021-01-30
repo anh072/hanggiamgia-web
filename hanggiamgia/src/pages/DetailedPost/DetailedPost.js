@@ -30,7 +30,10 @@ export default function DetailedPost() {
     const getCommentsbyPostId = async (id) => {
       try {
         setIsLoadingComments(true);
-        const res = await axios.get(`${apiBaseUrl}/posts/${id}/comments`);
+        const res = await axios.get(
+          `${apiBaseUrl}/posts/${id}/comments`,
+          { timeout: 20000 }
+        );
         setComments(res.data.comments);
         setOffset(res.data.comments.length);
         setCount(res.data.count);
@@ -55,7 +58,10 @@ export default function DetailedPost() {
     const getPostById = async (id) => {
       try {
         setIsLoadingPost(true);
-        const res = await axios.get(`${apiBaseUrl}/posts/${id}`);
+        const res = await axios.get(
+          `${apiBaseUrl}/posts/${id}`,
+          { timeout: 20000 }
+        );
         setPost(res.data);
         setIsLoadingPost(false);
         setErrors(prevErrors => ({
@@ -79,7 +85,8 @@ export default function DetailedPost() {
       const res = await axios.post(
         `${apiBaseUrl}/posts/${id}/comments`,
         { text: newComment.trim().replace(/\n+$/, "") },
-        { headers: { 'Content-Type': 'application/json', 'username': 'gmanshop' }} //TODO: remove this
+        { headers: { 'Content-Type': 'application/json', 'username': 'gmanshop' }}, //TODO: remove this
+        { timeout: 20000 }
       );
       console.log("submitted comment");
       var comment = res.data;
@@ -89,6 +96,7 @@ export default function DetailedPost() {
       setOffset(offset + 1);
     } catch (error) {
       console.log('error', error);
+      alert('Error: Unable to submit your comment');
     }
   };
 
@@ -99,7 +107,10 @@ export default function DetailedPost() {
 
     try {
       setIsLoadingExtraComments(true);
-      const res = await axios.get(`${apiBaseUrl}/posts/${id}/comments?offset=${newOffset}&start_date=${startDate}`);
+      const res = await axios.get(
+        `${apiBaseUrl}/posts/${id}/comments?offset=${newOffset}&start_date=${startDate}`,
+        { timeout: 20000 }
+      );
       setComments(res.data.comments);
       setCount(res.data.count);
       setOffset(res.data.comments.length);
@@ -122,7 +133,8 @@ export default function DetailedPost() {
             'Content-Type': 'application/json',
             'username': 'gmanshop' // TODO: remove this
           } 
-        }
+        },
+        { timeout: 20000 }
       );
       post.votes++;
       setPost({...post});
@@ -147,7 +159,8 @@ export default function DetailedPost() {
             'Content-Type': 'application/json',
             'username': 'testDownVote3' // TODO: remove this
           } 
-        }
+        },
+        { timeout: 20000 }
       );
       post.votes--;
       setPost({...post});

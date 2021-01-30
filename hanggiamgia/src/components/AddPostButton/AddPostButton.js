@@ -47,8 +47,9 @@ const useStyles = makeStyles({
   },
   createButton: {
     height: '100%',
-    width: '100px',
-    fontSize: '13px'
+    width: '90px',
+    fontSize: '13px',
+    color: 'white'
   }
 });
 
@@ -103,7 +104,7 @@ function AddPostButton() {
   const { user } = useAuth0();
 
   const state = useDataProvider();
-  const [categories] = state.categoryStore;
+  const [categories] = state.categoryStore.data;
 
   const apiBaseUrl = config.apiBaseUrl;
 
@@ -164,7 +165,8 @@ function AddPostButton() {
         const res = await axios.post(
           `${apiBaseUrl}/users/${user[config.claimNamespace+'username']}/images/upload`,
           values.image,
-          { headers: { 'Content-Type': 'multipart/form-data', 'username': 'gmanshop' } } //TODO: remove this
+          { headers: { 'Content-Type': 'multipart/form-data', 'username': 'gmanshop' } }, //TODO: remove this
+          { timeout: 20000 }
         );
         const imageUrl = res.data.image_url;
         data.image_url = imageUrl;
@@ -177,7 +179,8 @@ function AddPostButton() {
       await axios.post(
         `${apiBaseUrl}/posts`, 
         data, 
-        { headers: { 'Content-Type': 'application/json', 'username': 'gmanshop' } } //TODO: remove this
+        { headers: { 'Content-Type': 'application/json', 'username': 'gmanshop' } }, //TODO: remove this
+        { timeout: 20000 }
       );
       setValues(initialValues);
       setIsSubmitting(false);

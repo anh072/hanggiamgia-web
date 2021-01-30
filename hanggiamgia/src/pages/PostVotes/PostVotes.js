@@ -83,7 +83,8 @@ function PostVotes() {
               'Content-Type': 'application/json',
               'Authorization': 'xxxx' //TODO: add access token here
             } 
-          }
+          },
+          { timeout: 20000 }
         );
         setVotes(res.data.votes);
         setIsLoadingVotes(false);
@@ -107,7 +108,10 @@ function PostVotes() {
     const getPostById = async (id) => {
       try {
         setIsLoadingPost(true);
-        const res = await axios.get(`${apiBaseUrl}/posts/${id}`);
+        const res = await axios.get(
+          `${apiBaseUrl}/posts/${id}`,
+          { timeout: 20000 }
+        );
         setPost(res.data);
         setIsLoadingPost(false);
         setErrors(prevErrors => ({
@@ -131,7 +135,8 @@ function PostVotes() {
     try {
       await axios.delete(
         `${apiBaseUrl}/posts/${id}/votes/${voteId}`,
-        { headers: { 'Authorization': 'Bearer ....', 'username': 'gmanshop' } } //TODO: remove this
+        { headers: { 'Authorization': 'Bearer ....', 'username': 'gmanshop' } }, //TODO: remove this
+        { timeout: 20000 }
       );
       const newVotes = votes.filter(vote => vote.id !== voteId);
       setVotes([...newVotes]);

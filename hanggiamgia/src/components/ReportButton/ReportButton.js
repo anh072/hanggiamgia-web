@@ -54,7 +54,7 @@ function ReportButton({ type, post_id = null, comment_id = null }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const state = useDataProvider();
-  const [reasons] = state.reasonStore;
+  const [reasons] = state.reasonStore.data;
 
   const apiBaseUrl = config.apiBaseUrl;
 
@@ -111,7 +111,8 @@ function ReportButton({ type, post_id = null, comment_id = null }) {
             'Content-Type': 'application/json',
             'username': '' // TODO: testing purposses only
           } 
-        }
+        },
+        { timeout: 20000 }
       );
       setErrors({});
       setValues(initialValues);

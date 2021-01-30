@@ -1,27 +1,36 @@
 import React, { useState, useEffect } from 'react';
-import { useDataProvider } from '../../GlobalState';
 import PostItem from '../../components/PostItem/PostItem';
 import config from '../../lib/config';
+import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth0 } from '@auth0/auth0-react';
-import './Posts.css';
+import Pagination from '@material-ui/lab/Pagination';
+import { makeStyles } from '@material-ui/styles';
 import Loading from '../../components/Loading/Loading';
+import { calculatePages, useQuery } from '../../lib/common';
+import './Home.css';
 
+
+const useStyles = makeStyles({
+  pagination: {
+    margin: '20px auto',
+    width: '33%'
+  },
+  paginationList: {
+    justifyContent: 'center'
+  }
+});
 
 export default function Posts() {
   const apiBaseUrl = config.apiBaseUrl
-
-  const state = useDataProvider();
-  const [category, setCategory] = state.selectedCategory;
-  const [_, setSearchTerm] = state.searchTerm;
+  const classes = useStyles();
+  const query = useQuery();
+  const page = query.get('page') || 1;
 
   const { isAuthenticated } = useAuth0();
+  const history = useHistory();
 
-  const [ page, setPage ] = useState(1);
   const [ posts, setPosts ] = useState([]);
-  const [ next, setNext ] = useState(null);
-  const [ prev, setPrev ] = useState(null);
-  const [ count, setCount ] = useState(0);
   const [ isLoading, setIsLoading ] = useState(false);
   const [ errors, setErrors ] = useState({});
 
@@ -29,12 +38,16 @@ export default function Posts() {
     const getPosts = async () => {
       try {
         setIsLoading(true);
-        const res = await axios.get(`${apiBaseUrl}/posts?page=${page}&category=${category}`);
-        setPosts(res.data.posts);
-        setNext(res.data.next);
-        setPrev(res.data.prev);
-        setCount(res.data.count);
+        const res = await axios.get(
+          `${apiBaseUrl}/posts?page=${page}`,
+          { timeout: 20000 }
+        );
+        setPosts(res.data);
         setIsLoading(false);
+        setErrors(prevErrors => ({
+          ...prevErrors,
+          posts: ''
+        }));
       } catch(error) {
         console.log('error', error);
         setErrors(prevErrors => ({
@@ -44,7 +57,7 @@ export default function Posts() {
       }
     };
     getPosts();
-  }, [page, category]);
+  }, [page]);
 
   const handleUpVote = async (id) => {
     if (!isAuthenticated) alert("You must be logged in to vote");
@@ -57,7 +70,8 @@ export default function Posts() {
             'Content-Type': 'application/json',
             'username': 'testvotes2' // TODO: remove this
           } 
-        }
+        },
+        { timeout: 20000 }
       );
       const currentPostIndex = posts.findIndex(p => p.id === id);
       posts[currentPostIndex].votes++;
@@ -83,7 +97,8 @@ export default function Posts() {
             'Content-Type': 'application/json',
             'username': 'testDownVote2' // TODO: remove this
           } 
-        }
+        },
+        { timeout: 20000 }
       );
       const currentPostIndex = posts.findIndex(p => p.id === id);
       posts[currentPostIndex].votes--;
@@ -98,12 +113,35 @@ export default function Posts() {
     }
   }
 
+  const handlePageSelect = (e, newPage) => {
+    if (parseInt(newPage) !== parseInt(page)) {
+      history.push({
+        pathname: '/',
+        search: `?page=${newPage}`
+      });
+    }
+  };
+
   if (isLoading) return <Loading size='large' />;
 
   return (
-    <ul className="post-list">
-      {posts.map(post => <PostItem post={post} key={post.id} handleUpVote={handleUpVote} handleDownVote={handleDownVote}/>)}
-      {errors.posts && (<p className='post-list__error'>{errors.posts}</p>)}
-    </ul>
+    <div className='post-list'>
+      <ul className="post-list__list">
+        {posts.posts && posts.posts.map(post => 
+          <PostItem post={post} key={post.id} handleUpVote={handleUpVote} handleDownVote={handleDownVote}/>)}
+        {errors.posts && (<p className='post-list__error'>{errors.posts}</p>)}
+      </ul>
+      <Pagination
+        classes={{ul: classes.paginationList}}
+        className={classes.pagination}
+        count={calculatePages(posts.limit, posts.count)}
+        shape="rounded"
+        variant="outlined"
+        color="secondary"
+        size="small"
+        page={parseInt(page)}
+        onChange={handlePageSelect}
+      />
+    </div>
   );
 }

@@ -1,0 +1,28 @@
+.search-results {
+  margin: 0 0;
+  padding: 0 20px 2.5rem 20px;
+  max-width: 100%;
+}
+
+.search-results__list {
+  margin: 0 0;
+  padding: 0 0;
+  max-width: 100%;
+}
+
+.search-results__error {
+  color: red;
+}
+
+.search-results__title {
+  padding: 0 0;
+}
+
+.search-results__info {
+  color: rgb(9, 106, 192);
+  padding: 0 0;
+}
+
+.search-results__info span{
+  margin-right: 20px;
+}

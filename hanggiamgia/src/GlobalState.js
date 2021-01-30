@@ -1,23 +1,26 @@
-import React, { useState, useContext } from 'react';
+import React, { useContext } from 'react';
 import CategoryAPI from './api/CategoryAPI';
 import ReasonAPI from './api/ReportAPI';
+import InternalError from './pages/InternalError/InternalError';
 
 export const GlobalState = React.createContext();
 
 export function DataProvider({children}) {
-  const [ category, setCategory ] = useState("");
-  const [ searchTerm, setSearchTerm ] = useState("");
 
   const state = {
     categoryStore: CategoryAPI(),
     reasonStore: ReasonAPI(),
-    selectedCategory: [category, setCategory],
-    searchTerm: [searchTerm, setSearchTerm]
+  };
+
+  const renderContent = () => {
+    if (state.categoryStore.error || state.reasonStore.error)
+      return <InternalError />;
+    return children
   };
   
   return (
     <GlobalState.Provider value={state}>
-      {children}
+      { renderContent() }
     </GlobalState.Provider>
   );
 }

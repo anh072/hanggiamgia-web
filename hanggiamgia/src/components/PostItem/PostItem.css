@@ -76,8 +76,7 @@
   align-items: center;
   margin-top: 10px;
   padding: 0;
-  font-size: 120%;
-  border: 1px solid black;
+  font-size: 1.2rem;
 }
 
 .post__coupon--display-detailed {
@@ -86,7 +85,7 @@
 }
 
 .post__coupon-code {
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   padding: 2px 5px;
   font-family: monospace;
 }
