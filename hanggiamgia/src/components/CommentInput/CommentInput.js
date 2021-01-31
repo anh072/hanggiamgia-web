@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Avatar, Button, TextField } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import PropTypes from 'prop-types';
 import './CommentInput.css';
 
 const useStyles = makeStyles({
@@ -28,7 +29,7 @@ function CommentInput({ onSubmit, onChange }) {
     onChange(e.target.value);
   };
 
-  const handleClick = () => {
+  const handleSubmit = () => {
     onSubmit();
     setText('');
   };
@@ -36,29 +37,32 @@ function CommentInput({ onSubmit, onChange }) {
   return (
     <div className='comment-input'>
       <Avatar className={classes.avatar} src="https://files.ozbargain.com.au/gmask/38.jpg" />
-      <div className='comment-input__form'>
-        <form>
-          <TextField
-            id="standard-textarea"
-            placeholder="Write a comment..."
-            multiline
-            rowsMax={100}
-            variant="outlined"
-            onChange={handleChange}
-            value={text}
-            className={classes.input}
-          />
-          <Button 
-            className={classes.button}
-            variant='contained' 
-            size='small' color='primary' 
-            onClick={handleClick}>
-              Submit
-          </Button>
-        </form>
-      </div>
+      <form>
+        <TextField
+          id="standard-textarea"
+          placeholder="Write a comment..."
+          multiline
+          rowsMax={100}
+          variant="outlined"
+          onChange={handleChange}
+          value={text}
+          className={classes.input}
+        />
+        <Button 
+          className={classes.button}
+          variant='contained' 
+          size='small' color='primary' 
+          onClick={handleSubmit}>
+            Submit
+        </Button>
+      </form>
     </div>
-  )
+  );
 }
 
-export default CommentInput
+CommentInput.propTypes = {
+  onSubmit: PropTypes.func,
+  onChange: PropTypes.func,
+};
+
+export default CommentInput;

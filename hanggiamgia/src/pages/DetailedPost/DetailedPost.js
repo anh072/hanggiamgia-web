@@ -14,7 +14,7 @@ export default function DetailedPost() {
   const apiBaseUrl = config.apiBaseUrl;
 
   const { id } = useParams();
-  const { isAuthenticated } = useAuth0();
+  const { isAuthenticated, user } = useAuth0();
 
   const [ post, setPost ] = useState(null);
   const [ comments, setComments ] = useState([]);
@@ -174,7 +174,38 @@ export default function DetailedPost() {
     }
   }
   
-  // if (post === null) return <NotFound />
+  const handleCommentUpdate = async (commentId, newText) => {
+    try {
+      const res = await axios.put(
+        `${apiBaseUrl}/posts/${id}/comments/${commentId}`,
+        { text: newText },
+        { headers: { 'Authorization': 'Bearer xxx', 'username': 'gmanshop' } }, //TODO: remove this
+        { timeout: 20000 }
+      );
+      const currentCommentIndex = comments.findIndex(c => c.id === commentId);
+      comments[currentCommentIndex] = res.data;
+      setComments([...comments]);
+    } catch(error) {
+      console.log('error', error);
+      alert('Error: Unable to update the comment');
+    }
+  };
+
+  const handleCommentDelete = async (commentId) => {
+    try {
+      await axios.delete(
+        `${apiBaseUrl}/posts/${id}/comments/${commentId}`,
+        { headers: { 'Authorization': 'Bearer xxx', 'username': 'gmanshop' } }, // TODO: remove this
+        { timeout: 20000 }
+      );
+      const newComments = comments.filter(c => c.id !== commentId);
+      setComments([...newComments]);
+    } catch(error) {
+      console.log('error', error);
+      alert('Error: Unable to delete the comment');
+    }
+  };
+
   return (
     <div className="detailed-post">
       {
@@ -200,9 +231,18 @@ export default function DetailedPost() {
           <Loading size='medium' /> :
           (
             <>
-              <CommentInput onSubmit={handleSubmit} onChange={setNewComment}/>
+              { isAuthenticated && <CommentInput onSubmit={handleSubmit} onChange={setNewComment}/> }
               { count > 0 &&
-                comments.map(comment => <Comment comment={comment} key={comment.id} />)
+                comments.map(comment => {
+                  if (isAuthenticated && user[config.claimNamespace+'username'] === comment.author)
+                    return <Comment 
+                      editable={true} 
+                      onDelete={handleCommentDelete}
+                      onUpdate={handleCommentUpdate}
+                      comment={comment} 
+                      key={comment.id} />
+                  return <Comment comment={comment} key={comment.id} />
+                })
               }
               {
                 errors.comments && (<p className='detailed-post__error'>{errors.comments}</p>)

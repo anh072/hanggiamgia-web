@@ -57,7 +57,7 @@ function Header() {
   const { isAuthenticated, loginWithPopup, logout, user } = useAuth0();
   const history = useHistory();
   const state = useDataProvider();
-  const [ categories ] = state.categoryStore.data;
+  const categories = state.categoryStore.data;
 
   // local state
   const [ selectedCategory, setSelectedCategory ] = useState('');
@@ -128,7 +128,7 @@ function Header() {
           type='submit' 
           value='Update' 
           color='primary' 
-          disableUnderline='true'
+          disableUnderline={true}
           className={classes.input} />
       </form>
       

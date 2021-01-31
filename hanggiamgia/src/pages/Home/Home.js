@@ -128,7 +128,7 @@ export default function Posts() {
     <div className='post-list'>
       <ul className="post-list__list">
         {posts.posts && posts.posts.map(post => 
-          <PostItem post={post} key={post.id} handleUpVote={handleUpVote} handleDownVote={handleDownVote}/>)}
+          <PostItem post={post} key={post.id} handleUpVote={handleUpVote} handleDownVote={handleDownVote} />)}
         {errors.posts && (<p className='post-list__error'>{errors.posts}</p>)}
       </ul>
       <Pagination

@@ -74,7 +74,7 @@ const useStyles = makeStyles({
   }
 });
 
-function PostItem({ post, detailed=false, handleUpVote, handleDownVote }) {
+function PostItem({ post, detailed, handleUpVote, handleDownVote }) {
   const classes = useStyles();
   const modifier = detailed ? 'display-detailed' : '';
 
@@ -165,6 +165,10 @@ function PostItem({ post, detailed=false, handleUpVote, handleDownVote }) {
     </div>
   );
 }
+
+PostItem.defaultProps = {
+  detailed: false
+};
 
 PostItem.propTypes = {
   post: PropTypes.object.isRequired,

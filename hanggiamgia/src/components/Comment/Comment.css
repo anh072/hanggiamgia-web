@@ -1,8 +1,12 @@
 .comment {
-  display: grid;
-  grid-template-columns: 50px minmax(0, 1fr);
+  display: flex;
   width: 100%;
   padding: 5px 5px;
+}
+
+.comment__main {
+  display: flex;
+  align-items: center;
 }
 
 .comment a {
@@ -11,6 +15,10 @@
 
 .comment__block {
   font-size: 1rem;
+}
+
+.comment__editing-comment {
+  width: 100%;
 }
 
 .comment__block pre {
@@ -44,4 +52,8 @@
   border: none;
   padding: 10px 10px;
   display: inline-block;
+}
+
+.comment__buttons {
+  display: flex;
 }

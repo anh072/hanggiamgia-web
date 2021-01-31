@@ -24,7 +24,7 @@ export default function CategoryAPI() {
   }, []);
 
   return {
-    data: [reasons, setReasons],
+    data: reasons,
     error: error
   };
 }

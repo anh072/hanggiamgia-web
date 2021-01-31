@@ -104,7 +104,7 @@ function AddPostButton() {
   const { user } = useAuth0();
 
   const state = useDataProvider();
-  const [categories] = state.categoryStore.data;
+  const categories = state.categoryStore.data;
 
   const apiBaseUrl = config.apiBaseUrl;
 
