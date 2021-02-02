@@ -139,6 +139,7 @@ function Header() {
       <Link to="/">
         <img className="logo" alt="gia re logo" src={logo} />
       </Link>
+      
       <div className={`header-nav ${openBurger ? 'header-nav--active' : ''}`}>
         {isAuthenticated ? 
           (
@@ -182,6 +183,7 @@ function Header() {
             className={classes.input} />
         </form>
       </div>
+      
       <div 
         className='header-burger' onClick={handleOpenBurger}>
         <div 

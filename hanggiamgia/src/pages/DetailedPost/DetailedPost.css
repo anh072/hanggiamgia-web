@@ -28,6 +28,13 @@
   font-size: 1rem;
 }
 
+@media screen and (min-width: 1024px) {
+  .detailed-post {
+    width: 70%;
+    margin: auto;
+  }
+}
+
 @media screen and (max-width: 650px) {
   .detailed-post__comment-header {
     font-size: 1.3rem;

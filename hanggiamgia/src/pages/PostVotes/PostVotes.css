@@ -23,6 +23,13 @@
   display: flex;
 }
 
+@media screen and (min-width: 1024px) {
+  .vote {
+    width: 70%;
+    margin: auto;
+  }
+}
+
 @media screen and (max-width: 650px) {
   .vote__title {
     font-size: 1.1rem;

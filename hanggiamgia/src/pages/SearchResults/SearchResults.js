@@ -13,7 +13,10 @@ import './SearchResults.css';
 const useStyles = makeStyles({
   pagination: {
     margin: '20px auto',
-    width: '33%'
+    width: '33%',
+    '@media (max-width: 650px)': {
+      width: '75%'
+    }
   },
   paginationList: {
     justifyContent: 'center'

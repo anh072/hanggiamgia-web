@@ -26,3 +26,35 @@
 .search-results__info span{
   margin-right: 20px;
 }
+
+@media screen and (min-width: 1024px) {
+  .search-results {
+    width: 70%;
+    margin: auto;
+  }
+}
+
+@media screen and (max-width: 650px) {
+  .search-results__title {
+    font-size: 1.3rem;
+  }
+
+  .search-results__info {
+    font-size: 0.9rem;
+  }
+}
+
+@media screen and (max-width: 450px) {
+  .search-results__title {
+    font-size: 1rem;
+  }
+
+  .search-results__info {
+    font-size: 0.8rem;
+  }
+
+  .search-results {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+}

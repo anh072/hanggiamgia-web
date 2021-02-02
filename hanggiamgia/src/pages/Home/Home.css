@@ -8,12 +8,12 @@
   color: red;
 }
 
-/* @media screen and (min-width: 1024px) {
-  .post-list__list {
-    width: 100%;
-    margin: 0 auto;
+@media screen and (min-width: 1024px) {
+  .post-list {
+    width: 70%;
+    margin: auto;
   }
-} */
+}
 
 @media screen and (max-width: 450px) {
   .post-list__list {
