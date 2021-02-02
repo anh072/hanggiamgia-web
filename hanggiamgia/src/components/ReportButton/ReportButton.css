@@ -47,3 +47,34 @@
   margin: 0px 0px 20px 20px;
   font-size: 12px;
 }
+
+@media screen and (max-width: 650px) {
+  .report__form-error {
+    font-size: 0.9rem;
+  }
+
+  .report button {
+    font-size: 0.7rem;
+  }
+}
+
+@media screen and (max-width: 450px) {
+  .report__header {
+    font-size: 1rem;
+    padding: 10px 10px;
+  }
+
+  .report__fields {
+    margin: 10px 10px;
+  }
+
+  .report button {
+    font-size: 0.5rem;
+    margin-left: 5px;
+  }
+
+  .report__form-error {
+    font-size: 0.7rem;
+  }
+}
+

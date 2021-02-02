@@ -8,15 +8,24 @@ import './Footer.css';
 const useStyles = makeStyles({
   facebookIcon: {
     fill: '#3b5998',
-    fontSize: '2rem'
+    fontSize: '2rem',
+    '@media (max-width: 550px)': {
+      fontSize: '1.5rem'
+    }
   },
   twitterIcon: {
     fill: '#1da1f2',
-    fontSize: '2rem'
+    fontSize: '2rem',
+    '@media (max-width: 550px)': {
+      fontSize: '1.5rem'
+    }
   },
   instagramIcon: {
     fill: '#c13584',
-    fontSize: '2rem'
+    fontSize: '2rem',
+    '@media (max-width: 550px)': {
+      fontSize: '1.5rem'
+    }
   }
 });
 

@@ -14,7 +14,10 @@ import './Home.css';
 const useStyles = makeStyles({
   pagination: {
     margin: '20px auto',
-    width: '33%'
+    width: '33%',
+    '@media (max-width: 650px)': {
+      width: '75%'
+    }
   },
   paginationList: {
     justifyContent: 'center'
@@ -30,7 +33,7 @@ export default function Posts() {
   const { isAuthenticated } = useAuth0();
   const history = useHistory();
 
-  const [ posts, setPosts ] = useState([]);
+  const [ posts, setPosts ] = useState({});
   const [ isLoading, setIsLoading ] = useState(false);
   const [ errors, setErrors ] = useState({});
 
@@ -68,14 +71,17 @@ export default function Posts() {
         { 
           headers: { 
             'Content-Type': 'application/json',
-            'username': 'testvotes2' // TODO: remove this
+            'username': 'gmanshop' // TODO: remove this
           } 
         },
         { timeout: 20000 }
       );
-      const currentPostIndex = posts.findIndex(p => p.id === id);
-      posts[currentPostIndex].votes++;
-      setPosts([...posts]);
+      const currentPostIndex = posts.posts.findIndex(p => p.id === id);
+      posts.posts[currentPostIndex].votes++;
+      setPosts({
+        ...posts,
+        posts: [...posts.posts]
+      });
     } catch (error) {
       console.log('error', error);
       if (error.response && error.response.status === 400) {
@@ -95,14 +101,17 @@ export default function Posts() {
         { 
           headers: { 
             'Content-Type': 'application/json',
-            'username': 'testDownVote2' // TODO: remove this
+            'username': 'gmanshop' // TODO: remove this
           } 
         },
         { timeout: 20000 }
       );
-      const currentPostIndex = posts.findIndex(p => p.id === id);
-      posts[currentPostIndex].votes--;
-      setPosts([...posts]);
+      const currentPostIndex = posts.posts.findIndex(p => p.id === id);
+      posts.posts[currentPostIndex].votes--;
+      setPosts({
+        ...posts,
+        posts: [...posts.posts]
+      });
     } catch (error) {
       console.log('error', error);
       if (error.response && error.response.status === 400) {

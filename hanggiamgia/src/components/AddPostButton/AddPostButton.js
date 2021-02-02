@@ -1,25 +1,35 @@
 import React, { useState } from 'react';
 import { useAuth0 } from "@auth0/auth0-react";
-import './AddPostButton.css';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { Backdrop, Modal, Button, TextareaAutosize, Select, MenuItem, FormControl, Fade, TextField } from '@material-ui/core';
 import axios from 'axios';
 import { useDataProvider } from '../../GlobalState';
 import config from '../../lib/config';
-
+import './AddPostButton.css';
 
 const useStyles = makeStyles({
   modal: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    overflow:'scroll'
   },
   dateField: {
     width: '200px'
   },
   textField: {
     width: 'calc(100% - 40px)',
-    boxSizing: 'border-box'
+    boxSizing: 'border-box',
+    '@media (max-width: 450px)': {
+      width: '100%',
+      fontSize: '0.5rem'
+    }
+  },
+  inputField: {
+    fontSize: '1rem',
+    '@media (max-width: 450px)': {
+      fontSize: '0.8rem'
+    }
   },
   paper: {
     backgroundColor: 'white',
@@ -27,13 +37,21 @@ const useStyles = makeStyles({
     padding: '0',
     position: 'absolute',
     margin: '0',
-    width: '50%',
+    width: '60%',
     fontSize: '1rem',
-    boxSizing: 'border-box'
+    boxSizing: 'border-box',
+    '@media (max-width: 650px)': {
+      width: '100%'
+    }
   },
   textArea: {
     width: 'calc(100% - 40px)',
-    padding: '5px'
+    padding: '5px',
+    fontSize: '1rem',
+    '@media (max-width: 450px)': {
+      width: 'calc(100% - 20px)',
+      fontSize: '0.8rem'
+    }
   },
   select: {
     width: '200px'
@@ -49,9 +67,48 @@ const useStyles = makeStyles({
     height: '100%',
     width: '90px',
     fontSize: '13px',
-    color: 'white'
+    color: 'white',
+    '@media (max-width: 950px)': {
+      width: '100%'
+    },
+    '@media (max-width: 450px)': {
+      fontSize: '0.6rem'
+    }
   }
 });
+
+const StyledSelect = withStyles({
+  root: {
+    backgroundColor: 'white',
+    fontSize: '0.9rem',
+    width: '180px',
+    '@media (max-width: 650px)': {
+      fontSize: '0.9rem',
+      padding: '10px 0px'
+    },
+    '@media (max-width: 450px)': {
+      fontSize: '0.7rem',
+      padding: '5.5px 0px',
+      width: '90px'
+    }
+  }
+})(Select);
+
+const StyledMenuItem = withStyles({
+  root: {
+    fontSize: '1rem',
+    '@media (max-width: 650px)': {
+      fontSize: '0.9rem',
+      minHeight: '40px',
+      padding: '6px 8px'
+    },
+    '@media (max-width: 450px)': {
+      fontSize: '0.7rem',
+      minHeight: '30px',
+      padding: '3px 8px'
+    }
+  }
+})(MenuItem);
 
 const initialValues = {
   category: '',
@@ -221,7 +278,13 @@ function AddPostButton() {
                 name="title" 
                 required 
                 onChange={handleChange} 
-                className={classes.textField}/>
+                className={classes.textField}
+                InputProps={{
+                  classes: {
+                    input: classes.inputField
+                  }
+                }}
+              />
               { errors.title && <p className="deal__form-error">{errors.title}</p> }
             </div>
 
@@ -232,7 +295,13 @@ function AddPostButton() {
                 name="url"
                 placeholder="Link to the product e.g https://ebay.com.au" 
                 onChange={handleChange} 
-                className={classes.textField}/>
+                className={classes.textField}
+                InputProps={{
+                  classes: {
+                    input: classes.inputField
+                  }
+                }}
+              />
               { errors.url && <p className="deal__form-error">{errors.url}</p> }
             </div>
 
@@ -243,7 +312,13 @@ function AddPostButton() {
                 name="image"
                 type="file" 
                 onChange={handleChange} 
-                className={classes.textField}/>
+                className={classes.textField}
+                InputProps={{
+                  classes: {
+                    input: classes.inputField
+                  }
+                }}
+              />
               { errors.image && <p className="deal__form-error">{errors.image}</p> }
             </div>
 
@@ -254,7 +329,13 @@ function AddPostButton() {
                 name="coupon"
                 placeholder="Enter coupon..." 
                 onChange={handleChange} 
-                className={classes.textField}/>
+                className={classes.textField}
+                InputProps={{
+                  classes: {
+                    input: classes.inputField
+                  }
+                }}
+              />
             </div>
 
             <div className="deal__fields">
@@ -263,12 +344,17 @@ function AddPostButton() {
                 id="start"
                 name="start"
                 required
-                type="datetime-local"
+                type="date"
                 className={classes.dateField}
                 InputLabelProps={{
                   shrink: true,
                 }}
                 onChange={handleChange}
+                InputProps={{
+                  classes: {
+                    input: classes.inputField
+                  }
+                }}
               />
               { errors.start && <p className="deal__form-error">{errors.start}</p> }
             </div>
@@ -279,12 +365,17 @@ function AddPostButton() {
                 id="expiry"
                 name="end"
                 required
-                type="datetime-local"
+                type="date"
                 className={classes.dateField}
                 InputLabelProps={{
                   shrink: true,
                 }}
                 onChange={handleChange}
+                InputProps={{
+                  classes: {
+                    input: classes.inputField
+                  }
+                }}
               />
               { errors.end && <p className="deal__form-error">{errors.end}</p> }
             </div>
@@ -292,14 +383,14 @@ function AddPostButton() {
             <div className="deal__fields">
               <label>Categories <span>&#42;</span></label> <br />
               <FormControl>
-                <Select 
+                <StyledSelect 
                   value={values.category}
-                  className={classes.select} 
                   onChange={handleSelect}>
                   {
-                    categories.map((category, index) => <MenuItem dense key={index} value={category}>{category}</MenuItem>)
+                    categories.map((category, index) => 
+                      <StyledMenuItem dense key={index} value={category}>{category}</StyledMenuItem>)
                   }
-                </Select>
+                </StyledSelect>
               </FormControl>
               { errors.category && <p className="deal__form-error">{errors.category}</p> }
             </div>
@@ -317,18 +408,21 @@ function AddPostButton() {
               />
               { errors.description && <p className="deal__form-error">{errors.description}</p> }
             </div>
+
             <div className="deal__submit-button">
               <Button 
                 className={classes.submitButton} 
                 variant="contained" 
                 color="primary" 
-                onClick={handleSubmit}>
+                onClick={handleSubmit}
+                size='small'>
                   Submit
               </Button>
               <Button 
                   className={classes.cancelButton} 
                   variant="contained" 
-                  onClick={handleClose}>
+                  onClick={handleClose}
+                  size='small'>
                     Cancel
               </Button>
               { isSubmitting && (<p className='deal__loading-message'>Creating a new post ...</p>) }

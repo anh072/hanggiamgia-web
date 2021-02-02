@@ -37,9 +37,37 @@
 }
 
 .deal__submit-button {
+  display: flex;
   margin-left: 40px;
 }
 
 .deal__submit-error {
   margin-left: 0;
+}
+
+@media screen and (max-width: 950px) {
+  .deal {
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 450px) {
+  .deal__header {
+    padding: 10px 20px;
+    font-size: 1rem;
+  }
+
+  .deal__fields {
+    font-size: 0.8rem;
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+
+  .deal__form-error {
+    font-size: 0.7rem;
+  }
+
+  .deal__submit-button {
+    margin-left: 20px;
+  }
 }

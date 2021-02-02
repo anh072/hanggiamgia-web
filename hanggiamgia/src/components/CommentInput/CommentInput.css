@@ -1,6 +1,11 @@
 .comment-input {
   display: grid;
   grid-template-columns: 50px minmax(0, 1fr);
-  width: 100%;
   padding: 5px 5px;
+}
+
+@media screen and (max-width: 450px) {
+  .comment-input {
+    grid-template-columns: 40px minmax(0, 1fr);
+  }
 }

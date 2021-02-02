@@ -8,7 +8,8 @@ import InputLabel from '@material-ui/core/InputLabel';
 import Input from '@material-ui/core/Input';
 import MenuItem from '@material-ui/core/MenuItem';
 import SearchIcon from '@material-ui/icons/Search';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
+import { useMediaQuery } from 'react-responsive';
 import { Button } from '@material-ui/core';
 import AddPostButton from '../AddPostButton/AddPostButton';
 import logo from './logo192.png';
@@ -23,18 +24,23 @@ const useStyles = makeStyles({
     fontSize: '13px',
     '&:hover': {
       backgroundColor: '#af5e0c',
+    },
+    '@media (max-width: 950px)': {
+      width: '100%'
+    },
+    '@media (max-width: 450px)': {
+      fontSize: '0.6rem'
     }
   },
   formControl: {
-    fontSize: '13px',
     backgroundColor: 'white',
-    height: '100%',
-    minWidth: '200px'
-  },
-  select: {
-    height: '100%',
-    borderRadius: '0',
-    backgroundColor: 'white'
+    width: '200px',
+    '@media (max-width: 650px)': {
+      width: '150px',
+    },
+    '@media (max-width: 450px)': {
+      width: '100px',
+    }
   },
   searchIcon: {
     textAlign: 'center',
@@ -45,12 +51,49 @@ const useStyles = makeStyles({
     color: 'white',
     backgroundColor: '#1976d2',
     padding: '6px 8px',
-    fontSize: '13px',
-    height: '100%',
-    borderRadius: '5px'
+    fontSize: '0.9rem',
+    borderRadius: '5px',
+    '@media (max-width: 650px)': {
+      fontSize: '0.9rem',
+      padding: '2px 4px'
+    },
+    '@media (max-width: 450px)': {
+      fontSize: '0.7rem',
+      padding: '2px 4px'
+    }
   }
 });
 
+const StyledSelect = withStyles({
+  root: {
+    backgroundColor: 'white',
+    fontSize: '0.9rem',
+    '@media (max-width: 650px)': {
+      fontSize: '0.9rem',
+      padding: '10px 10px'
+    },
+    '@media (max-width: 450px)': {
+      fontSize: '0.7rem',
+      padding: '5.5px 10px'
+    }
+  }
+})(Select);
+
+const StyledMenuItem = withStyles({
+  root: {
+    fontSize: '1rem',
+    '@media (max-width: 650px)': {
+      fontSize: '0.9rem',
+      minHeight: '40px',
+      padding: '6px 8px'
+    },
+    '@media (max-width: 450px)': {
+      fontSize: '0.7rem',
+      minHeight: '30px',
+      padding: '3px 8px'
+    }
+  }
+})(MenuItem);
 
 function Header() {
   const classes = useStyles();
@@ -58,10 +101,12 @@ function Header() {
   const history = useHistory();
   const state = useDataProvider();
   const categories = state.categoryStore.data;
+  const shouldDisplayCategoryLabel = useMediaQuery({ query: `(max-width: 650px)` });
 
   // local state
-  const [ selectedCategory, setSelectedCategory ] = useState('');
+  const [ selectedCategory, setSelectedCategory ] = useState('All');
   const [ search, setSearch ] = useState('');
+  const [ openBurger, setOpenBurger ] = useState(false);
 
   const handleSearch = (e) => {
     setSearch(e.target.value);
@@ -84,53 +129,69 @@ function Header() {
     }
   };
 
+  const handleOpenBurger = () => {
+    console.log('burger is clicked');
+    setOpenBurger(prev => !prev);
+  };
+
   return (
     <header className="header">
       <Link to="/">
         <img className="logo" alt="gia re logo" src={logo} />
       </Link>
+      <div className={`header-nav ${openBurger ? 'header-nav--active' : ''}`}>
+        {isAuthenticated ? 
+          (
+            <>
+              <AddPostButton />
+              <Button 
+                className={classes.button} 
+                onClick={() => history.push(`/users/${user[config.claimNamespace+'username']}`)}>
+                  My Account
+              </Button>
+              <Button 
+                className={classes.button} 
+                color="primary" 
+                onClick={() => logout({returnTo: window.location.origin})}>
+                Log Out
+              </Button>
+            </>
+          ) :
+          <Button className={classes.button} color="primary" onClick={() => loginWithPopup()}>
+            Log In
+          </Button> }
 
-      {isAuthenticated ? 
-        (
-          <>
-            <AddPostButton />
-            <Button 
-              className={classes.button} 
-              onClick={() => history.push(`/users/${user[config.claimNamespace+'username']}`)}>
-                My Account
-            </Button>
-            <Button 
-              className={classes.button} 
-              color="primary" 
-              onClick={() => logout({returnTo: window.location.origin})}>
-              Log Out
-            </Button>
-          </>
-        ) :
-        <Button className={classes.button} color="primary" onClick={() => loginWithPopup()}>
-          Log In
-        </Button> }
-
-      <form className="header__filter" onSubmit={handleSubmit}>
-        <FormControl size="small" variant="filled" className={classes.formControl}>
-          <InputLabel>Categories</InputLabel>
-          <Select value={selectedCategory} onChange={handleCategory} label="Category" className={classes.select}>
-            <MenuItem value="All">All</MenuItem>
-            {categories.map((category, index) => 
-              <MenuItem key={index} value={category}>{category}</MenuItem>)}
-          </Select>
-        </FormControl>
-        <div className="search">
-          <input type="text" value={search} placeholder="I'm looking for..." onChange={handleSearch} />
-          <SearchIcon color="disabled" className={classes.searchIcon}/>
+        <form className="header__filter" onSubmit={handleSubmit}>
+          <FormControl size="small" variant="filled" className={classes.formControl}>
+            <InputLabel style={{display: shouldDisplayCategoryLabel ? 'none' : 'block'}}>Categories</InputLabel>
+            <StyledSelect value={selectedCategory} onChange={handleCategory} label="Category">
+              <StyledMenuItem value="All">All</StyledMenuItem>
+              {categories.map((category, index) => 
+                <StyledMenuItem key={index} value={category}>{category}</StyledMenuItem>)}
+            </StyledSelect>
+          </FormControl>
+          <div className="search">
+            <input type="text" value={search} placeholder="I'm looking for..." onChange={handleSearch} />
+            <SearchIcon color="disabled" className={classes.searchIcon}/>
+          </div>
+          <Input 
+            type='submit' 
+            value='Update' 
+            color='primary' 
+            disableUnderline={true}
+            className={classes.input} />
+        </form>
+      </div>
+      <div 
+        className='header-burger' onClick={handleOpenBurger}>
+        <div 
+          className={`header-burger__line-one ${openBurger ? 'header-burger__line-one--active' : ''} header-burger__layer`}>
         </div>
-        <Input 
-          type='submit' 
-          value='Update' 
-          color='primary' 
-          disableUnderline={true}
-          className={classes.input} />
-      </form>
+        <div className={`header-burger__line-two ${openBurger ? 'header-burger__line-two--active' : ''} header-burger__layer`}>
+        </div>
+        <div className={`header-burger__line-three ${openBurger ? 'header-burger__line-three--active' : ''} header-burger__layer`}>
+        </div>
+      </div>
       
     </header>
   );

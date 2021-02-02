@@ -22,10 +22,20 @@ const StyledTableCell = withStyles({
   head: {
     backgroundColor: '#333338',
     color: 'white',
+    lineHeight: '1.2rem',
+    padding: '10px',
+    fontSize: '0.9rem',
+    '@media (max-width: 450px)': {
+      fontSize: '0.7rem'
+    }
   },
   body: {
     fontSize: 14,
-  },
+    padding: '10px',
+    '@media (max-width: 450px)': {
+      fontSize: '0.7rem'
+    }
+  }
 })(TableCell);
 
 const StyledTableRow = withStyles({
@@ -38,23 +48,47 @@ const StyledTableRow = withStyles({
 
 const useStyles = makeStyles({
   table: {
-    maxWidth: '100%',
+    maxWidth: '100%'
   },
   tableContainer: {
-    maxWidth: '60%',
+    maxWidth: '600px',
+    '@media (max-width: 1024px)': {
+      maxWidth: '60%'
+    },
+    '@media (max-width: 650px)': {
+      maxWidth: '100%'
+    }
   },
   addIcon: {
     fill: 'green',
-    fontSize: '1rem'
+    fontSize: '1rem',
+    '@media (max-width: 650px)': {
+      fontSize: '0.8rem'
+    },
+    '@media (max-width: 450px)': {
+      fontSize: '0.7rem'
+    }
   },
   removeIcon: {
     fill: 'red',
-    fontSize: '1rem'
+    fontSize: '1rem',
+    '@media (max-width: 650px)': {
+      fontSize: '0.8rem'
+    },
+    '@media (max-width: 450px)': {
+      fontSize: '0.7rem'
+    }
   },
   deleteIcon: {
     fontSize: '1rem',
     fill: 'red',
-    marginLeft: '10px'
+    marginLeft: '10px',
+    '@media (max-width: 650px)': {
+      fontSize: '0.8rem'
+    },
+    '@media (max-width: 450px)': {
+      fontSize: '0.7rem'
+    }
   }
 });
 
@@ -162,7 +196,7 @@ function PostVotes() {
                   <Table className={classes.table} aria-label="customized table">
                     <TableHead>
                       <TableRow>
-                        <StyledTableCell>User</StyledTableCell>
+                        <StyledTableCell align='left'>User</StyledTableCell>
                         <StyledTableCell align="left">Vote</StyledTableCell>
                         <StyledTableCell align="left">Voted At</StyledTableCell>
                       </TableRow>
@@ -174,7 +208,7 @@ function PostVotes() {
                             <Link to={{pathname: `/users/${vote.voter}`}}>{vote.voter}</Link>
                           </StyledTableCell>
                           <StyledTableCell align="left">
-                            <>
+                            <div className='vote__vote-container'>
                             {
                               vote.vote_type === 'increment' ? 
                                 <AddIcon className={classes.addIcon} /> : 
@@ -184,7 +218,7 @@ function PostVotes() {
                               user[config.claimNamespace+'username'] === vote.voter && 
                                 (<DeleteIcon className={classes.deleteIcon} onClick={() => removeVote(vote.id)} />)
                             }
-                            </>
+                            </div>
                           </StyledTableCell>
                           <StyledTableCell align="left">{moment.tz(vote.created_time, config.localTimezone).format("ddd, MMM DD YYYY HH:MM:ss")}</StyledTableCell>
                         </StyledTableRow>

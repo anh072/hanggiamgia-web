@@ -7,6 +7,7 @@ import axios from 'axios';
 import { useAuth0 } from '@auth0/auth0-react';
 import PostItem from '../../components/PostItem/PostItem';
 import Loading from '../../components/Loading/Loading';
+import NotFound from '../NotFound/NotFound';
 import './DetailedPost.css';
 
 
@@ -71,10 +72,17 @@ export default function DetailedPost() {
       } catch (error) {
         console.log('error', error);
         setIsLoadingPost(false);
-        setErrors(prevErrors => ({
-          ...prevErrors,
-          post: 'Error: Unable to get post'
-        }))
+        if (error.response && error.response.status === 404) {
+          setErrors(prevErrors => ({
+            ...prevErrors,
+            notfound: 'Error: Post does not exists'
+          }));
+        } else {
+          setErrors(prevErrors => ({
+            ...prevErrors,
+            post: 'Error: Unable to get post'
+          }));
+        }
       }
     };
     getPostById(id);
@@ -206,6 +214,10 @@ export default function DetailedPost() {
     }
   };
 
+  if (errors.notfound) {
+    return <NotFound />;
+  }
+
   return (
     <div className="detailed-post">
       {
@@ -225,7 +237,7 @@ export default function DetailedPost() {
           )
       }
       
-      <h2>Comments</h2>
+      <h2 className='detailed-post__comment-header'>Comments</h2>
       {
         isLoadingComments ? 
           <Loading size='medium' /> :

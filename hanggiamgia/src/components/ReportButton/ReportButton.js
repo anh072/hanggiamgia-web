@@ -1,6 +1,6 @@
 import { Backdrop, Modal, Button, TextareaAutosize, Select, MenuItem, FormControl, Fade } from '@material-ui/core';
 import React, { useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { useDataProvider } from '../../GlobalState';
 import './ReportButton.css';
 import axios from 'axios';
@@ -9,11 +9,15 @@ import config from '../../lib/config';
 const useStyles = makeStyles({
   button: {
     margin: '20px 0px 20px 20px',
+    '@media (max-width: 450px)': {
+      margin: '10px 0px, 10px, 10px'
+    }
   },
   modal: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    overflow: 'scroll'
   },
   paper: {
     backgroundColor: 'white',
@@ -22,16 +26,53 @@ const useStyles = makeStyles({
     position: 'absolute',
     margin: 'auto',
     maxWidth: '500px',
-    fontSize: '1rem'
+    fontSize: '1rem',
+    '@media (max-width: 450px)': {
+      fontSize: '0.8rem'
+    }
   },
   textArea: {
     width: 'calc(100% - 40px)',
-    padding: '5px'
-  },
-  select: {
-    width: '180px'
+    padding: '5px',
+    fontSize: '1rem',
+    '@media (max-width: 450px)': {
+      fontSize: '0.8rem'
+    }
   }
 });
+
+const StyledSelect = withStyles({
+  root: {
+    backgroundColor: 'white',
+    fontSize: '0.9rem',
+    width: '180px',
+    '@media (max-width: 650px)': {
+      fontSize: '0.9rem',
+      padding: '10px 0px'
+    },
+    '@media (max-width: 450px)': {
+      fontSize: '0.7rem',
+      padding: '5.5px 0px',
+      width: '90px'
+    }
+  }
+})(Select);
+
+const StyledMenuItem = withStyles({
+  root: {
+    fontSize: '1rem',
+    '@media (max-width: 650px)': {
+      fontSize: '0.9rem',
+      minHeight: '40px',
+      padding: '6px 8px'
+    },
+    '@media (max-width: 450px)': {
+      fontSize: '0.7rem',
+      minHeight: '30px',
+      padding: '3px 8px'
+    }
+  }
+})(MenuItem);
 
 const initialValues = {
   reason: '',
@@ -144,18 +185,18 @@ function ReportButton({ type, post_id = null, comment_id = null }) {
         }}
       >
         <Fade in={open}>
-          <form className={classes.paper }>
+          <form className={classes.paper}>
             <h2 className="report__header">Report {type}</h2>
             <p className="report__fields">Report this item to help moderation team to identity items that require attention.</p>
             <br/>
             <div className="report__fields">
               <label>Reason: <span>&#42;</span></label> <br />
               <FormControl>
-                <Select className={classes.select} onChange={handleSelect} value={values.reason}>
+                <StyledSelect onChange={handleSelect} value={values.reason}>
                   {
-                    reasons.map((reason, index) => <MenuItem key={index} value={reason}>{reason}</MenuItem>)
+                    reasons.map((reason, index) => <StyledMenuItem key={index} value={reason}>{reason}</StyledMenuItem>)
                   }
-                </Select>
+                </StyledSelect>
               </FormControl>
               { errors.reason && <p className="report__form-error">{errors.reason}</p> }
             </div>
@@ -177,13 +218,15 @@ function ReportButton({ type, post_id = null, comment_id = null }) {
                 className={classes.button} 
                 variant="contained" 
                 color="primary" 
-                onClick={handleSubmit}>
+                onClick={handleSubmit}
+                size='small'>
                   Submit
               </Button>
               <Button 
                 className={classes.button} 
                 variant="contained" 
-                onClick={handleClose}>
+                onClick={handleClose}
+                size='small'>
                   Cancel
               </Button>
               { isSubmitting && (<p className='report__loading-message'>Creating the report...</p>) }

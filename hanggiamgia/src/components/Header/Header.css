@@ -1,13 +1,17 @@
 .header {
   display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  max-width: 100%;
-  align-items: center;
   background-color: #cd6702;
   margin: 0;
   height: 60px;
-  padding: 0 10px;
+  padding: 0 20px;
+  align-items: center;
+}
+
+.header-nav {
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
+  align-items: center;
 }
 
 .logo {
@@ -17,6 +21,14 @@
   box-sizing: border-box;
   margin-right: 30px;
   margin-left: 20px;
+}
+
+.search {
+  background-color: white;
+  margin-left: 10px;
+  margin-right: 10px;
+  display: flex;
+  align-items: center;
 }
 
 .search input {
@@ -37,11 +49,79 @@
   display: flex;
 }
 
-.search {
-  height: 100%;
+.header-burger {
+  display: none;
+  margin-left: auto;
+  cursor: pointer;
+}
+
+.header-burger__layer {
   background-color: white;
-  margin-left: 10px;
-  margin-right: 10px;
-  display: flex;
-  align-items: center;
+  height: 3px;
+  width: 25px;
+  margin: 5px;
+}
+
+@media screen and (max-width: 950px) {
+  .header-burger {
+    display: block;
+  }
+
+  .header-nav {
+    position: absolute;
+    right: 0px;
+    top: 60px;
+    flex-direction: column;
+    background-color: #cd6702;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+    transform: translateX(100%);
+  }
+
+  .header__filter {
+    margin-left: 0;
+    padding: 5px;
+  }
+}
+
+@media screen and (max-width: 650px) {
+  .search input {
+    width: 120px;
+    font-size: 0.9rem;
+  }
+}
+
+@media screen and (max-width: 450px) {
+  .search {
+    height: 60%;
+    font-size: 0.7rem;
+    margin-right: 5px;
+    margin-left: 5px;
+  }
+
+  .search input {
+    width: 70px;
+    font-size: 0.7rem;
+  }
+
+  .header__filter {
+    align-items: center;
+  }
+}
+
+.header-nav--active {
+  transform: translateX(0%);
+}
+
+.header-burger__line-one--active {
+  transform: rotate(-45deg) translate(-5px, 6px);
+}
+
+.header-burger__line-two--active {
+  opacity: 0;
+}
+
+.header-burger__line-three--active {
+  transform: rotate(45deg) translate(-5px, -6px);
 }

@@ -38,31 +38,69 @@ const useStyles = makeStyles({
   avatar: {
     height: '50px',
     width: '50px',
+    '@media (max-width: 650px)': {
+      height: '40px',
+      width: '40px'
+    },
+    '@media (max-width: 450px)': {
+      height: '30px',
+      width: '30px'
+    }
   },
   upvote: {
     fill: 'green',
     '&:hover': {
       cursor: 'pointer'
+    },
+    '@media (max-width: 650px)': {
+      fontSize: '1.3rem'
+    },
+    '@media (max-width: 450px)': {
+      fontSize: '1.1rem'
     }
   },
   downvote: {
     fill: 'red',
     '&:hover': {
       cursor: 'pointer'
+    },
+    '@media (max-width: 650px)': {
+      fontSize: '1.3rem'
+    },
+    '@media (max-width: 450px)': {
+      fontSize: '1.1rem'
     }
   },
   commentIcon: {
     fontSize: '1rem',
-    marginRight: '3px'
+    marginRight: '3px',
+    '@media (max-width: 650px)': {
+      fontSize: '0.9rem'
+    },
+    '@media (max-width: 450px)': {
+      fontSize: '0.7rem'
+    }
   },
   categoryIcon: {
     fontSize: '1rem',
-    marginRight: '3px'
+    marginRight: '3px',
+    '@media (max-width: 650px)': {
+      fontSize: '0.9rem'
+    },
+    '@media (max-width: 450px)': {
+      fontSize: '0.7rem'
+    }
   },
   couponIcon: {
     margin: 0,
     padding: '2px 2px',
-    fontSize: '1.2rem'
+    fontSize: '1.2rem',
+    '@media (max-width: 650px)': {
+      fontSize: '0.9rem'
+    },
+    '@media (max-width: 450px)': {
+      fontSize: '0.7rem'
+    }
   },
   linkIcon: {
     fontSize: '100%',
@@ -70,7 +108,13 @@ const useStyles = makeStyles({
   },
   dateRangeIcon: {
     fontSize: '1rem',
-    marginRight: '3px'
+    marginRight: '3px',
+    '@media (max-width: 650px)': {
+      fontSize: '0.9rem'
+    },
+    '@media (max-width: 450px)': {
+      fontSize: '0.7rem'
+    }
   }
 });
 
@@ -103,6 +147,9 @@ function PostItem({ post, detailed, handleUpVote, handleDownVote }) {
       </div>
       
       <div className="post__content">
+        <div className='post__image-wrapper'>
+          <img className="post__image" alt="" src={post.image_url?.length > 0 ? post.image_url : '/images/no-image-available.png'} />
+        </div>
         {
           !detailed ? 
             (
@@ -119,7 +166,7 @@ function PostItem({ post, detailed, handleUpVote, handleDownVote }) {
           <Link to={{pathname: `/users/${post.author}`}}>
             <div className="post__author">{post.author}</div>
           </Link>
-          <div>{moment(post.created_time).format('DD/MM/YYYY - hh:mm')}</div>
+          <div>{moment(post.created_time).format('DD/MM/YYYY ')}</div>
           { post.product_url?.length > 0 &&
             (
               <>
@@ -154,14 +201,12 @@ function PostItem({ post, detailed, handleUpVote, handleDownVote }) {
           <div>{post.category}</div>
           <DateRangeIcon className={classes.dateRangeIcon}/>
           <div>
-            {moment.tz(post.start_date, config.localTimezone).format('YYYY/MM/DD HH:MM')} - {moment.tz(post.end_date, config.localTimezone).format('YYYY/MM/DD HH:MM')}
+            {moment.tz(post.start_date, config.localTimezone).format('DD/MM')} - {moment.tz(post.end_date, config.localTimezone).format('DD/MM/YYYY')}
           </div>
           <ReportButton type="Post" post_id={post.id} />
         </div>
         
       </div>
-      
-      <img className="post__image" alt="" src={post.image_url?.length > 0 ? post.image_url : '/images/no-image-available.png'} />
     </div>
   );
 }

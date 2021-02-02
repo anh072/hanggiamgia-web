@@ -1,7 +1,6 @@
 .detailed-post {
   margin: 0 0;
   padding: 0 20px 2.5rem 20px;
-  max-width: 100%;
 }
 
 .comment-loader {
@@ -27,4 +26,28 @@
 .comment-loader_text {
   color: rgb(9, 106, 192);
   font-size: 1rem;
+}
+
+@media screen and (max-width: 650px) {
+  .detailed-post__comment-header {
+    font-size: 1.3rem;
+  }
+}
+
+@media screen and (max-width: 450px) {
+  .detailed-post {
+    padding: 0 10px 2.5rem 10px;
+  }
+
+  .detailed-post__comment-header {
+    font-size: 1rem;
+  }
+
+  .comment-loader_text {
+    font-size: 0.8rem;
+  }
+
+  .detailed-post__error {
+    font-size: 0.8rem;
+  }
 }

@@ -5,6 +5,7 @@ import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
 import { makeStyles } from '@material-ui/core/styles';
 import moment from 'moment-timezone';
 import { Link } from 'react-router-dom';
+import { useMediaQuery } from 'react-responsive';
 import ReportButton from '../ReportButton/ReportButton';
 import config from '../../lib/config';
 import PropTypes from 'prop-types';
@@ -14,7 +15,12 @@ const useStyles = makeStyles({
   avatar: {
     height: '35px',
     width: '35px',
-    marginRight: '15px'
+    marginRight: '15px',
+    '@media (max-width: 450px)': {
+      height: '30px',
+      width: '30px',
+      marginRight: '10px'
+    }
   },
   input: {
     width: '100%'
@@ -28,6 +34,7 @@ const useStyles = makeStyles({
 
 function Comment({ comment, editable, onDelete, onUpdate }) {
   const classes = useStyles();
+  const isScreenSmall = useMediaQuery({ query: `(max-width: 650px)` });
 
   const [ editing, setEditing ] = useState(false);
   const [ anchorEl, setAnchorEl ] = React.useState(null);
@@ -75,6 +82,7 @@ function Comment({ comment, editable, onDelete, onUpdate }) {
             onChange={handleChange}
             value={text}
             className={classes.input}
+            size={isScreenSmall ? 'small' : 'medium'}
           />
           <div className='comment__buttons'>
             <Button 

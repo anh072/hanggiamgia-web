@@ -2,12 +2,17 @@ import React, { useState } from 'react';
 import { Avatar, Button, TextField } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
+import { useMediaQuery } from 'react-responsive';
 import './CommentInput.css';
 
 const useStyles = makeStyles({
   avatar: {
     height: '35px',
     width: '35px',
+    '@media (max-width: 450px)': {
+      height: '30px',
+      width: '30px'
+    }
   },
   input: {
     width: '100%'
@@ -23,6 +28,7 @@ function CommentInput({ onSubmit, onChange }) {
   const classes = useStyles();
 
   const [text, setText] = useState('');
+  const isScreenSmall = useMediaQuery({ query: `(max-width: 650px)` });
 
   const handleChange = (e) => {
     setText(e.target.value);
@@ -47,6 +53,7 @@ function CommentInput({ onSubmit, onChange }) {
           onChange={handleChange}
           value={text}
           className={classes.input}
+          size={isScreenSmall ? 'small': 'medium'}
         />
         <Button 
           className={classes.button}

@@ -1,6 +1,5 @@
 .comment {
   display: flex;
-  width: 100%;
   padding: 5px 5px;
 }
 
@@ -19,6 +18,7 @@
 
 .comment__editing-comment {
   width: 100%;
+  box-sizing: border-box;
 }
 
 .comment__block pre {
@@ -56,4 +56,18 @@
 
 .comment__buttons {
   display: flex;
+}
+
+@media screen and (max-width: 450px) {
+  .comment__block {
+    font-size: 0.8rem;
+  }
+
+  .comment__author {
+    font-size: 0.7rem;
+  }
+
+  .comment__date {
+    font-size: 0.7rem;
+  }
 }

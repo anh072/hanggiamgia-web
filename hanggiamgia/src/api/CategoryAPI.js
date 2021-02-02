@@ -17,7 +17,7 @@ export default function CategoryAPI() {
         setCategories(res.data.categories);
       } catch (error) {
         console.log('error', error);
-        setError({ error: 'Unable to get report reasons' });
+        setError({ error: 'Unable to get categories' });
       }
     }
     getCategories();

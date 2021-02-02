@@ -1,4 +1,3 @@
-import { requirePropFactory } from '@material-ui/core';
 import React from 'react';
 import logo from './logo192.png';
 import './InternalError.css';

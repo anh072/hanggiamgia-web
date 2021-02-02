@@ -14,9 +14,6 @@
   flex-direction: row;
 }
 
-.profile__avatar-container {
-}
-
 .profile__userinfo {
   margin-left: 40px;
 }
@@ -30,5 +27,25 @@
 .profile__error {
   color: red;
   font-size: 12px;
+}
+
+@media screen and (max-width: 450px) {
+  .profile {
+    padding: 0 10px;
+  }
+
+  .profile__title {
+    font-size: 1.2rem;
+  }
+
+  .profile__avatar {
+    height: 60px;
+    width: 60px;
+  }
+
+  .profile__userinfo {
+    margin-left: 15px;
+    font-size: 0.69rem;
+  }
 }
 

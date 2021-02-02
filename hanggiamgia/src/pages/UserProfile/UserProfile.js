@@ -10,13 +10,17 @@ import TabItem from "../../components/Tab/TabItem";
 import SimplePostItem from "../../components/SimplePostItem/SimplePostItem";
 import Loading from "../../components/Loading/Loading";
 import { calculatePages } from '../../lib/common';
+import NotFound from '../NotFound/NotFound';
 import './UserProfile.css';
 
 
 const useStyles = makeStyles({
   pagination: {
     margin: '20px auto',
-    width: '33%'
+    width: '33%',
+    '@media (max-width: 650px)': {
+      width: '75%'
+    }
   },
   paginationList: {
     justifyContent: 'center'
@@ -86,11 +90,6 @@ function UserProfile() {
       }
     };
 
-    if (selectedTab === 'Posts') getPostsByUsername(username);
-    else getCommentedPostsByUsername(username);
-  }, [page, username, selectedTab])
-
-  useEffect(() => {
     const getUserByUsername = async (username) => {
       try {
         setIsLoadingUser(true);
@@ -106,15 +105,25 @@ function UserProfile() {
         }));
       } catch(error) {
         console.log('error', error);
-        setErrors(prevErrors => ({
-          ...prevErrors,
-          user: 'Error: Unable to get user information'
-        }));
+        if (error.response && error.response.status === 404) {
+          setErrors(prevErrors => ({
+            ...prevErrors,
+            notfound: 'Error: User does not exist'
+          }));
+        } else {
+          setErrors(prevErrors => ({
+            ...prevErrors,
+            user: 'Error: Unable to get user information'
+          }));
+        }
         setIsLoadingUser(false);
       }
     };
     getUserByUsername(username);
-  }, [username]);
+
+    if (selectedTab === 'Posts') getPostsByUsername(username);
+    else getCommentedPostsByUsername(username);
+  }, [page, username, selectedTab])
 
   const handleSelectTab = (e, newValue) => {
     setSelectedTab(newValue);
@@ -124,9 +133,13 @@ function UserProfile() {
     setPage(page);
   };
 
+  if (errors.notfound) {
+    return <NotFound />;
+  }
+
   return (
     <div className='profile'>
-      <h2>User Profile</h2>
+      <h2 className='profile__title'>User Profile</h2>
       {
         isLoadingUser ? 
           <Loading size='medium' /> : (
