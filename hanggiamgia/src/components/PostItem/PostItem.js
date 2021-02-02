@@ -136,7 +136,7 @@ function PostItem({ post, detailed, handleUpVote, handleDownVote }) {
         </div>
         <div className='post__vote-count'>{post.votes} votes</div>
         {
-          detailed && 
+          detailed && post.votes > 0 && 
             (
               <Link to={{pathname: `/posts/${post.id}/votes`}}>
                 <div className="post__see-votes">See votes</div>
