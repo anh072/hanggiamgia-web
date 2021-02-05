@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Button from '@material-ui/core/Button';
 import config from '../../lib/config';
 import Comment from '../../components/Comment/Comment';
 import CommentInput from '../../components/CommentInput/CommentInput';
@@ -15,6 +19,7 @@ export default function DetailedPost() {
   const apiBaseUrl = config.apiBaseUrl;
 
   const { id } = useParams();
+  const history = useHistory();
   const { isAuthenticated, user } = useAuth0();
 
   const [ post, setPost ] = useState(null);
@@ -26,6 +31,7 @@ export default function DetailedPost() {
   const [ isLoadingPost, setIsLoadingPost ] = useState(false);
   const [ isLoadingComments, setIsLoadingComments ] = useState(false);
   const [ isLoadingExtraComments, setIsLoadingExtraComments ] = useState(false);
+  const [ open, setOpen ] = useState(false);
 
   useEffect(() => {
     const getCommentsbyPostId = async (id) => {
@@ -181,6 +187,21 @@ export default function DetailedPost() {
       }
     }
   }
+
+  const handlePostDelete = async () => {
+    try {
+      await axios.delete(
+        `${apiBaseUrl}/posts/${id}`,
+        { headers: { 'Authorization': 'Bearer xxx', 'username': 'gmanshop' } } //TODO: remove this
+      );
+      setOpen(false);
+      history.push('/');
+    } catch (error){
+      console.log('error', error);
+      setOpen(false);
+      alert('Error: Unable to delete your post');
+    }
+  };
   
   const handleCommentUpdate = async (commentId, newText) => {
     try {
@@ -227,7 +248,12 @@ export default function DetailedPost() {
             <>
             {
               post && (
-                <PostItem post={post} detailed={true} handleUpVote={handleUpVote} handleDownVote={handleDownVote} />
+                  <PostItem 
+                    post={post} 
+                    detailed={true} 
+                    handleUpVote={handleUpVote} 
+                    handleDownVote={handleDownVote}
+                    handlePostDelete={setOpen} />
                 )
             }
             {
@@ -271,6 +297,23 @@ export default function DetailedPost() {
             </>
           )
       }
+
+      <div>
+        <Dialog
+          open={open}
+          onClose={() => setOpen(false)}
+        >
+          <DialogTitle>Are you sure you want to delete?</DialogTitle>
+          <DialogActions>
+            <Button onClick={() => setOpen(false)} color="primary">
+              Cancel
+            </Button>
+            <Button onClick={handlePostDelete} color="secondary" autoFocus>
+              Delete
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </div>  
     </div>
   );
 }

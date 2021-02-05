@@ -50,9 +50,12 @@ function SimplePostItem({ post }) {
       <Link to={{pathname: `/posts/${post.id}`}}>
         <h2 className='simple-post__title'>{post.title}</h2>
       </Link>
-      <Link to={{pathname: `/users/${post.author}`}}>
-        <div className="simple-post__author">{post.author}</div>
-      </Link>
+      <div className='simple-post__subheader'>
+        <Link to={{pathname: `/users/${post.author}`}}>
+          <div className="simple-post__author">{post.author}</div>
+        </Link>
+        <div className='simple-post__created-time'>{moment(post.created_time).format('DD/MM/YYYY HH:MM')}</div>
+      </div>
       <div className='simple-post__footer'>
         <div 
           className={`simple-post__votes 

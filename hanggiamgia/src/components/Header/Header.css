@@ -11,7 +11,7 @@
   display: flex;
   justify-content: flex-start;
   width: 100%;
-  align-items: center;
+  align-items: stretch;
 }
 
 .logo {
@@ -44,7 +44,6 @@
 }
 
 .header__filter {
-  height: 80%;
   margin-left: auto;
   display: flex;
 }

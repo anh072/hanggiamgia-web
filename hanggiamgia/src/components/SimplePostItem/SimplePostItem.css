@@ -29,8 +29,6 @@
 
 .simple-post__author {
   font-weight: 500;
-  margin-right: 5px;
-  font-size: 0.8rem;
   display: inline;
 }
 
@@ -82,6 +80,17 @@
   margin: 0 auto;
 }
 
+.simple-post__subheader {
+  display: flex;
+  font-size: 0.8rem;
+  margin-top: 5px;
+  margin-bottom: 10px;
+}
+
+.simple-post__created-time {
+  margin-left: 10px;
+}
+
 @media screen and (max-width: 450px) {
   .simple-post__image {
     width: 60px;
@@ -92,7 +101,7 @@
     font-size: 0.9rem;
   }
 
-  .simple-post__author {
+  .simple-post__subheader {
     font-size: 0.7rem;
   }
 

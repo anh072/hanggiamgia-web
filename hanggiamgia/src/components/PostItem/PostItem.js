@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import { useAuth0 } from '@auth0/auth0-react';
 import { Avatar } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import AddBoxTwoToneIcon from '@material-ui/icons/AddBoxTwoTone';
@@ -118,9 +120,12 @@ const useStyles = makeStyles({
   }
 });
 
-function PostItem({ post, detailed, handleUpVote, handleDownVote }) {
+function PostItem({ post, detailed, handleUpVote, handleDownVote, handlePostDelete }) {
   const classes = useStyles();
   const modifier = detailed ? 'display-detailed' : '';
+
+  const history = useHistory();
+  const { user } = useAuth0();
 
   return (
     <div className={`post ${detailed ? `post--${modifier}` : ''}`}>
@@ -166,7 +171,7 @@ function PostItem({ post, detailed, handleUpVote, handleDownVote }) {
           <Link to={{pathname: `/users/${post.author}`}}>
             <div className="post__author">{post.author}</div>
           </Link>
-          <div>{moment(post.created_time).format('DD/MM/YYYY ')}</div>
+          <div>{moment(post.created_time).format('DD/MM/YYYY HH:MM')}</div>
           { post.product_url?.length > 0 &&
             (
               <>
@@ -204,9 +209,16 @@ function PostItem({ post, detailed, handleUpVote, handleDownVote }) {
             {moment.tz(post.start_date, config.localTimezone).format('DD/MM')} - {moment.tz(post.end_date, config.localTimezone).format('DD/MM/YYYY')}
           </div>
           <ReportButton type="Post" post_id={post.id} />
+          { 
+            user && user[config.claimNamespace+'username'] === post.author && detailed && (
+              <>
+                <button className='post__personal-buttons' onClick={() => history.push(`/posts/${post.id}/edit`)}>edit</button>
+                <button className='post__personal-buttons' onClick={() => handlePostDelete(true)}>delete</button>
+              </>
+          )}
         </div>
         
-      </div>
+      </div>            
     </div>
   );
 }
@@ -219,7 +231,8 @@ PostItem.propTypes = {
   post: PropTypes.object.isRequired,
   detailed: PropTypes.bool.isRequired, 
   handleUpVote: PropTypes.func, 
-  handleDownVote: PropTypes.func
+  handleDownVote: PropTypes.func,
+  handleDelete: PropTypes.func
 };
 
 export default PostItem;

@@ -1,7 +1,3 @@
-.deal {
-  height: 100%;
-}
-
 .deal__fields label {
   font-weight: 500;
 }
@@ -20,7 +16,6 @@
   margin-block-start: 0rem;
   margin-block-end: 0rem;
   padding: 10px 40px;
-  background-color: #cd6702;
 }
 
 .deal__fields {
@@ -37,7 +32,6 @@
 }
 
 .deal__submit-button {
-  display: flex;
   margin-left: 40px;
 }
 
@@ -45,9 +39,10 @@
   margin-left: 0;
 }
 
-@media screen and (max-width: 950px) {
+@media screen and (min-width: 1024px) {
   .deal {
-    width: 100%;
+    width: 70%;
+    margin: auto;
   }
 }
 

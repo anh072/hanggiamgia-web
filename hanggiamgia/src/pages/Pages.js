@@ -7,6 +7,8 @@ import NotFound from './NotFound/NotFound';
 import PostVotes from './PostVotes/PostVotes';
 import SearchResults from './SearchResults/SearchResults';
 import ProtectedRoute from '../auth/ProtectedRoute';
+import NewDeal from './NewDeal/NewDeal';
+import EditPost from './EditPost/EditPost';
 import './Pages.css';
 
 export default function Pages() {
@@ -14,10 +16,12 @@ export default function Pages() {
     <div className='pages'>
       <Switch>
         <Route path="/" exact component={Home} />
-        <Route path="/posts/search" exact component={SearchResults} />
-        <Route path="/posts/:id" exact component={DetailedPost} />
-        <ProtectedRoute path="/posts/:id/votes" exact component={PostVotes} />
         <Route path="/users/:username" exact component={UserProfile} />
+        <Route path="/posts/search" exact component={SearchResults} />
+        <ProtectedRoute path="/posts/submit" exact component={NewDeal} />
+        <Route path="/posts/:id" exact component={DetailedPost} />
+        <ProtectedRoute path="/posts/:id/edit" exact component={EditPost} />
+        <ProtectedRoute path="/posts/:id/votes" exact component={PostVotes} />
         <Route path="*" exact component={NotFound} />
       </Switch>
     </div>

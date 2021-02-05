@@ -11,7 +11,6 @@ import SearchIcon from '@material-ui/icons/Search';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { useMediaQuery } from 'react-responsive';
 import { Button } from '@material-ui/core';
-import AddPostButton from '../AddPostButton/AddPostButton';
 import logo from './logo192.png';
 import config from '../../lib/config';
 import './Header.css';
@@ -19,7 +18,6 @@ import './Header.css';
 const useStyles = makeStyles({
   button: {
     color: 'white',
-    height: '100%',
     width: '90px',
     fontSize: '13px',
     '&:hover': {
@@ -68,6 +66,8 @@ const StyledSelect = withStyles({
   root: {
     backgroundColor: 'white',
     fontSize: '0.9rem',
+    paddingTop: '27px',
+    paddingBottom: '10px',
     '@media (max-width: 650px)': {
       fontSize: '0.9rem',
       padding: '10px 10px'
@@ -144,7 +144,11 @@ function Header() {
         {isAuthenticated ? 
           (
             <>
-              <AddPostButton />
+              <Button 
+                className={classes.button}
+                onClick={() => history.push('/posts/submit')}>
+                Add Deal
+              </Button>
               <Button 
                 className={classes.button} 
                 onClick={() => history.push(`/users/${user[config.claimNamespace+'username']}`)}>
