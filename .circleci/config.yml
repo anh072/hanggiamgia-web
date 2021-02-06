@@ -39,7 +39,7 @@ jobs:
         name: Run build
         command: | 
           npm install
-          npm run build
+          CI=false npm run build
     # - run:
     #     name: Deploy to S3
     #     command: 
