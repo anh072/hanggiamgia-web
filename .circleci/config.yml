@@ -24,27 +24,37 @@ jobs:
         name: Deploy CDN
         command: make deployInfra
 
-  # build:
-  #   machine:
-  #     image: ubuntu-2004:202010-01
-  #     docker_layer_caching: true
-  #   steps:
-  #   - checkout
-  #   - run:
-  #       name: Push Docker image to ECR
-  #       command: make build
-  #       environment:
-  #         TAG: ${CIRCLE_SHA1}
-
+  deployApp:
+    machine:
+      image: ubuntu-2004:202010-01
+      docker_layer_caching: true
+    steps:
+    - checkout
+    - run:
+        name: Install Node and NPM
+        command: |
+          sudo apt-get -y install curl
+          curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
+          sudo apt-get -y install nodejs
+          sudo apt-get -y install npm
+          node --version
+          npm --version
+    - run:
+        name: Run build
+        command: npm run build
+    # - run:
+    #     name: Deploy to S3
+    #     command: 
 
 workflows:
   version: 2
   build_test_deploy:
     jobs:
-    - test
-    - deployInfra:
-        filters:
-          branches:
-            only: main
-          tags:
-            ignore: /.*/
+    - deployApp
+    # - test
+    # - deployInfra:
+    #     filters:
+    #       branches:
+    #         only: main
+    #       tags:
+    #         ignore: /.*/
