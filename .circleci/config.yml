@@ -26,19 +26,10 @@ jobs:
 
   deployApp:
     machine:
-      image: ubuntu-2004:202010-01
+      image: circleci/node
       docker_layer_caching: true
     steps:
     - checkout
-    - run:
-        name: Install Node and NPM
-        command: |
-          sudo apt-get -y install curl
-          curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
-          sudo apt-get -y install nodejs
-          sudo apt-get -y install npm
-          node --version
-          npm --version
     - run:
         name: Run build
         command: npm run build
