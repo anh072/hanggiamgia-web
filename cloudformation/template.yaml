@@ -3,10 +3,20 @@ AWSTemplateFormatVersion: 2010-09-09
 
 Description: CDN and S3 bucket for website
 
+Parameters:
+  Environment:
+    Type: String
+    Default: test
+    AllowedValues:
+    - test
+    - dev
+    - prod
+
 Resources:
   S3Bucket:
     Type: 'AWS::S3::Bucket'
     Properties:
+      BucketName: !Sub 'giare-${Environment}-frontend'
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
         BlockPublicPolicy: true

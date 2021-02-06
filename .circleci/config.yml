@@ -40,19 +40,28 @@ jobs:
         command: | 
           npm install
           CI=false npm run build
-    # - run:
-    #     name: Deploy to S3
-    #     command: 
+    - run:
+        name: Deploy to S3
+        command: make deployApp
 
 workflows:
   version: 2
   build_test_deploy:
     jobs:
-    - deployApp
-    # - test
-    # - deployInfra:
-    #     filters:
-    #       branches:
-    #         only: main
-    #       tags:
-    #         ignore: /.*/
+    - test
+    - deployInfra:
+        requires:
+        - test
+        filters:
+          branches:
+            only: main
+          tags:
+            ignore: /.*/
+    - deployApp:
+        requires:
+        - deployInfra
+        filters:
+          branches:
+            only: main
+          tags:
+            ignore: /.*/

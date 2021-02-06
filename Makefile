@@ -8,6 +8,8 @@ COMPOSE_RUN_AWS = docker-compose run --rm aws
 COMPOSE_RUN_LINT = docker-compose run --rm lint
 COMPOSE_RUN_NPM = docker-compose run --rm npm
 
+S3_BUCKET ?= giare-test-frontend
+
 
 lint: dotenv
 	$(COMPOSE_RUN_LINT) yamllint cloudformation/template.yaml
@@ -23,6 +25,10 @@ build: dotenv
 
 deployInfra: dotenv
 	$(COMPOSE_RUN_AWS) make _deployInfra
+.PHONY: deployInfra
+
+deployApp: dotenv
+	$(COMPOSE_RUN_AWS) make _deployApp
 .PHONY: deployApp
 
 # replaces .env with DOTENV if the variable is specified
@@ -49,6 +55,9 @@ _deployInfra: _assumeRole
 		--stack-name "$(SERVICE_NAME)-$(ENV)-frontend" \
 		--capabilities CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND \
 		--no-fail-on-empty-changeset
+
+_deployApp: _assumeRole
+	aws s3 cp ./build s3://$(S3_BUCKET) --recursive
 
 _assumeRole:
 ifndef AWS_SESSION_TOKEN
