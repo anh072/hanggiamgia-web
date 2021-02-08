@@ -96,7 +96,7 @@ function ReportButton({ type, post_id = null, comment_id = null }) {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { isAuthenticated, getAccessTokenSilently } = useAuth0();
+  const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
 
   const state = useDataProvider();
   const reasons = state.reasonStore.data;
@@ -157,7 +157,8 @@ function ReportButton({ type, post_id = null, comment_id = null }) {
         { 
           headers: { 
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${accessToken}`
+            'Authorization': `Bearer ${accessToken}`,
+            'username': user[config.claimNamespace+'username']
           } 
         },
         { timeout: 20000 }

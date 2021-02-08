@@ -116,7 +116,8 @@ function PostVotes() {
           { 
             headers: { 
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${accessToken}`
+              'Authorization': `Bearer ${accessToken}`,
+              'username': user[config.claimNamespace+'username']
             } 
           },
           { timeout: 20000 }
@@ -171,7 +172,7 @@ function PostVotes() {
       const accessToken = await getAccessTokenSilently({ audience: config.auth0ApiAudience });
       await axios.delete(
         `${apiBaseUrl}/posts/${id}/votes/${voteId}`,
-        { headers: { 'Authorization': `Bearer ${accessToken}` } },
+        { headers: { 'Authorization': `Bearer ${accessToken}`, 'username': user[config.claimNamespace+'username'] } },
         { timeout: 20000 }
       );
       const newVotes = votes.filter(vote => vote.id !== voteId);

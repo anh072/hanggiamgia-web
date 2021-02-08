@@ -27,7 +27,7 @@ function SearchResults() {
   const apiBaseUrl = config.apiBaseUrl
   const classes = useStyles();
 
-  const { isAuthenticated, getAccessTokenSilently } = useAuth0();
+  const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
   const history = useHistory();
   const query = useQuery();
   const category = query.get('category');
@@ -74,7 +74,8 @@ function SearchResults() {
         { 
           headers: { 
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${accessToken}`
+            'Authorization': `Bearer ${accessToken}`,
+            'username': user[config.claimNamespace+'username']
           } 
         },
         { timeout: 20000 }
@@ -102,7 +103,8 @@ function SearchResults() {
         { 
           headers: { 
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${accessToken}`
+            'Authorization': `Bearer ${accessToken}`,
+            'username': user[config.claimNamespace+'username']
           } 
         },
         { timeout: 20000 }

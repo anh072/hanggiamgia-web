@@ -198,7 +198,10 @@ function EditPost() {
         const res = await axios.post(
           `${apiBaseUrl}/users/${user[config.claimNamespace+'username']}/images/upload`,
           values.image,
-          { headers: { 'Content-Type': 'multipart/form-data', 'Authorization': `Bearer ${accessToken}` } },
+          { headers: { 
+            'Content-Type': 'multipart/form-data', 
+            'Authorization': `Bearer ${accessToken}`,
+            'username': user[config.claimNamespace+'username'] } },
           { timeout: 20000 }
         );
         const imageUrl = res.data.image_url;
@@ -212,7 +215,10 @@ function EditPost() {
       const res = await axios.put(
         `${apiBaseUrl}/posts/${id}`, 
         data, 
-        { headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` } },
+        { headers: { 
+          'Content-Type': 'application/json', 
+          'Authorization': `Bearer ${accessToken}`,
+          'username': user[config.claimNamespace+'username'] } },
         { timeout: 20000 }
       );
       const newPost = res.data;

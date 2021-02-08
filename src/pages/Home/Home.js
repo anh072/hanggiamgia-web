@@ -30,7 +30,7 @@ export default function Posts() {
   const query = useQuery();
   const page = query.get('page') || 1;
 
-  const { isAuthenticated, getAccessTokenSilently } = useAuth0();
+  const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
   const history = useHistory();
 
   const [ posts, setPosts ] = useState({});
@@ -72,7 +72,8 @@ export default function Posts() {
         { 
           headers: { 
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${accessToken}`
+            'Authorization': `Bearer ${accessToken}`,
+            'username': user[config.claimNamespace+'username']
           } 
         },
         { timeout: 20000 }
@@ -103,7 +104,8 @@ export default function Posts() {
         { 
           headers: { 
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${accessToken}`
+            'Authorization': `Bearer ${accessToken}`,
+            'username': user[config.claimNamespace+'username']
           } 
         },
         { timeout: 20000 }
