@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
-import { useDataProvider } from '../../GlobalState';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -11,6 +10,7 @@ import SearchIcon from '@material-ui/icons/Search';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { useMediaQuery } from 'react-responsive';
 import { Button } from '@material-ui/core';
+import { useDataProvider } from '../../GlobalState';
 import logo from './logo192.png';
 import config from '../../lib/config';
 import './Header.css';

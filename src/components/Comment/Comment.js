@@ -6,9 +6,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import moment from 'moment-timezone';
 import { Link } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
+import PropTypes from 'prop-types';
 import ReportButton from '../ReportButton/ReportButton';
 import config from '../../lib/config';
-import PropTypes from 'prop-types';
 import './Comment.css';
 
 const useStyles = makeStyles({
@@ -138,6 +138,7 @@ function Comment({ comment, editable, onDelete, onUpdate }) {
             }
           </div>
           <ReportButton type="Comment" comment_id={comment.id}/>
+
         </div>
       </>
     );

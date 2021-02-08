@@ -93,7 +93,7 @@ function EditPost() {
   const [ isSubmitting, setIsSubmitting ] = useState(false);
   const [ isLoading, setIsLoading ] = useState(false);
 
-  const { user } = useAuth0();
+  const { user, getAccessTokenSilently } = useAuth0();
   const { id } = useParams();
   const history = useHistory();
 
@@ -193,11 +193,12 @@ function EditPost() {
       };
 
       // upload image
+      const accessToken = await getAccessTokenSilently({ audience: config.auth0ApiAudience });
       if (values.image) {
         const res = await axios.post(
           `${apiBaseUrl}/users/${user[config.claimNamespace+'username']}/images/upload`,
           values.image,
-          { headers: { 'Content-Type': 'multipart/form-data', 'username': 'gmanshop' } }, //TODO: remove this
+          { headers: { 'Content-Type': 'multipart/form-data', 'Authorization': `Bearer ${accessToken}` } },
           { timeout: 20000 }
         );
         const imageUrl = res.data.image_url;
@@ -211,7 +212,7 @@ function EditPost() {
       const res = await axios.put(
         `${apiBaseUrl}/posts/${id}`, 
         data, 
-        { headers: { 'Content-Type': 'application/json', 'username': 'gmanshop' } }, //TODO: remove this
+        { headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` } },
         { timeout: 20000 }
       );
       const newPost = res.data;

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import { Avatar } from '@material-ui/core';
@@ -13,9 +13,9 @@ import DateRangeIcon from '@material-ui/icons/DateRange';
 import moment from 'moment';
 import { Link } from 'react-router-dom';
 import psl from 'psl';
+import PropTypes from 'prop-types';
 import ReportButton from '../ReportButton/ReportButton';
 import config from '../../lib/config';
-import PropTypes from 'prop-types';
 import './PostItem.css';
 
 const getDomainName = (url) => {
@@ -125,7 +125,7 @@ function PostItem({ post, detailed, handleUpVote, handleDownVote, handlePostDele
   const modifier = detailed ? 'display-detailed' : '';
 
   const history = useHistory();
-  const { user } = useAuth0();
+  const { isAuthenticated, user } = useAuth0();
 
   return (
     <div className={`post ${detailed ? `post--${modifier}` : ''}`}>
@@ -210,7 +210,7 @@ function PostItem({ post, detailed, handleUpVote, handleDownVote, handlePostDele
           </div>
           <ReportButton type="Post" post_id={post.id} />
           { 
-            user && user[config.claimNamespace+'username'] === post.author && detailed && (
+            isAuthenticated && user[config.claimNamespace+'username'] === post.author && detailed && (
               <>
                 <button className='post__personal-buttons' onClick={() => history.push(`/posts/${post.id}/edit`)}>edit</button>
                 <button className='post__personal-buttons' onClick={() => handlePostDelete(true)}>delete</button>

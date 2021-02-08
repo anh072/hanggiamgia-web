@@ -100,7 +100,7 @@ function NewDeal() {
   const [ errors, setErrors ] = useState({});
   const [ isSubmitting, setIsSubmitting ] = useState(false);
 
-  const { user } = useAuth0();
+  const { user, getAccessTokenSilently } = useAuth0();
   const history = useHistory();
 
   const handleSelect = (e) => {
@@ -146,11 +146,12 @@ function NewDeal() {
       };
 
       // upload image
+      const accessToken = await getAccessTokenSilently({ audience: config.auth0ApiAudience });
       if (values.image) {
         const res = await axios.post(
           `${apiBaseUrl}/users/${user[config.claimNamespace+'username']}/images/upload`,
           values.image,
-          { headers: { 'Content-Type': 'multipart/form-data', 'username': 'gmanshop' } }, //TODO: remove this
+          { headers: { 'Content-Type': 'multipart/form-data', 'Authorization': `Bearer ${accessToken}` } },
           { timeout: 20000 }
         );
         const imageUrl = res.data.image_url;
@@ -164,7 +165,7 @@ function NewDeal() {
       const res = await axios.post(
         `${apiBaseUrl}/posts`, 
         data, 
-        { headers: { 'Content-Type': 'application/json', 'username': 'gmanshop' } }, //TODO: remove this
+        { headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` } },
         { timeout: 20000 }
       );
       const newPost = res.data;

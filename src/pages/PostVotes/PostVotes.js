@@ -101,7 +101,7 @@ function PostVotes() {
 
   const [ post, setPost ] = useState(null);
   const [ votes, setVotes ] = useState([]);
-  const { user } = useAuth0();
+  const { user, getAccessTokenSilently } = useAuth0();
   const [ isLoadingVotes, setIsLoadingVotes ] = useState(false);
   const [ isLoadingPost, setIsLoadingPost ] = useState(false);
   const [ errors, setErrors ] = useState({});
@@ -110,12 +110,13 @@ function PostVotes() {
     const getVotesByPostId = async (id) => {
       try {
         setIsLoadingVotes(true);
+        const accessToken = await getAccessTokenSilently({ audience: config.auth0ApiAudience });
         const res = await axios.get(
           `${apiBaseUrl}/posts/${id}/votes`,
           { 
             headers: { 
               'Content-Type': 'application/json',
-              'Authorization': 'xxxx' //TODO: add access token here
+              'Authorization': `Bearer ${accessToken}`
             } 
           },
           { timeout: 20000 }
@@ -167,9 +168,10 @@ function PostVotes() {
 
   const removeVote = async (voteId) => {
     try {
+      const accessToken = await getAccessTokenSilently({ audience: config.auth0ApiAudience });
       await axios.delete(
         `${apiBaseUrl}/posts/${id}/votes/${voteId}`,
-        { headers: { 'Authorization': 'Bearer ....', 'username': 'gmanshop' } }, //TODO: remove this
+        { headers: { 'Authorization': `Bearer ${accessToken}` } },
         { timeout: 20000 }
       );
       const newVotes = votes.filter(vote => vote.id !== voteId);

@@ -1,9 +1,11 @@
-import { Backdrop, Modal, Button, TextareaAutosize, Select, MenuItem, FormControl, Fade } from '@material-ui/core';
 import React, { useState } from 'react';
+import { Backdrop, Modal, Button, TextareaAutosize, Select, MenuItem, FormControl, Fade } from '@material-ui/core';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
+import axios from 'axios';
+import { useAuth0 } from '@auth0/auth0-react';
 import { useDataProvider } from '../../GlobalState';
 import './ReportButton.css';
-import axios from 'axios';
+
 import config from '../../lib/config';
 
 const useStyles = makeStyles({
@@ -94,6 +96,8 @@ function ReportButton({ type, post_id = null, comment_id = null }) {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const { isAuthenticated, getAccessTokenSilently } = useAuth0();
+
   const state = useDataProvider();
   const reasons = state.reasonStore.data;
 
@@ -144,13 +148,16 @@ function ReportButton({ type, post_id = null, comment_id = null }) {
       if (post_id !== null) data.post_id = post_id;
       if (comment_id !== null) data.comment_id = comment_id;
 
+      const accessToken = await getAccessTokenSilently({ audience: config.auth0ApiAudience });
+      console.log(accessToken);
+
       await axios.post(
         `${apiBaseUrl}/reports`, 
         data, 
         { 
           headers: { 
             'Content-Type': 'application/json',
-            'username': '' // TODO: testing purposses only
+            'Authorization': `Bearer ${accessToken}`
           } 
         },
         { timeout: 20000 }
@@ -169,7 +176,7 @@ function ReportButton({ type, post_id = null, comment_id = null }) {
     }
   };
 
-  return (
+  const renderForm = () => (
     <div className="report">
       <button onClick={handleOpen}>report</button>
       <Modal
@@ -236,6 +243,14 @@ function ReportButton({ type, post_id = null, comment_id = null }) {
         </Fade>
       </Modal>
     </div>
+  );
+
+  return (
+    <>
+    {
+      isAuthenticated && renderForm()
+    }
+    </>
   );
 }
 

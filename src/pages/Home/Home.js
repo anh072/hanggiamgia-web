@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import PostItem from '../../components/PostItem/PostItem';
-import config from '../../lib/config';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth0 } from '@auth0/auth0-react';
 import Pagination from '@material-ui/lab/Pagination';
 import { makeStyles } from '@material-ui/styles';
 import Loading from '../../components/Loading/Loading';
+import PostItem from '../../components/PostItem/PostItem';
+import config from '../../lib/config';
 import { calculatePages, useQuery } from '../../lib/common';
 import './Home.css';
 
@@ -30,7 +30,7 @@ export default function Posts() {
   const query = useQuery();
   const page = query.get('page') || 1;
 
-  const { isAuthenticated } = useAuth0();
+  const { isAuthenticated, getAccessTokenSilently } = useAuth0();
   const history = useHistory();
 
   const [ posts, setPosts ] = useState({});
@@ -65,13 +65,14 @@ export default function Posts() {
   const handleUpVote = async (id) => {
     if (!isAuthenticated) alert("You must be logged in to vote");
     try {
+      const accessToken = await getAccessTokenSilently({ audience: config.auth0ApiAudience })
       await axios.put(
         `${apiBaseUrl}/posts/${id}/votes`, 
         { vote_action: 'increment' }, 
         { 
           headers: { 
             'Content-Type': 'application/json',
-            'username': 'gmanshop' // TODO: remove this
+            'Authorization': `Bearer ${accessToken}`
           } 
         },
         { timeout: 20000 }
@@ -95,13 +96,14 @@ export default function Posts() {
   const handleDownVote = async (id) => {
     if (!isAuthenticated) alert("You must be logged in to vote");
     try {
+      const accessToken = await getAccessTokenSilently({ audience: config.auth0ApiAudience })
       await axios.put(
         `${apiBaseUrl}/posts/${id}/votes`, 
         { vote_action: 'decrement' }, 
         { 
           headers: { 
             'Content-Type': 'application/json',
-            'username': 'gmanshop' // TODO: remove this
+            'Authorization': `Bearer ${accessToken}`
           } 
         },
         { timeout: 20000 }

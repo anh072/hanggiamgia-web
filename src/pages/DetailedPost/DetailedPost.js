@@ -4,11 +4,11 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
+import axios from 'axios';
+import { useAuth0 } from '@auth0/auth0-react';
 import config from '../../lib/config';
 import Comment from '../../components/Comment/Comment';
 import CommentInput from '../../components/CommentInput/CommentInput';
-import axios from 'axios';
-import { useAuth0 } from '@auth0/auth0-react';
 import PostItem from '../../components/PostItem/PostItem';
 import Loading from '../../components/Loading/Loading';
 import NotFound from '../NotFound/NotFound';
@@ -20,7 +20,7 @@ export default function DetailedPost() {
 
   const { id } = useParams();
   const history = useHistory();
-  const { isAuthenticated, user } = useAuth0();
+  const { isAuthenticated, user, getAccessTokenSilently } = useAuth0();
 
   const [ post, setPost ] = useState(null);
   const [ comments, setComments ] = useState([]);
@@ -96,10 +96,11 @@ export default function DetailedPost() {
 
   const handleSubmit = async () => {
     try {
+      const accessToken = await getAccessTokenSilently({ audience: config.auth0ApiAudience });
       const res = await axios.post(
         `${apiBaseUrl}/posts/${id}/comments`,
         { text: newComment.trim().replace(/\n+$/, "") },
-        { headers: { 'Content-Type': 'application/json', 'username': 'gmanshop' }}, //TODO: remove this
+        { headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` } },
         { timeout: 20000 }
       );
       console.log("submitted comment");
@@ -139,13 +140,14 @@ export default function DetailedPost() {
   const handleUpVote = async (id) => {
     if (!isAuthenticated) alert("You must be logged in to vote");
     try {
+      const accessToken = await getAccessTokenSilently({ audience: config.auth0ApiAudience });
       await axios.put(
         `${apiBaseUrl}/posts/${id}/votes`, 
         { vote_action: 'increment' }, 
         { 
           headers: { 
             'Content-Type': 'application/json',
-            'username': 'gmanshop' // TODO: remove this
+            'Authorization': `Bearer ${accessToken}`
           } 
         },
         { timeout: 20000 }
@@ -165,13 +167,14 @@ export default function DetailedPost() {
   const handleDownVote = async (id) => {
     if (!isAuthenticated) alert("You must be logged in to vote");
     try {
+      const accessToken = await getAccessTokenSilently({ audience: config.auth0ApiAudience });
       await axios.put(
         `${apiBaseUrl}/posts/${id}/votes`, 
         { vote_action: 'decrement' }, 
         { 
           headers: { 
             'Content-Type': 'application/json',
-            'username': 'testDownVote3' // TODO: remove this
+            'Authorization': `Bearer ${accessToken}`
           } 
         },
         { timeout: 20000 }
@@ -190,9 +193,10 @@ export default function DetailedPost() {
 
   const handlePostDelete = async () => {
     try {
+      const accessToken = await getAccessTokenSilently({ audience: config.auth0ApiAudience });
       await axios.delete(
         `${apiBaseUrl}/posts/${id}`,
-        { headers: { 'Authorization': 'Bearer xxx', 'username': 'gmanshop' } } //TODO: remove this
+        { headers: { 'Authorization': `Bearer ${accessToken}` } }
       );
       setOpen(false);
       history.push('/');
@@ -205,10 +209,11 @@ export default function DetailedPost() {
   
   const handleCommentUpdate = async (commentId, newText) => {
     try {
+      const accessToken = await getAccessTokenSilently({ audience: config.auth0ApiAudience });
       const res = await axios.put(
         `${apiBaseUrl}/posts/${id}/comments/${commentId}`,
         { text: newText },
-        { headers: { 'Authorization': 'Bearer xxx', 'username': 'gmanshop' } }, //TODO: remove this
+        { headers: { 'Authorization': `Bearer ${accessToken}`} },
         { timeout: 20000 }
       );
       const currentCommentIndex = comments.findIndex(c => c.id === commentId);
@@ -222,9 +227,10 @@ export default function DetailedPost() {
 
   const handleCommentDelete = async (commentId) => {
     try {
+      const accessToken = await getAccessTokenSilently({ audience: config.auth0ApiAudience });
       await axios.delete(
         `${apiBaseUrl}/posts/${id}/comments/${commentId}`,
-        { headers: { 'Authorization': 'Bearer xxx', 'username': 'gmanshop' } }, // TODO: remove this
+        { headers: { 'Authorization': `Bearer ${accessToken}` } },
         { timeout: 20000 }
       );
       const newComments = comments.filter(c => c.id !== commentId);
