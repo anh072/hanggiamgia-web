@@ -23,6 +23,16 @@ Resources:
         IgnorePublicAcls: true
         RestrictPublicBuckets: true
 
+  CDNLogBucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: !Sub 'giare-${Environment}-cdn-logs'
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
   ReadPolicy:
     Type: 'AWS::S3::BucketPolicy'
     Properties:
@@ -73,3 +83,11 @@ Resources:
           S3OriginConfig:
             OriginAccessIdentity: !Sub 'origin-access-identity/cloudfront/${CloudFrontOriginAccessIdentity}'
         PriceClass: 'PriceClass_200'
+        CustomErrorResponses:
+        - ErrorCachingMinTTL: 10
+          ErrorCode: 403
+          ResponseCode: 200
+          ResponsePagePath: /index.html
+        Logging:
+          Bucket: !GetAtt 'S3Bucket.RegionalDomainName'
+          Prefix: cdn
