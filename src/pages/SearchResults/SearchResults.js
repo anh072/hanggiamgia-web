@@ -136,10 +136,10 @@ function SearchResults() {
   return (
     <div className='search-results'>
       <div className='search-results__header'>
-        <h2 className='search-results__title'>Search Results</h2>
+        <h2 className='search-results__title'>Kết quả tìm kiếm</h2>
         <p className='search-results__info'>
-          <span><b>Category:</b> {category ? category : 'All'}</span>
-          <span><b>Search Term:</b> {term ? term : 'None'}</span>
+          <span><b>Hạng mục:</b> {category ? category : 'Tất cả'}</span>
+          <span><b>Từ khóa:</b> {term ? term : ''}</span>
         </p>
       </div>
       <ul className="search-results__list">

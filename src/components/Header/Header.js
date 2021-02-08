@@ -181,7 +181,7 @@ function Header() {
           </div>
           <Input 
             type='submit' 
-            value='Update' 
+            value='Tìm kiếm' 
             color='primary' 
             disableUnderline={true}
             className={classes.input} />

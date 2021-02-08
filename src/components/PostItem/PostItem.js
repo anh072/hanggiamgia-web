@@ -144,7 +144,7 @@ function PostItem({ post, detailed, handleUpVote, handleDownVote, handlePostDele
           detailed && post.votes > 0 && 
             (
               <Link to={{pathname: `/posts/${post.id}/votes`}}>
-                <div className="post__see-votes">See votes</div>
+                <div className="post__see-votes">Xem phiếu</div>
               </Link>
             ) 
         }

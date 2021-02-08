@@ -4,6 +4,7 @@ import axios from 'axios';
 import moment from 'moment';
 import Pagination from '@material-ui/lab/Pagination';
 import { makeStyles } from '@material-ui/styles';
+import { useAuth0 } from '@auth0/auth0-react';
 import config from '../../lib/config';
 import Tab from '../../components/Tab/Tab';
 import TabItem from "../../components/Tab/TabItem";
@@ -32,6 +33,7 @@ function UserProfile() {
   const classes = useStyles();
 
   const { username } = useParams();
+  const { isAuthenticated, user } = useAuth0();
 
   const [ userInfo, setUserInfo ] = useState({});
   const [ page, setPage ] = useState(1);
@@ -153,10 +155,14 @@ function UserProfile() {
                     <td align='left' className='profile__label'>Tên tài khoản</td>
                     <td align='left'>{userInfo.username}</td>
                   </tr>
-                  <tr>
-                    <td align='left' className='profile__label'>Email</td>
-                    <td align='left'>{userInfo.email}</td>
-                  </tr>
+                  {
+                    isAuthenticated && user[config.claimNamespace+'username'] === userInfo.username && (
+                      <tr>
+                        <td align='left' className='profile__label'>Email</td>
+                        <td align='left'>{userInfo.email}</td>
+                    </tr>
+                    )
+                  }
                   <tr>
                     <td align='left' className='profile__label'>Ngày đăng ký</td>
                     <td align='left'>{moment.tz(userInfo.created_time, config.localTimezone).format('YYYY/MM/DD')}</td>
