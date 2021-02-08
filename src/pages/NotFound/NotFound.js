@@ -18,10 +18,10 @@ export default function NotFound() {
   return (
     <div className='not-found'>
       <SentimentVeryDissatisfiedIcon className={classes.sadIcon} />
-      <h2 className='not-found__title'>Ooups, page not found</h2>
-      <p>It looks like you are trying to access a page that doesnt exists</p>
+      <h2 className='not-found__title'>Ooups, trang không tồn tại</h2>
+      <p>Hình như bạn đang truy cập trang không tồn tại</p>
       <Link to='/'>
-        <Button color='primary' variant='contained'>Back to Home</Button>
+        <Button color='primary' variant='contained'>Trang chủ</Button>
       </Link>
     </div>
   );

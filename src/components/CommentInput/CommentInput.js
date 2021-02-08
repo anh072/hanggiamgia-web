@@ -46,7 +46,7 @@ function CommentInput({ onSubmit, onChange }) {
       <form>
         <TextField
           id="standard-textarea"
-          placeholder="Write a comment..."
+          placeholder="Viết bình luận..."
           multiline
           rowsMax={100}
           variant="outlined"
@@ -60,7 +60,7 @@ function CommentInput({ onSubmit, onChange }) {
           variant='contained' 
           size='small' color='primary' 
           onClick={handleSubmit}>
-            Submit
+            Gửi
         </Button>
       </form>
     </div>

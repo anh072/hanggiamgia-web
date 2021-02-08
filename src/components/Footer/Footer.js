@@ -35,17 +35,17 @@ function Footer() {
   return (
     <footer className='footer'>
       <div className='footer__name'>
-        <h1 className='footer__company-name'>Gia Re</h1>
+        <h1 className='footer__company-name'>Giá Rẻ</h1>
       </div>
       <div className='about footer__about'>
-        <h2 className='footer__header'>About Us</h2>
+        <h2 className='footer__header'>Về Chúng Tôi</h2>
         <p className='about__description'>
-          Gia Re is built to provide the community with a channel to share discounted products and services. 
-          Our commitment is to help people spend money smarter and stay alerted to sales.
+          Giá Rẻ được tạo ra nhằm giúp người dùng chia sẻ thông tin về hàng giảm giá và cập nhật thông tin về những chương trình khuyến mãi.
+          Giá Rẻ la website không lợi nhuận với mục tiêu giúp dỡ người tiêu dùng là chính.
         </p>
       </div>
       <div className='social-connections footer__connections'>
-        <h2 className='footer__header'>Stay Connected!</h2>
+        <h2 className='footer__header'>Kết Nối</h2>
         <div className='social-connections__container'>
           <a href='https://www.facebook.com/profile.php?id=100000278872468' >
               <FacebookIcon className={classes.facebookIcon}/>

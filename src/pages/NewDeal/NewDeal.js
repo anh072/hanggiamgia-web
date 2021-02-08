@@ -183,16 +183,16 @@ function NewDeal() {
       setIsSubmitting(false);
       setErrors(prevErrors => ({
         ...prevErrors,
-        submit: "Unable to create a new deal. Try again!"
+        submit: "Lỗi: Không thể tạo bài viết. Thử lại!"
       }));
     }
   };
 
   return (
     <form className='deal'>
-      <h2 className="deal__header">Submit Deal</h2>
+      <h2 className="deal__header">Tạo bài</h2>
       <div className="deal__fields">
-        <label htmlFor="title">Title <span>&#42;</span></label> <br />
+        <label htmlFor="title">Tiêu đề <span>&#42;</span></label> <br />
         <TextField 
           id="title" 
           name="title" 
@@ -214,7 +214,7 @@ function NewDeal() {
         <TextField 
           id="url"
           name="url"
-          placeholder="Link to the product e.g https://ebay.com.au"
+          placeholder="Link đến sản phẩm e.g https://ebay.com.au"
           value={values.url}
           onChange={handleChange} 
           className={classes.textField}
@@ -228,7 +228,7 @@ function NewDeal() {
       </div>
 
       <div className="deal__fields">
-        <label htmlFor="image">Image</label> <br />
+        <label htmlFor="image">Ảnh</label> <br />
         <TextField 
           id="image"
           name="image"
@@ -246,11 +246,11 @@ function NewDeal() {
       </div>
 
       <div className="deal__fields">
-        <label htmlFor="coupon">Coupon Code</label> <br />
+        <label htmlFor="coupon">Mã giảm giá</label> <br />
         <TextField 
           id="coupon"
           name="coupon"
-          placeholder="Enter coupon..."
+          placeholder="Điền mã giảm giá..."
           value={values.coupon}
           onChange={handleChange} 
           className={classes.textField}
@@ -263,7 +263,7 @@ function NewDeal() {
       </div>
 
       <div className="deal__fields">
-        <label htmlFor="start">Start <span>&#42;</span></label> <br />
+        <label htmlFor="start">Ngày bắt đầu <span>&#42;</span></label> <br />
         <TextField
           id="start"
           name="start"
@@ -285,7 +285,7 @@ function NewDeal() {
       </div>
       
       <div className="deal__fields">
-        <label htmlFor="expiry">Expiry <span>&#42;</span></label> <br />
+        <label htmlFor="expiry">Ngày kết thúc <span>&#42;</span></label> <br />
         <TextField
           id="expiry"
           name="end"
@@ -307,7 +307,7 @@ function NewDeal() {
       </div>
       
       <div className="deal__fields">
-        <label>Categories <span>&#42;</span></label> <br />
+        <label>Hạng mục <span>&#42;</span></label> <br />
         <FormControl>
           <StyledSelect 
             value={values.category}
@@ -322,7 +322,7 @@ function NewDeal() {
       </div>
       
       <div className="deal__fields">
-        <label htmlFor="description">Description <span>&#42;</span></label> <br />
+        <label htmlFor="description">Mô tả <span>&#42;</span></label> <br />
         <TextareaAutosize
           id="description"
           name="description"
@@ -330,7 +330,7 @@ function NewDeal() {
           className={classes.textArea}
           rowsMin={6}
           rowsMax={6}
-          placeholder="Enter your deal description..."
+          placeholder="Viết mô tả..."
           onChange={handleChange}
         />
         { errors.description && <p className="deal__form-error">{errors.description}</p> }
@@ -343,9 +343,9 @@ function NewDeal() {
           color="primary" 
           onClick={handleSubmit}
           size='small'>
-            Submit
+            Gửi
         </Button>
-        { isSubmitting && (<p className='deal__loading-message'>Creating a new post ...</p>) }
+        { isSubmitting && (<p className='deal__loading-message'>Đang tạo bài viết ...</p>) }
         { errors.submit && <p className="deal__form-error deal__submit-error">{errors.submit}</p> }
       </div>
     </form>

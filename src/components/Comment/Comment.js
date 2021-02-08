@@ -91,14 +91,14 @@ function Comment({ comment, editable, onDelete, onUpdate }) {
               size='small' 
               color='primary' 
               onClick={handleUpdate}>
-                Update
+                Cập nhật
             </Button>
             <Button 
               className={classes.button}
               variant='contained' 
               size='small' 
               onClick={handleCancel}>
-                Cancel
+                Hủy
             </Button>
           </div>
         </form>
@@ -130,8 +130,8 @@ function Comment({ comment, editable, onDelete, onUpdate }) {
                     open={Boolean(anchorEl)}
                     onClose={handleClose}
                   >
-                    <MenuItem onClick={() => setEditing(true)}>Edit</MenuItem>
-                    <MenuItem onClick={handleDelete}>Delete</MenuItem>
+                    <MenuItem onClick={() => setEditing(true)}>Sửa</MenuItem>
+                    <MenuItem onClick={handleDelete}>Xóa</MenuItem>
                   </Menu>
                 </div>
               )

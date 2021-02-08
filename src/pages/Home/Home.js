@@ -63,7 +63,7 @@ export default function Posts() {
   }, [page]);
 
   const handleUpVote = async (id) => {
-    if (!isAuthenticated) alert("You must be logged in to vote");
+    if (!isAuthenticated) alert("Bạn phải đăng nhập để bỏ phiếu");
     try {
       const accessToken = await getAccessTokenSilently({ audience: config.auth0ApiAudience })
       await axios.put(
@@ -89,13 +89,13 @@ export default function Posts() {
       if (error.response && error.response.status === 400) {
         alert(error.response.data.message);
       } else {
-        alert("Unexpected error has occured");
+        alert("Lỗi: Server bị lỗi");
       }
     }
   }
 
   const handleDownVote = async (id) => {
-    if (!isAuthenticated) alert("You must be logged in to vote");
+    if (!isAuthenticated) alert("Bạn phải đăng nhập để bỏ phiếu");
     try {
       const accessToken = await getAccessTokenSilently({ audience: config.auth0ApiAudience })
       await axios.put(
@@ -121,7 +121,7 @@ export default function Posts() {
       if (error.response && error.response.status === 400) {
         alert(error.response.data.message);
       } else {
-        alert("Unexpected error has occured");
+        alert("Lỗi: Server bị lỗi");
       }
     }
   }

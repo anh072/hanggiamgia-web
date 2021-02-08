@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Backdrop, Modal, Button, TextareaAutosize, Select, MenuItem, FormControl, Fade } from '@material-ui/core';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
+import PropTypes from 'prop-types';
 import axios from 'axios';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useDataProvider } from '../../GlobalState';
@@ -84,12 +85,12 @@ const initialValues = {
 const validate = (values) => {
   let errors = {};
   if (!values.reason) {
-    errors.reason = "Reason is required";
+    errors.reason = "Lý do là bắt buộc";
   }
   return errors;
 };
 
-function ReportButton({ type, post_id = null, comment_id = null }) {
+function ReportButton({ type, post_id, comment_id }) {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
   const [values, setValues] = useState(initialValues);
@@ -172,14 +173,14 @@ function ReportButton({ type, post_id = null, comment_id = null }) {
       setIsSubmitting(false);
       setErrors(prevError => ({
         ...prevError,
-        submit: "Cannot submit form right now. Try again!"
+        submit: "Lỗi: Không gửi được báo cáo. Thử lại!"
       }));
     }
   };
 
   const renderForm = () => (
     <div className="report">
-      <button onClick={handleOpen}>report</button>
+      <button onClick={handleOpen}>báo cáo</button>
       <Modal
         aria-labelledby="report-modal"
         aria-describedby="report-modal-description"
@@ -194,11 +195,11 @@ function ReportButton({ type, post_id = null, comment_id = null }) {
       >
         <Fade in={open}>
           <form className={classes.paper}>
-            <h2 className="report__header">Report {type}</h2>
-            <p className="report__fields">Report this item to help moderation team to identity items that require attention.</p>
+            <h2 className="report__header">Báo cáo {type === 'Post' ? 'Bài' : 'Bình luận' }</h2>
+            <p className="report__fields">Báo cáo để admin xử lý bài viết có nội dung không phù hợp</p>
             <br/>
             <div className="report__fields">
-              <label>Reason: <span>&#42;</span></label> <br />
+              <label>Lý do: <span>&#42;</span></label> <br />
               <FormControl>
                 <StyledSelect onChange={handleSelect} value={values.reason}>
                   {
@@ -210,14 +211,14 @@ function ReportButton({ type, post_id = null, comment_id = null }) {
             </div>
             <br />
             <div className="report__fields">
-              <label htmlFor="description">Description: (Optional)</label> <br />
+              <label htmlFor="description">Mô tả: (Tùy ý)</label> <br />
               <TextareaAutosize
                 id="description"
                 name="description"
                 className={classes.textArea}
                 rowsMin={4}
                 rowsMax={4}
-                placeholder="Enter problem description..."
+                placeholder="Điền mô tả của bạn..."
                 onChange={handleDescription}
               />
             </div>
@@ -228,16 +229,16 @@ function ReportButton({ type, post_id = null, comment_id = null }) {
                 color="primary" 
                 onClick={handleSubmit}
                 size='small'>
-                  Submit
+                  Gửi
               </Button>
               <Button 
                 className={classes.button} 
                 variant="contained" 
                 onClick={handleClose}
                 size='small'>
-                  Cancel
+                  Hủy
               </Button>
-              { isSubmitting && (<p className='report__loading-message'>Creating the report...</p>) }
+              { isSubmitting && (<p className='report__loading-message'>Đang gửi báo cáo...</p>) }
               { errors.submit && <p className="report__form-error report__submit-error">{errors.submit}</p> }
             </div>
           </form>
@@ -254,5 +255,16 @@ function ReportButton({ type, post_id = null, comment_id = null }) {
     </>
   );
 }
+
+ReportButton.defaultProps = {
+  post_id: null,
+  comment_id: null
+};
+
+ReportButton.propTypes = {
+  type: PropTypes.oneOf(['Post', 'Comment']),
+  post_id: PropTypes.number,
+  comment_id: PropTypes.number
+};
 
 export default ReportButton;

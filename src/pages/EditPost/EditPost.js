@@ -106,7 +106,7 @@ function EditPost() {
         if (post.author !== user[config.claimNamespace+'username']) {
           setErrors(prevErrors => ({
             ...prevErrors,
-            forbidden: 'Error: User has no permission to edit the post'
+            forbidden: 'Lỗi: Bạn không được phép cchi3nh sửa bài viết'
           }));
           setIsLoading(false);
           return;
@@ -133,12 +133,12 @@ function EditPost() {
         if (error.response && error.response.status === 404) {
           setErrors(prevErrors => ({
             ...prevErrors,
-            notfound: 'Error: Post is not found'
+            notfound: 'Lỗi: Bài viết không tồn tại'
           }));
         } else {
           setErrors(prevErrors => ({
             ...prevErrors,
-            post: 'Error: Unable to get post'
+            post: 'Lỗi: Không tải được bài viết'
           }));
         }
         setIsLoading(false);
@@ -239,16 +239,16 @@ function EditPost() {
       setIsSubmitting(false);
       setErrors(prevErrors => ({
         ...prevErrors,
-        submit: "Unable to update the post. Try again!"
+        submit: "Không cập nhật được bài viết. Thử lại!"
       }));
     }
   };
 
   const renderForm = () => (
     <form className='deal'>
-      <h2 className="deal__header">Update Post</h2>
+      <h2 className="deal__header">Cập nhật bài viết</h2>
       <div className="deal__fields">
-        <label htmlFor="title">Title <span>&#42;</span></label> <br />
+        <label htmlFor="title">Tiêu đề <span>&#42;</span></label> <br />
         <TextField 
           id="title" 
           name="title" 
@@ -270,7 +270,7 @@ function EditPost() {
         <TextField 
           id="url"
           name="url"
-          placeholder="Link to the product e.g https://ebay.com.au"
+          placeholder="Link đến sản phẩm e.g https://ebay.com.au"
           value={values.url}
           onChange={handleChange} 
           className={classes.textField}
@@ -284,7 +284,7 @@ function EditPost() {
       </div>
 
       <div className="deal__fields">
-        <label htmlFor="image">Image</label> <br />
+        <label htmlFor="image">Ảnh</label> <br />
         <TextField 
           id="image"
           name="image"
@@ -302,11 +302,11 @@ function EditPost() {
       </div>
 
       <div className="deal__fields">
-        <label htmlFor="coupon">Coupon Code</label> <br />
+        <label htmlFor="coupon">Mã giảm giá</label> <br />
         <TextField 
           id="coupon"
           name="coupon"
-          placeholder="Enter coupon..."
+          placeholder="Điền mã giảm giá..."
           value={values.coupon}
           onChange={handleChange} 
           className={classes.textField}
@@ -319,7 +319,7 @@ function EditPost() {
       </div>
 
       <div className="deal__fields">
-        <label htmlFor="start">Start <span>&#42;</span></label> <br />
+        <label htmlFor="start">Ngày bắt đầu <span>&#42;</span></label> <br />
         <TextField
           id="start"
           name="start"
@@ -341,7 +341,7 @@ function EditPost() {
       </div>
       
       <div className="deal__fields">
-        <label htmlFor="expiry">Expiry <span>&#42;</span></label> <br />
+        <label htmlFor="expiry">Ngày kết thúc <span>&#42;</span></label> <br />
         <TextField
           id="expiry"
           name="end"
@@ -363,7 +363,7 @@ function EditPost() {
       </div>
       
       <div className="deal__fields">
-        <label>Categories <span>&#42;</span></label> <br />
+        <label>Hạng mục <span>&#42;</span></label> <br />
         <FormControl>
           <StyledSelect 
             value={values.category}
@@ -378,7 +378,7 @@ function EditPost() {
       </div>
       
       <div className="deal__fields">
-        <label htmlFor="description">Description <span>&#42;</span></label> <br />
+        <label htmlFor="description">Mô tả <span>&#42;</span></label> <br />
         <TextareaAutosize
           id="description"
           name="description"
@@ -386,7 +386,7 @@ function EditPost() {
           className={classes.textArea}
           rowsMin={6}
           rowsMax={6}
-          placeholder="Enter your deal description..."
+          placeholder="Viết mô tả..."
           onChange={handleChange}
         />
         { errors.description && <p className="deal__form-error">{errors.description}</p> }
@@ -399,9 +399,9 @@ function EditPost() {
           color="primary" 
           onClick={handleSubmit}
           size='small'>
-            Update
+            Cập nhật
         </Button>
-        { isSubmitting && (<p className='deal__loading-message'>Updating the post ...</p>) }
+        { isSubmitting && (<p className='deal__loading-message'>Cập nhật bài viết ...</p>) }
         { errors.submit && <p className="deal__form-error deal__submit-error">{errors.submit}</p> }
       </div>
     </form>

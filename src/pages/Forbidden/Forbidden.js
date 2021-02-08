@@ -5,7 +5,7 @@ export default function Forbidden() {
   return (
     <div className='forbidden'>
       <h2>403</h2>
-      <p>Sorry, you cannot access this page</p>
+      <p>Xin lỗi, bạn không được phép xem trang này</p>
     </div>
   );
 }

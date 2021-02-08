@@ -61,7 +61,7 @@ function UserProfile() {
         setIsLoadingPosts(false);
         setErrors(prevErrors => ({
           ...prevErrors,
-          posts: 'Error: Unable to get posts'
+          posts: 'Lỗi: Không thể tải bài viết'
         }));
       }
     };
@@ -85,7 +85,7 @@ function UserProfile() {
         setIsLoadingPosts(false);
         setErrors(prevErrors => ({
           ...prevErrors,
-          comments: 'Error: Unable to get posts commented by the user'
+          comments: 'Lỗi: Không thể tải bài viết'
         }));
       }
     };
@@ -108,12 +108,12 @@ function UserProfile() {
         if (error.response && error.response.status === 404) {
           setErrors(prevErrors => ({
             ...prevErrors,
-            notfound: 'Error: User does not exist'
+            notfound: 'Lỗi: Người dùng không tồn tại'
           }));
         } else {
           setErrors(prevErrors => ({
             ...prevErrors,
-            user: 'Error: Unable to get user information'
+            user: 'Lỗi: Không thể tải thông tin người dùng'
           }));
         }
         setIsLoadingUser(false);
@@ -139,7 +139,7 @@ function UserProfile() {
 
   return (
     <div className='profile'>
-      <h2 className='profile__title'>User Profile</h2>
+      <h2 className='profile__title'>Thông tin người dùng</h2>
       {
         isLoadingUser ? 
           <Loading size='medium' /> : (
@@ -150,7 +150,7 @@ function UserProfile() {
               <table className='profile__userinfo'>
                 <tbody>
                   <tr>
-                    <td align='left' className='profile__label'>Username</td>
+                    <td align='left' className='profile__label'>Tên tài khoản</td>
                     <td align='left'>{userInfo.username}</td>
                   </tr>
                   <tr>
@@ -158,7 +158,7 @@ function UserProfile() {
                     <td align='left'>{userInfo.email}</td>
                   </tr>
                   <tr>
-                    <td align='left' className='profile__label'>Member Since</td>
+                    <td align='left' className='profile__label'>Ngày đăng ký</td>
                     <td align='left'>{moment.tz(userInfo.created_time, config.localTimezone).format('YYYY/MM/DD')}</td>
                   </tr>
                 </tbody>
@@ -167,8 +167,8 @@ function UserProfile() {
           )
       }
       <Tab value={selectedTab} onChange={handleSelectTab}>
-        <TabItem value="Posts" label="Posts" />
-        <TabItem value="Comments" label="Commented On" />
+        <TabItem value="Posts" label="Bài viết" />
+        <TabItem value="Comments" label="Bình luận" />
       </Tab>
       <div className='profile__items'>
         {isLoadingPosts ?

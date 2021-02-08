@@ -147,36 +147,36 @@ function Header() {
               <Button 
                 className={classes.button}
                 onClick={() => history.push('/posts/submit')}>
-                Add Deal
+                Tạo Bài
               </Button>
               <Button 
                 className={classes.button} 
                 onClick={() => history.push(`/users/${user[config.claimNamespace+'username']}`)}>
-                  My Account
+                  Tài Khoản
               </Button>
               <Button 
                 className={classes.button} 
                 color="primary" 
                 onClick={() => logout({returnTo: window.location.origin})}>
-                Log Out
+                Đăng Xuất
               </Button>
             </>
           ) :
           <Button className={classes.button} color="primary" onClick={() => loginWithPopup()}>
-            Log In
+            Đăng Nhập
           </Button> }
 
         <form className="header__filter" onSubmit={handleSubmit}>
           <FormControl size="small" variant="filled" className={classes.formControl}>
-            <InputLabel style={{display: shouldDisplayCategoryLabel ? 'none' : 'block'}}>Categories</InputLabel>
+            <InputLabel style={{display: shouldDisplayCategoryLabel ? 'none' : 'block'}}>Hạng mục</InputLabel>
             <StyledSelect value={selectedCategory} onChange={handleCategory} label="Category">
-              <StyledMenuItem value="All">All</StyledMenuItem>
+              <StyledMenuItem value="All">Tất cả</StyledMenuItem>
               {categories.map((category, index) => 
                 <StyledMenuItem key={index} value={category}>{category}</StyledMenuItem>)}
             </StyledSelect>
           </FormControl>
           <div className="search">
-            <input type="text" value={search} placeholder="I'm looking for..." onChange={handleSearch} />
+            <input type="text" value={search} placeholder="Tìm kiếm..." onChange={handleSearch} />
             <SearchIcon color="disabled" className={classes.searchIcon}/>
           </div>
           <Input 

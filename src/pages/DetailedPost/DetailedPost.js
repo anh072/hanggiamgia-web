@@ -54,7 +54,7 @@ export default function DetailedPost() {
         setIsLoadingComments(false);
         setErrors(prevErrors => ({
           ...prevErrors,
-          comments: 'Unable to get comments'
+          comments: 'Lỗi: Không tải được bình luận'
         }));
       }
     };
@@ -81,12 +81,12 @@ export default function DetailedPost() {
         if (error.response && error.response.status === 404) {
           setErrors(prevErrors => ({
             ...prevErrors,
-            notfound: 'Error: Post does not exists'
+            notfound: 'Lỗi: Bài viết không tồn tại'
           }));
         } else {
           setErrors(prevErrors => ({
             ...prevErrors,
-            post: 'Error: Unable to get post'
+            post: 'Lỗi: Không tải được bài viết'
           }));
         }
       }
@@ -114,7 +114,7 @@ export default function DetailedPost() {
       setOffset(offset + 1);
     } catch (error) {
       console.log('error', error);
-      alert('Error: Unable to submit your comment');
+      alert('Lỗi: Không thể gửi bình luận của bạn');
     }
   };
 
@@ -136,12 +136,12 @@ export default function DetailedPost() {
     } catch (error) {
       console.log('error', error);
       setIsLoadingExtraComments(false);
-      alert('Error: Unable to load more comments');
+      alert('Lỗi: Không thể tải thêm bình luận');
     }
   };
 
   const handleUpVote = async (id) => {
-    if (!isAuthenticated) alert("You must be logged in to vote");
+    if (!isAuthenticated) alert("Bạn phải đăng nhập để bỏ phiếu");
     try {
       const accessToken = await getAccessTokenSilently({ audience: config.auth0ApiAudience });
       await axios.put(
@@ -163,13 +163,13 @@ export default function DetailedPost() {
       if (error.response && error.response.status === 400) {
         alert(error.response.data.message);
       } else {
-        alert("Unexpected error has occured");
+        alert("Server đang bị lỗi");
       }
     }
   }
 
   const handleDownVote = async (id) => {
-    if (!isAuthenticated) alert("You must be logged in to vote");
+    if (!isAuthenticated) alert("Bạn phải đăng nhập để bỏ phiếu");
     try {
       const accessToken = await getAccessTokenSilently({ audience: config.auth0ApiAudience });
       await axios.put(
@@ -191,7 +191,7 @@ export default function DetailedPost() {
       if (error.response && error.response.status === 400) {
         alert(error.response.data.message);
       } else {
-        alert("Unexpected error has occured");
+        alert("Server đang bị lỗi");
       }
     }
   }
@@ -208,7 +208,7 @@ export default function DetailedPost() {
     } catch (error){
       console.log('error', error);
       setOpen(false);
-      alert('Error: Unable to delete your post');
+      alert('Lỗi: Không thể xóa bài viết');
     }
   };
   
@@ -226,7 +226,7 @@ export default function DetailedPost() {
       setComments([...comments]);
     } catch(error) {
       console.log('error', error);
-      alert('Error: Unable to update the comment');
+      alert('Lỗi: Không thể cập nhật bình luận');
     }
   };
 
@@ -242,7 +242,7 @@ export default function DetailedPost() {
       setComments([...newComments]);
     } catch(error) {
       console.log('error', error);
-      alert('Error: Unable to delete the comment');
+      alert('Lỗi: Không thể xóa bình luận');
     }
   };
 
@@ -274,7 +274,7 @@ export default function DetailedPost() {
           )
       }
       
-      <h2 className='detailed-post__comment-header'>Comments</h2>
+      <h2 className='detailed-post__comment-header'>Bình luận</h2>
       {
         isLoadingComments ? 
           <Loading size='medium' /> :
@@ -299,7 +299,7 @@ export default function DetailedPost() {
               {
                 offset < count && (
                   <div className="comment-loader detailed-post__load">
-                    <div className="comment-loader__button comment-loader_text" onClick={loadComments}>View more comments</div>
+                    <div className="comment-loader__button comment-loader_text" onClick={loadComments}>Xem thêm bình luận</div>
                     <div className="comment-loader_text">{offset}/{count}</div>
                   </div>
                 )
@@ -314,13 +314,13 @@ export default function DetailedPost() {
           open={open}
           onClose={() => setOpen(false)}
         >
-          <DialogTitle>Are you sure you want to delete?</DialogTitle>
+          <DialogTitle>Bạn thực sự muốn xóa?</DialogTitle>
           <DialogActions>
             <Button onClick={() => setOpen(false)} color="primary">
-              Cancel
+              Hủy
             </Button>
             <Button onClick={handlePostDelete} color="secondary" autoFocus>
-              Delete
+              Xóa
             </Button>
           </DialogActions>
         </Dialog>

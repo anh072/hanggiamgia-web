@@ -132,7 +132,7 @@ function PostVotes() {
         console.log('error', error);
         setErrors(prevErrors => ({
           ...prevErrors,
-          votes: 'Error: Unable to get votes'
+          votes: 'Lỗi: Không thể tải phiếu'
         }));
         setIsLoadingVotes(false);
       }
@@ -158,7 +158,7 @@ function PostVotes() {
         console.log('error', error);
         setErrors(prevErrors => ({
           ...prevErrors,
-          post: 'Error: Unable to get post'
+          post: 'Lỗi: Không thể tải bài viết'
         }));
         setIsLoadingPost(false);
       }
@@ -179,7 +179,7 @@ function PostVotes() {
       setVotes([...newVotes]);
     } catch(error) {
       console.log('error', error);
-      alert('Error: Unable to revoke vote');
+      alert('Lỗi: Không thể xóa phiếu');
     }
   };
 
@@ -199,9 +199,9 @@ function PostVotes() {
                   <Table className={classes.table} aria-label="customized table">
                     <TableHead>
                       <TableRow>
-                        <StyledTableCell align='left'>User</StyledTableCell>
-                        <StyledTableCell align="left">Vote</StyledTableCell>
-                        <StyledTableCell align="left">Voted At</StyledTableCell>
+                        <StyledTableCell align='left'>Người</StyledTableCell>
+                        <StyledTableCell align="left">Phiếu</StyledTableCell>
+                        <StyledTableCell align="left">Thời gian</StyledTableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
