@@ -212,8 +212,8 @@ function PostItem({ post, detailed, handleUpVote, handleDownVote, handlePostDele
           { 
             isAuthenticated && user[config.claimNamespace+'username'] === post.author && detailed && (
               <>
-                <button className='post__personal-buttons' onClick={() => history.push(`/posts/${post.id}/edit`)}>edit</button>
-                <button className='post__personal-buttons' onClick={() => handlePostDelete(true)}>delete</button>
+                <button className='post__personal-buttons' onClick={() => history.push(`/posts/${post.id}/edit`)}>sửa</button>
+                <button className='post__personal-buttons' onClick={() => handlePostDelete(true)}>xóa</button>
               </>
           )}
         </div>
