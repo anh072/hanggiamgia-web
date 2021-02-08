@@ -65,7 +65,7 @@ Resources:
           - HEAD
           - OPTIONS
           Compress: true
-          DefaultTTL: 3600 # deprecated use cache policy
+          DefaultTTL: 300 # deprecated use cache policy
           ForwardedValues: # deprecated
             Cookies:
               Forward: none
