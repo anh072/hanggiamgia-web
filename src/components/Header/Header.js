@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import FormControl from '@material-ui/core/FormControl';
@@ -7,11 +7,11 @@ import InputLabel from '@material-ui/core/InputLabel';
 import Input from '@material-ui/core/Input';
 import MenuItem from '@material-ui/core/MenuItem';
 import SearchIcon from '@material-ui/icons/Search';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
-import { useMediaQuery } from 'react-responsive';
 import { Button } from '@material-ui/core';
+import { useMediaQuery } from 'react-responsive';
 import { useDataProvider } from '../../GlobalState';
-import useOutsideClick from './useOutsideClick';
 import logo from './logo192.png';
 import config from '../../lib/config';
 import './Header.css';
@@ -108,12 +108,13 @@ function Header() {
   const [ selectedCategory, setSelectedCategory ] = useState('All');
   const [ search, setSearch ] = useState('');
   const [ openBurger, setOpenBurger ] = useState(false);
+  const [ openSelect, setOpenSelect ] = useState(false);
+  const isScreenSmall = useMediaQuery({ query: `(max-width: 950px)` });
 
-  const headerRef = useRef();
-
-  useOutsideClick(headerRef, () => {
-    if (openBurger) setOpenBurger(false);
-  });
+  useEffect(() => {
+    setOpenSelect(false);
+    setOpenBurger(false);
+  }, [isScreenSmall])
 
   const handleSearch = (e) => {
     setSearch(e.target.value);
@@ -137,86 +138,98 @@ function Header() {
     }
   };
 
-  const handleOpenBurger = () => {
-    console.log('burger is clicked');
+  const handleOpenBurger = (e) => {
     setOpenBurger(prev => !prev);
   };
 
-  return (
-    <header className="header" ref={headerRef}>
-      <Link to="/">
-        <img className="logo" alt="gia re logo" src={logo} />
-      </Link>
-      
-      <div className={`header-nav ${openBurger ? 'header-nav--active' : ''}`}>
-        {isAuthenticated ? 
-          (
-            <>
-              <Button 
-                className={classes.button}
-                onClick={() => {
-                  setOpenBurger(false);
-                  history.push('/posts/submit');
-                }}>
-                Tạo Bài
-              </Button>
-              <Button 
-                className={classes.button} 
-                onClick={() => {
-                  setOpenBurger(false);
-                  history.push(`/users/${user[config.claimNamespace+'username']}`);
-                }}>
-                  Tài Khoản
-              </Button>
-              <Button 
-                className={classes.button} 
-                color="primary" 
-                onClick={() => {
-                  setOpenBurger(false);
-                  logout({returnTo: window.location.origin});
-                }}>
-                Đăng Xuất
-              </Button>
-            </>
-          ) :
-          <Button className={classes.button} color="primary" onClick={() => loginWithPopup()}>
-            Đăng Nhập
-          </Button> }
+  const handleClickAway = () => {
+    setOpenSelect(false);
+    if (openBurger) setOpenBurger(false);
+  };
 
-        <form className="header__filter" onSubmit={handleSubmit}>
-          <FormControl size="small" variant="filled" className={classes.formControl}>
-            <InputLabel style={{display: shouldDisplayCategoryLabel ? 'none' : 'block'}}>Hạng mục</InputLabel>
-            <StyledSelect value={selectedCategory} onChange={handleCategory} label="Category">
-              <StyledMenuItem value="All">Tất cả</StyledMenuItem>
-              {categories.map((category, index) => 
-                <StyledMenuItem key={index} value={category}>{category}</StyledMenuItem>)}
-            </StyledSelect>
-          </FormControl>
-          <div className="search">
-            <input type="text" value={search} placeholder="Tìm kiếm..." onChange={handleSearch} />
-            <SearchIcon color="disabled" className={classes.searchIcon}/>
-          </div>
-          <Input 
-            type='submit' 
-            value='Tìm kiếm' 
-            color='primary' 
-            disableUnderline={true}
-            className={classes.input} />
-        </form>
-      </div>
-      
-      <div 
-        className='header-burger' onClick={handleOpenBurger}>
-        <div 
-          className={`header-burger__line-one ${openBurger ? 'header-burger__line-one--active' : ''} header-burger__layer`}>
+  return (
+    <ClickAwayListener onClickAway={handleClickAway}>
+      <header className="header">
+        <Link to="/">
+          <img className="logo" alt="gia re logo" src={logo} />
+        </Link>
+        
+        <div className={`header-nav ${openBurger ? 'header-nav--active' : ''}`}>
+          {isAuthenticated ? 
+            (
+              <>
+                <Button 
+                  className={classes.button}
+                  onClick={() => {
+                    setOpenBurger(false);
+                    history.push('/posts/submit');
+                  }}>
+                  Tạo Bài
+                </Button>
+                <Button 
+                  className={classes.button} 
+                  onClick={() => {
+                    setOpenBurger(false);
+                    history.push(`/users/${user[config.claimNamespace+'username']}`);
+                  }}>
+                    Tài Khoản
+                </Button>
+                <Button 
+                  className={classes.button} 
+                  color="primary" 
+                  onClick={() => {
+                    setOpenBurger(false);
+                    logout({returnTo: window.location.origin});
+                  }}>
+                  Đăng Xuất
+                </Button>
+              </>
+            ) :
+            <Button className={classes.button} color="primary" onClick={() => loginWithPopup()}>
+              Đăng Nhập
+            </Button> }
+
+          <form className="header__filter" onSubmit={handleSubmit}>
+            <FormControl size="small" variant="filled" className={classes.formControl}>
+              <InputLabel style={{display: shouldDisplayCategoryLabel ? 'none' : 'block'}}>Hạng mục</InputLabel>
+              <StyledSelect
+                value={selectedCategory}
+                open={openSelect}
+                onOpen={() => setOpenSelect(true)}
+                onClose={() => setOpenSelect(false)}
+                onChange={handleCategory} 
+                label="Category" 
+                MenuProps={{ 
+                  keepMounted: true,
+                  disablePortal: true,
+                  style: { width: "200px", height: "1000px" }
+                }}>
+                <StyledMenuItem value="All">Tất cả</StyledMenuItem>
+                {categories.map((category, index) => 
+                  <StyledMenuItem key={index} value={category}>{category}</StyledMenuItem>)}
+              </StyledSelect>
+            </FormControl>
+            <div className="search">
+              <input type="text" value={search} placeholder="Tìm kiếm..." onChange={handleSearch} />
+              <SearchIcon color="disabled" className={classes.searchIcon}/>
+            </div>
+            <Input 
+              type='submit' 
+              value='Tìm kiếm' 
+              color='primary' 
+              disableUnderline={true}
+              className={classes.input} />
+          </form>
         </div>
-        <div className={`header-burger__line-two ${openBurger ? 'header-burger__line-two--active' : ''} header-burger__layer`}>
+        
+        <div className='header-burger' onClick={handleOpenBurger}>
+          <div className={`header-burger__line-one ${openBurger ? 'header-burger__line-one--active' : ''} header-burger__layer`}></div>
+          <div className={`header-burger__line-two ${openBurger ? 'header-burger__line-two--active' : ''} header-burger__layer`}></div>
+          <div className={`header-burger__line-three ${openBurger ? 'header-burger__line-three--active' : ''} header-burger__layer`}></div>
         </div>
-        <div className={`header-burger__line-three ${openBurger ? 'header-burger__line-three--active' : ''} header-burger__layer`}>
-        </div>
-      </div>
-      
-    </header>
+        
+      </header>
+    </ClickAwayListener>
   );
 }
 

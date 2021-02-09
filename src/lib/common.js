@@ -44,7 +44,6 @@ export function validatePostForm(values) {
 
 export function isWithinAWeek(moment_date) {
   const now = moment();
-  console.log(now);
   const diff = now.diff(moment_date, 'days', true);
   return diff <= 7;
 }

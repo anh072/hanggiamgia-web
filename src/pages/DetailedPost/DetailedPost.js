@@ -14,7 +14,6 @@ import Loading from '../../components/Loading/Loading';
 import NotFound from '../NotFound/NotFound';
 import './DetailedPost.css';
 
-
 export default function DetailedPost() {
   const apiBaseUrl = config.apiBaseUrl;
 

@@ -180,6 +180,7 @@
   font-weight: bold;
   margin-right: 10px;
   font-style: italic;
+  background-color: inherit;
 }
 
 .post__personal-buttons:hover {

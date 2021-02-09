@@ -75,7 +75,7 @@
     align-items: center;
     justify-content: center;
     z-index: 1;
-    transform: translateX(100%);
+    display: none;
   }
 
   .header__filter {
@@ -110,7 +110,7 @@
 }
 
 .header-nav--active {
-  transform: translateX(0%);
+  display: flex;
 }
 
 .header-burger__line-one--active {
