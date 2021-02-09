@@ -58,6 +58,7 @@
   font-size: 0.8rem;
   align-items: flex-end;
   flex-wrap: wrap;
+  margin-top: 5px;
 }
 
 .post__subheader a {

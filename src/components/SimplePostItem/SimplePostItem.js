@@ -6,7 +6,6 @@ import DateRangeIcon from '@material-ui/icons/DateRange';
 import moment from 'moment';
 import { makeStyles } from '@material-ui/core/styles';
 import { Link } from 'react-router-dom';
-import config from '../../lib/config';
 import './SimplePostItem.css';
 
 const useStyles = makeStyles({
@@ -65,7 +64,7 @@ function SimplePostItem({ post }) {
         <ChatBubbleIcon className={classes.commentIcon} />
         <div>{post.comment_count}</div>
         <DateRangeIcon className={classes.dateRangeIcon}/>
-        <div>{moment.tz(post.start_date, config.localTimezone).format('YYYY/MM/DD')}</div>
+        <div>{moment(post.start_date).format('YYYY/MM/DD')}</div>
         <LabelIcon className={classes.categoryIcon} />
         <div>{post.category}</div>
       </div>

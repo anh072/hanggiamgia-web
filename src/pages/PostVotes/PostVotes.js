@@ -15,6 +15,7 @@ import moment from 'moment';
 import { useAuth0 } from '@auth0/auth0-react';
 import Loading from '../../components/Loading/Loading';
 import config from '../../lib/config';
+import { isWithinAWeek } from '../../lib/common';
 import './PostVotes.css';
 
 
@@ -223,7 +224,13 @@ function PostVotes() {
                             }
                             </div>
                           </StyledTableCell>
-                          <StyledTableCell align="left">{moment.tz(vote.created_time, config.localTimezone).format("ddd, MMM DD YYYY HH:MM:ss")}</StyledTableCell>
+                          <StyledTableCell align="left">
+                            {
+                              isWithinAWeek(moment(vote.created_time)) ? 
+                                moment(vote.created_time).fromNow() :
+                                moment(vote.created_time).format("dddd, DD/MM/YYYY HH:mm:ss")
+                            }
+                          </StyledTableCell>
                         </StyledTableRow>
                       ))}
                     </TableBody>

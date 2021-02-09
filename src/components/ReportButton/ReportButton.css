@@ -10,6 +10,7 @@
 .report__fields {
   margin-block-end: 0;
   margin-left: 20px;
+  margin-right: 20px;
 }
 
 .report__loading-message {
@@ -35,6 +36,7 @@
   border: none;
   font-weight: bold;
   font-style: italic;
+  background-color: inherit;
 }
 
 .report button:hover {

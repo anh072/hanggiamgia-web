@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive';
 import PropTypes from 'prop-types';
 import ReportButton from '../ReportButton/ReportButton';
-import config from '../../lib/config';
+import { isWithinAWeek } from '../../lib/common';
 import './Comment.css';
 
 const useStyles = makeStyles({
@@ -113,7 +113,13 @@ function Comment({ comment, editable, onDelete, onUpdate }) {
                 <Link to={{pathname: `/users/${comment.author}`}}>
                   <div className="comment__author">{comment.author}</div>
                 </Link>
-                <div className="comment__date">{moment.tz(comment.created_time, config.localTimezone).format('YYYY/MM/DD HH:MM')}</div>
+                <div className="comment__date">
+                  {
+                    isWithinAWeek(moment(comment.created_time)) ?
+                      moment(comment.created_time).fromNow() :
+                      moment(comment.created_time).format('YYYY/MM/DD HH:mm')
+                  }
+                </div>
               </div>
               <pre>{comment.text}</pre>
             </div>

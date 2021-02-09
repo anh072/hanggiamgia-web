@@ -148,9 +148,11 @@ function NewDeal() {
       // upload image
       const accessToken = await getAccessTokenSilently({ audience: config.auth0ApiAudience });
       if (values.image) {
+        const bodyFormData = new FormData();
+        bodyFormData.append('image', values.image); 
         const res = await axios.post(
           `${apiBaseUrl}/users/${user[config.claimNamespace+'username']}/images/upload`,
-          values.image,
+          bodyFormData,
           { headers: { 
             'Content-Type': 'multipart/form-data', 
             'Authorization': `Bearer ${accessToken}`,
@@ -233,7 +235,6 @@ function NewDeal() {
           id="image"
           name="image"
           type="file" 
-          value={values.image}
           onChange={handleChange} 
           className={classes.textField}
           InputProps={{

@@ -16,6 +16,7 @@ import psl from 'psl';
 import PropTypes from 'prop-types';
 import ReportButton from '../ReportButton/ReportButton';
 import config from '../../lib/config';
+import { isWithinAWeek } from '../../lib/common';
 import './PostItem.css';
 
 const getDomainName = (url) => {
@@ -171,7 +172,13 @@ function PostItem({ post, detailed, handleUpVote, handleDownVote, handlePostDele
           <Link to={{pathname: `/users/${post.author}`}}>
             <div className="post__author">{post.author}</div>
           </Link>
-          <div>{moment(post.created_time).format('DD/MM/YYYY HH:MM')}</div>
+          <div>
+            {
+              isWithinAWeek(moment(post.created_time)) ? 
+                moment(post.created_time).fromNow() :
+                moment(post.created_time).format('DD/MM/YYYY HH:mm')
+            }
+          </div>
           { post.product_url?.length > 0 &&
             (
               <>
@@ -206,7 +213,7 @@ function PostItem({ post, detailed, handleUpVote, handleDownVote, handlePostDele
           <div>{post.category}</div>
           <DateRangeIcon className={classes.dateRangeIcon}/>
           <div>
-            {moment.tz(post.start_date, config.localTimezone).format('DD/MM')} - {moment.tz(post.end_date, config.localTimezone).format('DD/MM/YYYY')}
+            {moment(post.start_date).format('DD/MM')} - {moment(post.end_date).format('DD/MM/YYYY')}
           </div>
           <ReportButton type="Post" post_id={post.id} />
           { 

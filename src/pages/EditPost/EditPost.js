@@ -122,8 +122,8 @@ function EditPost() {
           coupon: post.coupon_code || '',
           title: post.title,
           url: post.product_url || '',
-          start: moment.tz(post.start_date, config.localTimezone).format('YYYY-MM-DD'),
-          end: moment.tz(post.end_date, config.localTimezone).format('YYYY-MM-DD'),
+          start: moment(post.start_date).format('YYYY-MM-DD'),
+          end: moment(post.end_date).format('YYYY-MM-DD'),
           image: '',
           description: post.description
         });
@@ -195,9 +195,11 @@ function EditPost() {
       // upload image
       const accessToken = await getAccessTokenSilently({ audience: config.auth0ApiAudience });
       if (values.image) {
+        const bodyFormData = new FormData();
+        bodyFormData.append('image', values.image); 
         const res = await axios.post(
           `${apiBaseUrl}/users/${user[config.claimNamespace+'username']}/images/upload`,
-          values.image,
+          bodyFormData,
           { headers: { 
             'Content-Type': 'multipart/form-data', 
             'Authorization': `Bearer ${accessToken}`,
@@ -227,8 +229,8 @@ function EditPost() {
         coupon: newPost.coupon_code || '',
         title: newPost.title,
         url: newPost.product_url || '',
-        start: moment.tz(newPost.start_date, config.localTimezone).format('YYYY-MM-DD'),
-        end: moment.tz(newPost.end_date, config.localTimezone).format('YYYY-MM-DD'),
+        start: moment(newPost.start_date).format('YYYY-MM-DD'),
+        end: moment(newPost.end_date).format('YYYY-MM-DD'),
         image: '',
         description: newPost.description
       });
@@ -289,7 +291,6 @@ function EditPost() {
           id="image"
           name="image"
           type="file" 
-          value={values.image}
           onChange={handleChange} 
           className={classes.textField}
           InputProps={{

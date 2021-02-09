@@ -1,4 +1,5 @@
 import { useLocation } from 'react-router-dom';
+import moment from 'moment';
 
 export const calculatePages = (limit, count) => {
   const remainder = count % limit;
@@ -40,3 +41,10 @@ export function validatePostForm(values) {
   if (values.description.length < 20) errors.description = "Description must be at least 20 characters";
   return errors;
 };
+
+export function isWithinAWeek(moment_date) {
+  const now = moment();
+  console.log(now);
+  const diff = now.diff(moment_date, 'days', true);
+  return diff <= 7;
+}

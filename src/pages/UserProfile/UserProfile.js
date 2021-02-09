@@ -165,7 +165,7 @@ function UserProfile() {
                   }
                   <tr>
                     <td align='left' className='profile__label'>Ngày đăng ký</td>
-                    <td align='left'>{moment.tz(userInfo.created_time, config.localTimezone).format('YYYY/MM/DD')}</td>
+                    <td align='left'>{moment(userInfo.created_time).format('YYYY/MM/DD')}</td>
                   </tr>
                 </tbody>
               </table>

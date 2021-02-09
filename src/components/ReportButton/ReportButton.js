@@ -6,7 +6,6 @@ import axios from 'axios';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useDataProvider } from '../../GlobalState';
 import './ReportButton.css';
-
 import config from '../../lib/config';
 
 const useStyles = makeStyles({
@@ -195,7 +194,7 @@ function ReportButton({ type, post_id, comment_id }) {
       >
         <Fade in={open}>
           <form className={classes.paper}>
-            <h2 className="report__header">Báo cáo {type === 'Post' ? 'Bài' : 'Bình luận' }</h2>
+            <h2 className="report__header">Báo cáo {type === 'Post' ? 'bài' : 'bình luận' }</h2>
             <p className="report__fields">Báo cáo để admin xử lý bài viết có nội dung không phù hợp</p>
             <br/>
             <div className="report__fields">
