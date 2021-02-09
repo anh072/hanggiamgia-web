@@ -9,6 +9,7 @@ COMPOSE_RUN_LINT = docker-compose run --rm lint
 COMPOSE_RUN_NPM = docker-compose run --rm npm
 
 S3_BUCKET ?= giare-test-frontend
+SSL_CERT_ARN ?= arn:aws:acm:us-east-1:838080186947:certificate/17f91a87-af18-4c7d-ad93-d89a3c601671
 
 
 lint: dotenv
@@ -54,7 +55,8 @@ _deployInfra: _assumeRole
 		--template-file ./cloudformation/template.yaml \
 		--stack-name "$(SERVICE_NAME)-$(ENV)-frontend" \
 		--capabilities CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND \
-		--no-fail-on-empty-changeset
+		--no-fail-on-empty-changeset \
+		--parameter-overrides SSLCertificateArn=$(SSL_CERT_ARN)
 
 _deployApp: _assumeRole
 	aws s3 cp ./build s3://$(S3_BUCKET) --recursive

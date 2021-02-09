@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import FormControl from '@material-ui/core/FormControl';
@@ -11,6 +11,7 @@ import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { useMediaQuery } from 'react-responsive';
 import { Button } from '@material-ui/core';
 import { useDataProvider } from '../../GlobalState';
+import useOutsideClick from './useOutsideClick';
 import logo from './logo192.png';
 import config from '../../lib/config';
 import './Header.css';
@@ -108,6 +109,12 @@ function Header() {
   const [ search, setSearch ] = useState('');
   const [ openBurger, setOpenBurger ] = useState(false);
 
+  const headerRef = useRef();
+
+  useOutsideClick(headerRef, () => {
+    if (openBurger) setOpenBurger(false);
+  });
+
   const handleSearch = (e) => {
     setSearch(e.target.value);
   }
@@ -122,6 +129,7 @@ function Header() {
       let queryString = `?page=1&term=${search}&category=${selectedCategory}`;
       setSearch('');
       setSelectedCategory('');
+      setOpenBurger(false);
       history.push({
         pathname: '/posts/search',
         search: queryString
@@ -135,7 +143,7 @@ function Header() {
   };
 
   return (
-    <header className="header">
+    <header className="header" ref={headerRef}>
       <Link to="/">
         <img className="logo" alt="gia re logo" src={logo} />
       </Link>
@@ -146,18 +154,27 @@ function Header() {
             <>
               <Button 
                 className={classes.button}
-                onClick={() => history.push('/posts/submit')}>
+                onClick={() => {
+                  setOpenBurger(false);
+                  history.push('/posts/submit');
+                }}>
                 Tạo Bài
               </Button>
               <Button 
                 className={classes.button} 
-                onClick={() => history.push(`/users/${user[config.claimNamespace+'username']}`)}>
+                onClick={() => {
+                  setOpenBurger(false);
+                  history.push(`/users/${user[config.claimNamespace+'username']}`);
+                }}>
                   Tài Khoản
               </Button>
               <Button 
                 className={classes.button} 
                 color="primary" 
-                onClick={() => logout({returnTo: window.location.origin})}>
+                onClick={() => {
+                  setOpenBurger(false);
+                  logout({returnTo: window.location.origin});
+                }}>
                 Đăng Xuất
               </Button>
             </>
