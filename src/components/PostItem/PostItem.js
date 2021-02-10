@@ -140,7 +140,7 @@ function PostItem({ post, detailed, handleUpVote, handleDownVote, handlePostDele
             className={classes.downvote} 
             onClick={() => handleDownVote && handleDownVote(post.id)} />
         </div>
-        <div className='post__vote-count'>{post.votes} votes</div>
+        <div className='post__vote-count'>{post.votes} phiếu</div>
         {
           detailed && post.votes > 0 && 
             (
