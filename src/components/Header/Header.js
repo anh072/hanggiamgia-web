@@ -202,7 +202,7 @@ function Header() {
                 MenuProps={{ 
                   keepMounted: true,
                   disablePortal: true,
-                  style: { width: "200px", height: "1000px" }
+                  style: { width: "200px", height: "400px" }
                 }}>
                 <StyledMenuItem value="All">Tất cả</StyledMenuItem>
                 {categories.map((category, index) => 
