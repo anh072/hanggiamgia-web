@@ -202,8 +202,7 @@ function EditPost() {
           bodyFormData,
           { headers: { 
             'Content-Type': 'multipart/form-data', 
-            'Authorization': `Bearer ${accessToken}`,
-            'username': user[config.claimNamespace+'username'] } },
+            'Authorization': `Bearer ${accessToken}` } },
           { timeout: 20000 }
         );
         const imageUrl = res.data.image_url;
@@ -219,8 +218,7 @@ function EditPost() {
         data, 
         { headers: { 
           'Content-Type': 'application/json', 
-          'Authorization': `Bearer ${accessToken}`,
-          'username': user[config.claimNamespace+'username'] } },
+          'Authorization': `Bearer ${accessToken}` } },
         { timeout: 20000 }
       );
       const newPost = res.data;

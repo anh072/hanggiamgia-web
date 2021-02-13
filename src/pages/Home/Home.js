@@ -72,8 +72,7 @@ export default function Posts() {
         { 
           headers: { 
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${accessToken}`,
-            'username': user[config.claimNamespace+'username']
+            'Authorization': `Bearer ${accessToken}`
           } 
         },
         { timeout: 20000 }
@@ -104,8 +103,7 @@ export default function Posts() {
         { 
           headers: { 
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${accessToken}`,
-            'username': user[config.claimNamespace+'username']
+            'Authorization': `Bearer ${accessToken}`
           } 
         },
         { timeout: 20000 }

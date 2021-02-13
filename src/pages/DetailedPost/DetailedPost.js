@@ -101,8 +101,7 @@ export default function DetailedPost() {
         { text: newComment.trim().replace(/\n+$/, "") },
         { headers: { 
           'Content-Type': 'application/json', 
-          'Authorization': `Bearer ${accessToken}`, 
-          'username': user[config.claimNamespace+'username'] } },
+          'Authorization': `Bearer ${accessToken}` }},
         { timeout: 20000 }
       );
       console.log("submitted comment");
@@ -149,8 +148,7 @@ export default function DetailedPost() {
         { 
           headers: { 
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${accessToken}`,
-            'username': user[config.claimNamespace+'username']
+            'Authorization': `Bearer ${accessToken}`
           } 
         },
         { timeout: 20000 }
@@ -177,8 +175,7 @@ export default function DetailedPost() {
         { 
           headers: { 
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${accessToken}`,
-            'username': user[config.claimNamespace+'username']
+            'Authorization': `Bearer ${accessToken}`
           } 
         },
         { timeout: 20000 }
@@ -200,7 +197,7 @@ export default function DetailedPost() {
       const accessToken = await getAccessTokenSilently({ audience: config.auth0ApiAudience });
       await axios.delete(
         `${apiBaseUrl}/posts/${id}`,
-        { headers: { 'Authorization': `Bearer ${accessToken}`, 'username': user[config.claimNamespace+'username'] } }
+        { headers: { 'Authorization': `Bearer ${accessToken}` } }
       );
       setOpen(false);
       history.push('/');
@@ -217,7 +214,7 @@ export default function DetailedPost() {
       const res = await axios.put(
         `${apiBaseUrl}/posts/${id}/comments/${commentId}`,
         { text: newText },
-        { headers: { 'Authorization': `Bearer ${accessToken}`, 'username': user[config.claimNamespace+'username'] } },
+        { headers: { 'Authorization': `Bearer ${accessToken}` } },
         { timeout: 20000 }
       );
       const currentCommentIndex = comments.findIndex(c => c.id === commentId);
@@ -234,7 +231,7 @@ export default function DetailedPost() {
       const accessToken = await getAccessTokenSilently({ audience: config.auth0ApiAudience });
       await axios.delete(
         `${apiBaseUrl}/posts/${id}/comments/${commentId}`,
-        { headers: { 'Authorization': `Bearer ${accessToken}`, 'username': user[config.claimNamespace+'username'] } },
+        { headers: { 'Authorization': `Bearer ${accessToken}` } },
         { timeout: 20000 }
       );
       const newComments = comments.filter(c => c.id !== commentId);

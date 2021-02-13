@@ -157,8 +157,7 @@ function ReportButton({ type, post_id, comment_id }) {
         { 
           headers: { 
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${accessToken}`,
-            'username': user[config.claimNamespace+'username']
+            'Authorization': `Bearer ${accessToken}`
           } 
         },
         { timeout: 20000 }
