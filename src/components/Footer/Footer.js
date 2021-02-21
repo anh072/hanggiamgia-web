@@ -47,10 +47,10 @@ function Footer() {
       <div className='social-connections footer__connections'>
         <h2 className='footer__header'>Kết Nối</h2>
         <div className='social-connections__container'>
-          <a href='https://www.facebook.com/profile.php?id=100000278872468' >
+          <a href='https://www.facebook.com/giarevn.official' >
               <FacebookIcon className={classes.facebookIcon}/>
           </a>
-          <a href='https://www.instagram.com/anh_nguyen072'>
+          <a href='https://www.instagram.com/giarevn.official/'>
               <InstagramIcon className={classes.instagramIcon}/>
           </a>
           <a href='https://twitter.com/anhnguyen072'>
