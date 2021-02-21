@@ -14,16 +14,6 @@ jobs:
         name: Validate Cloudformation templates
         command: make validate
 
-  deployInfra:
-    machine:
-      image: ubuntu-2004:202010-01
-      docker_layer_caching: true
-    steps:
-    - checkout
-    - run:
-        name: Deploy CDN
-        command: make deployInfra
-
   deployApp:
     machine:
       image: ubuntu-2004:202010-01
@@ -39,9 +29,9 @@ jobs:
         name: Run build
         command: | 
           npm install
-          CI=false npm run build
+          CI=false npm run build-all
     - run:
-        name: Deploy to S3
+        name: Deploy the SPA
         command: make deployApp
 
 workflows:
@@ -49,17 +39,9 @@ workflows:
   build_test_deploy:
     jobs:
     - test
-    - deployInfra:
-        requires:
-        - test
-        filters:
-          branches:
-            only: main
-          tags:
-            ignore: /.*/
     - deployApp:
         requires:
-        - deployInfra
+        - test
         filters:
           branches:
             only: main

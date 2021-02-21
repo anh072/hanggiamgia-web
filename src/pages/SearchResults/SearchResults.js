@@ -27,7 +27,7 @@ function SearchResults() {
   const apiBaseUrl = config.apiBaseUrl
   const classes = useStyles();
 
-  const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
+  const { isAuthenticated, getAccessTokenSilently } = useAuth0();
   const history = useHistory();
   const query = useQuery();
   const category = query.get('category');

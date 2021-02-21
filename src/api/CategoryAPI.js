@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import config from '../lib/config';
 
 export default function CategoryAPI() {
-  const [ categories, setCategories ] = useState([]);
-  const [ error, setError ] = useState(null);
-  const apiBaseUrl = config.apiBaseUrl;
+  const [categories, setCategories] = useState(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const getCategories = async () => {
+      const apiBaseUrl = config.apiBaseUrl;
       try {
         const res = await axios.get(
           `${apiBaseUrl}/categories`,

@@ -6,6 +6,7 @@ import DateRangeIcon from '@material-ui/icons/DateRange';
 import moment from 'moment';
 import { makeStyles } from '@material-ui/core/styles';
 import { Link } from 'react-router-dom';
+import NoImage from '../../images/no-image-available.png';
 import './SimplePostItem.css';
 
 const useStyles = makeStyles({
@@ -44,7 +45,7 @@ function SimplePostItem({ post }) {
         <img 
           className="simple-post__image" 
           alt="" 
-          src={post.image_url?.length > 0 ? post.image_url : '/images/no-image-available.png'} />
+          src={post.image_url?.length > 0 ? post.image_url : NoImage} />
       </div>
       <Link to={{pathname: `/posts/${post.id}`}}>
         <h2 className='simple-post__title'>{post.title}</h2>

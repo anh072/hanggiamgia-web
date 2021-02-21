@@ -8,9 +8,8 @@ COMPOSE_RUN_AWS = docker-compose run --rm aws
 COMPOSE_RUN_LINT = docker-compose run --rm lint
 COMPOSE_RUN_NPM = docker-compose run --rm npm
 
-S3_BUCKET ?= giare-test-frontend
 SSL_CERT_ARN ?= arn:aws:acm:us-east-1:838080186947:certificate/17f91a87-af18-4c7d-ad93-d89a3c601671
-
+LAMBDA_VERSION = 4
 
 lint: dotenv
 	$(COMPOSE_RUN_LINT) yamllint cloudformation/template.yaml
@@ -21,16 +20,16 @@ validate: dotenv
 .PHONY: validate
 
 build: dotenv
-	$(COMPOSE_RUN_NPM) make _build
+	make _build
 .PHONY: build
 
-deployInfra: dotenv
-	$(COMPOSE_RUN_AWS) make _deployInfra
-.PHONY: deployInfra
+deployEdge: dotenv
+	$(COMPOSE_RUN_AWS) make _deployEdge
+.PHONY: deployEdge
 
-deployApp: dotenv
-	$(COMPOSE_RUN_AWS) make _deployApp
-.PHONY: deployApp
+deployCDN: dotenv
+	$(COMPOSE_RUN_AWS) make _deployCDN
+.PHONY: deployCDN
 
 # replaces .env with DOTENV if the variable is specified
 dotenv:
@@ -48,18 +47,27 @@ _validate: _assumeRole
 	aws --region $(APP_REGION) cloudformation validate-template --template-body file://cloudformation/template.yaml; \
 
 _build:
-	cd hangiamgia && npm run build
+	npm run build-all
 
-_deployInfra: _assumeRole
-	aws --region $(APP_REGION) cloudformation deploy \
-		--template-file ./cloudformation/template.yaml \
-		--stack-name "$(SERVICE_NAME)-$(ENV)-frontend" \
-		--capabilities CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND \
+_package: _assumeRole
+	aws cloudformation package --template-file cloudformation/lambdaedge.yaml \
+		--s3-bucket "$(SERVICE_NAME)-$(ENV)-sam-deployments-lambdaedge" \
+		--output-template-file packaged.yaml
+
+_deployEdge: _assumeRole _package
+	aws --region us-east-1 cloudformation deploy \
+		--template-file packaged.yaml \
+		--stack-name "$(SERVICE_NAME)-$(ENV)-lambdaedge" \
+		--capabilities CAPABILITY_NAMED_IAM \
 		--no-fail-on-empty-changeset \
-		--parameter-overrides SSLCertificateArn=$(SSL_CERT_ARN)
 
-_deployApp: _assumeRole
-	aws s3 cp ./build s3://$(S3_BUCKET) --recursive
+_deployCDN: _assumeRole
+	aws --region $(APP_REGION) cloudformation deploy \
+		--template-file cloudformation/template.yaml \
+		--stack-name "$(SERVICE_NAME)-$(ENV)-frontend" \
+		--capabilities CAPABILITY_NAMED_IAM \
+		--no-fail-on-empty-changeset \
+		--parameter-overrides SSLCertificateArn=$(SSL_CERT_ARN) LambdaEdgeArn="arn:aws:lambda:us-east-1:838080186947:function:giare-$(ENV)-ssr-function:$(LAMBDA_VERSION)" 
 
 _assumeRole:
 ifndef AWS_SESSION_TOKEN

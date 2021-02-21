@@ -12,7 +12,7 @@ import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { Button } from '@material-ui/core';
 import { useMediaQuery } from 'react-responsive';
 import { useDataProvider } from '../../GlobalState';
-import logo from './logo192.png';
+import logo from '../../images/logo.png';
 import config from '../../lib/config';
 import './Header.css';
 
@@ -205,7 +205,7 @@ function Header() {
                   style: { width: "200px", height: "400px" }
                 }}>
                 <StyledMenuItem value="All">Tất cả</StyledMenuItem>
-                {categories.map((category, index) => 
+                {categories && categories.map((category, index) => 
                   <StyledMenuItem key={index} value={category}>{category}</StyledMenuItem>)}
               </StyledSelect>
             </FormControl>

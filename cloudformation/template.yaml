@@ -1,7 +1,9 @@
 ---
 AWSTemplateFormatVersion: 2010-09-09
 
-Description: CDN and S3 bucket for website
+Transform: AWS::Serverless-2016-10-31
+
+Description: CDN and SSR for the web
 
 Parameters:
   Environment:
@@ -19,17 +21,10 @@ Parameters:
   SSLCertificateArn:
     Type: String
 
-Resources:
-  S3Bucket:
-    Type: 'AWS::S3::Bucket'
-    Properties:
-      BucketName: !Sub 'giare-${Environment}-frontend'
-      PublicAccessBlockConfiguration:
-        BlockPublicAcls: true
-        BlockPublicPolicy: true
-        IgnorePublicAcls: true
-        RestrictPublicBuckets: true
+  LambdaEdgeArn:
+    Type: String
 
+Resources:
   CDNLogBucket:
     Type: 'AWS::S3::Bucket'
     Properties:
@@ -39,24 +34,6 @@ Resources:
         BlockPublicPolicy: true
         IgnorePublicAcls: true
         RestrictPublicBuckets: true
-
-  ReadPolicy:
-    Type: 'AWS::S3::BucketPolicy'
-    Properties:
-      Bucket: !Ref S3Bucket
-      PolicyDocument:
-        Statement:
-        - Action: 's3:GetObject'
-          Effect: Allow
-          Resource: !Sub 'arn:aws:s3:::${S3Bucket}/*'
-          Principal:
-            CanonicalUser: !GetAtt CloudFrontOriginAccessIdentity.S3CanonicalUserId
-
-  CloudFrontOriginAccessIdentity:
-    Type: 'AWS::CloudFront::CloudFrontOriginAccessIdentity'
-    Properties:
-      CloudFrontOriginAccessIdentityConfig:
-        Comment: !Ref S3Bucket
 
   CloudFrontDistribution:
     Type: 'AWS::CloudFront::Distribution'
@@ -72,34 +49,56 @@ Resources:
           - GET
           - HEAD
           - OPTIONS
-          CachedMethods:
-          - GET
-          - HEAD
-          - OPTIONS
           Compress: true
-          DefaultTTL: 300 # deprecated use cache policy
           ForwardedValues: # deprecated
             Cookies:
               Forward: none
             QueryString: false
-          MaxTTL: 86400 # deprecated
-          MinTTL: 60 # deprecated
-          TargetOriginId: s3origin
+          TargetOriginId: MyOrigin
           ViewerProtocolPolicy: redirect-to-https
-        DefaultRootObject: index.html
+          LambdaFunctionAssociations:
+          - EventType: origin-request
+            LambdaFunctionARN: !Ref LambdaEdgeArn
         Enabled: true
-        HttpVersion: http2
+        HttpVersion: http1.1
         Origins:
-        - DomainName: !GetAtt 'S3Bucket.RegionalDomainName'
-          Id: s3origin
-          S3OriginConfig:
-            OriginAccessIdentity: !Sub 'origin-access-identity/cloudfront/${CloudFrontOriginAccessIdentity}'
+        - DomainName: aws.amazon.com
+          Id: MyOrigin
+          CustomOriginConfig:
+            HTTPPort: 80
+            OriginProtocolPolicy: https-only
         PriceClass: 'PriceClass_200'
-        CustomErrorResponses:
-        - ErrorCachingMinTTL: 10
-          ErrorCode: 403
-          ResponseCode: 200
-          ResponsePagePath: /index.html
         Logging:
-          Bucket: !GetAtt 'S3Bucket.RegionalDomainName'
+          Bucket: !GetAtt 'CDNLogBucket.RegionalDomainName'
           Prefix: cdn
+
+  FrontEndApiLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub 'giare-${Environment}-frontend-api-logs'
+      RetentionInDays: 30
+
+  FrontEndApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      Name: !Sub 'giare-${Environment}-frontend-api'
+      StageName: live
+      AccessLogSettings:
+        DestinationArn: !!GetAtt FrontEndApiLogGroup.Arn
+
+  FrontEndFunction: 
+    Type: AWS::Serverless::Function
+    Properties:
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            Path: /
+            Method: get
+            RestApiId:
+              Ref: FrontEndApi
+      FunctionName: !Sub 'giare-${Environment}-frontend-function'
+      Runtime: nodejs12.x
+      CodeUri: ../server-build
+      Handler: index.handler
+      Timeout: 5
