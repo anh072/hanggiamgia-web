@@ -1,7 +1,7 @@
 import React from 'react';
 import FacebookIcon from '@material-ui/icons/Facebook';
 import InstagramIcon from '@material-ui/icons/Instagram';
-import TwitterIcon from '@material-ui/icons/Twitter';
+import YouTubeIcon from '@material-ui/icons/YouTube';
 import { makeStyles } from '@material-ui/styles'
 import './Footer.css';
 
@@ -13,8 +13,8 @@ const useStyles = makeStyles({
       fontSize: '1.5rem'
     }
   },
-  twitterIcon: {
-    fill: '#1da1f2',
+  youtubeIcon: {
+    fill: '#ff0000',
     fontSize: '2rem',
     '@media (max-width: 550px)': {
       fontSize: '1.5rem'
@@ -53,8 +53,8 @@ function Footer() {
           <a href='https://www.instagram.com/giarevn.official/'>
               <InstagramIcon className={classes.instagramIcon}/>
           </a>
-          <a href='https://twitter.com/anhnguyen072'>
-            <TwitterIcon className={classes.twitterIcon}/>
+          <a href='https://www.youtube.com/channel/UCEPzhKgpUk7s5R7UBYdHcew'>
+            <YouTubeIcon className={classes.youtubeIcon}/>
           </a>
         </div>
       </div>
