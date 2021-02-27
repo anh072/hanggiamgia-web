@@ -25,11 +25,10 @@ const useStyles = makeStyles({
   }
 });
 
-export default function Posts({ staticContext }) {
+export default function Home({ staticContext }) {
   const classes = useStyles();
   const query = useQuery();
-  const page = query.get('page') || 1;
-
+  const page = isNaN(query.get('page')) ? 1 : parseInt(query.get('page'));
   const { isAuthenticated, getAccessTokenSilently } = useAuth0();
   const history = useHistory();
 
@@ -38,7 +37,6 @@ export default function Posts({ staticContext }) {
       return staticContext.data;
     } else {
       const initialData = window.__INITIAL_DATA__;
-      console.log(window);
       delete window.__INITIAL_DATA__;
       return initialData;
     }
@@ -50,7 +48,7 @@ export default function Posts({ staticContext }) {
     const getPosts = async () => {
       try {
         setIsLoading(true);
-        const posts = await Posts.fetchData(page);
+        const posts = await Home.fetchData(page);
         setPosts(posts);
         setIsLoading(false);
         setErrors(prevErrors => ({
@@ -138,11 +136,11 @@ export default function Posts({ staticContext }) {
   return renderPostList();
 }
 
-Posts.fetchData = async (page = 1) => {
+Home.fetchData = async (page = 1) => {
   const res = await restClient.get(`/posts?page=${page}`);
   return res.data;
 };
 
-Posts.propTypes = {
+Home.propTypes = {
   staticContext: PropTypes.object
 };

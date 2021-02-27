@@ -4,8 +4,9 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
-import axios from 'axios';
 import { useAuth0 } from '@auth0/auth0-react';
+import PropTypes from 'prop-types';
+import { restClient } from '../../client/index';
 import config from '../../lib/config';
 import Comment from '../../components/Comment/Comment';
 import CommentInput from '../../components/CommentInput/CommentInput';
@@ -14,18 +15,35 @@ import Loading from '../../components/Loading/Loading';
 import NotFound from '../NotFound/NotFound';
 import './DetailedPost.css';
 
-export default function DetailedPost() {
-  const apiBaseUrl = config.apiBaseUrl;
+export default function DetailedPost({ staticContext }) {
 
   const { id } = useParams();
   const history = useHistory();
   const { isAuthenticated, user, getAccessTokenSilently } = useAuth0();
 
-  const [ post, setPost ] = useState(null);
-  const [ comments, setComments ] = useState([]);
+  const [state, setState] = useState(() => {
+    if (staticContext && staticContext.data) {
+      return {
+        post: staticContext.data.post,
+        comments: staticContext.data.comments.comments,
+        offset: staticContext.data.comments.comments.length,
+        count: staticContext.data.comments.count,
+      };
+    } 
+
+    if (!window.__INITIAL_DATA__) return null;
+
+    const initialData = window.__INITIAL_DATA__;
+    delete window.__INITIAL_DATA__;
+    return {
+      post: initialData.post,
+      comments: initialData.comments.comments,
+      offset: initialData.comments.comments.length,
+      count: initialData.comments.count,
+    };
+  });
+
   const [ newComment, setNewComment ] = useState('');
-  const [ offset, setOffset ] = useState(0);
-  const [ count, setCount ] = useState(0);
   const [ errors, setErrors ] = useState({});
   const [ isLoadingPost, setIsLoadingPost ] = useState(false);
   const [ isLoadingComments, setIsLoadingComments ] = useState(false);
@@ -36,13 +54,13 @@ export default function DetailedPost() {
     const getCommentsbyPostId = async (id) => {
       try {
         setIsLoadingComments(true);
-        const res = await axios.get(
-          `${apiBaseUrl}/posts/${id}/comments`,
-          { timeout: 20000 }
-        );
-        setComments(res.data.comments);
-        setOffset(res.data.comments.length);
-        setCount(res.data.count);
+        const data = await DetailedPost.fetchComments(id);
+        setState(prevState => ({
+          ...prevState,
+          comments: data.comments,
+          offset: data.comments.length,
+          count: data.count
+        }));
         setIsLoadingComments(false);
         setErrors(prevErrors => ({
           ...prevErrors,
@@ -57,18 +75,18 @@ export default function DetailedPost() {
         }));
       }
     };
-    getCommentsbyPostId(id);
-  }, [id]);
+    if (!state || (state && !state.comments)) getCommentsbyPostId(id);
+  }, [state, id]);
 
   useEffect(() => {
     const getPostById = async (id) => {
       try {
         setIsLoadingPost(true);
-        const res = await axios.get(
-          `${apiBaseUrl}/posts/${id}`,
-          { timeout: 20000 }
-        );
-        setPost(res.data);
+        const data = await DetailedPost.fetchPost(id);
+        setState(prevState => ({
+          ...prevState,
+          post: data
+        }));
         setIsLoadingPost(false);
         setErrors(prevErrors => ({
           ...prevErrors,
@@ -90,26 +108,27 @@ export default function DetailedPost() {
         }
       }
     };
-    getPostById(id);
-  }, [id]);
+    if (!state || (state && !state.post)) getPostById(id);
+  }, [state, id]);
 
   const handleSubmit = async () => {
     try {
       const accessToken = await getAccessTokenSilently({ audience: config.auth0ApiAudience });
-      const res = await axios.post(
-        `${apiBaseUrl}/posts/${id}/comments`,
+      const res = await restClient.post(`/posts/${id}/comments`,
         { text: newComment.trim().replace(/\n+$/, "") },
         { headers: { 
           'Content-Type': 'application/json', 
-          'Authorization': `Bearer ${accessToken}` }},
-        { timeout: 20000 }
+          'Authorization': `Bearer ${accessToken}` } }
       );
-      console.log("submitted comment");
+    
       var comment = res.data;
-      setComments([comment, ...comments]);
+      setState({
+        ...state,
+        comments: [comment, ...state.comments],
+        count: state.count + 1,
+        offset: state.offset + 1
+      });
       setNewComment('');
-      setCount(count + 1);
-      setOffset(offset + 1);
     } catch (error) {
       console.log('error', error);
       alert('Lỗi: Không thể gửi bình luận của bạn');
@@ -118,18 +137,20 @@ export default function DetailedPost() {
 
   const loadComments = async () => {
     const incrementalOffset = 5;
-    const newOffset = offset + incrementalOffset;
-    const startDate = comments[0].created_time;
+    const newOffset = state.offset + incrementalOffset;
+    const startDate = state.comments[0].created_time;
 
     try {
       setIsLoadingExtraComments(true);
-      const res = await axios.get(
-        `${apiBaseUrl}/posts/${id}/comments?offset=${newOffset}&start_date=${startDate}`,
-        { timeout: 20000 }
+      const res = await restClient.get(
+        `/posts/${id}/comments?offset=${newOffset}&start_date=${startDate}`
       );
-      setComments(res.data.comments);
-      setCount(res.data.count);
-      setOffset(res.data.comments.length);
+      setState({
+        ...state,
+        comments: res.data.comments,
+        count: res.data.count,
+        offset: res.data.comments.length
+      });
       setIsLoadingExtraComments(false);
     } catch (error) {
       console.log('error', error);
@@ -138,50 +159,20 @@ export default function DetailedPost() {
     }
   };
 
-  const handleUpVote = async (id) => {
+  const handleVoteAction = async (id, options) => {
     if (!isAuthenticated) alert("Bạn phải đăng nhập để bỏ phiếu");
     try {
       const accessToken = await getAccessTokenSilently({ audience: config.auth0ApiAudience });
-      await axios.put(
-        `${apiBaseUrl}/posts/${id}/votes`, 
-        { vote_action: 'increment' }, 
-        { 
-          headers: { 
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${accessToken}`
-          } 
-        },
-        { timeout: 20000 }
+      await restClient.put(`/posts/${id}/votes`,
+        { vote_action: options.type }, 
+        { headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`
+        } }
       );
-      post.votes++;
-      setPost({...post});
-    } catch (error) {
-      console.log('error', error);
-      if (error.response && error.response.status === 400) {
-        alert(error.response.data.message);
-      } else {
-        alert("Server đang bị lỗi");
-      }
-    }
-  }
-
-  const handleDownVote = async (id) => {
-    if (!isAuthenticated) alert("Bạn phải đăng nhập để bỏ phiếu");
-    try {
-      const accessToken = await getAccessTokenSilently({ audience: config.auth0ApiAudience });
-      await axios.put(
-        `${apiBaseUrl}/posts/${id}/votes`, 
-        { vote_action: 'decrement' }, 
-        { 
-          headers: { 
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${accessToken}`
-          } 
-        },
-        { timeout: 20000 }
-      );
-      post.votes--;
-      setPost({...post});
+      if (options.type === 'increment') state.post.votes++;
+      else state.post.votes--;
+      setState({...state, post: state.post});
     } catch (error) {
       console.log('error', error);
       if (error.response && error.response.status === 400) {
@@ -195,10 +186,8 @@ export default function DetailedPost() {
   const handlePostDelete = async () => {
     try {
       const accessToken = await getAccessTokenSilently({ audience: config.auth0ApiAudience });
-      await axios.delete(
-        `${apiBaseUrl}/posts/${id}`,
-        { headers: { 'Authorization': `Bearer ${accessToken}` } }
-      );
+      await restClient.delete(`/posts/${id}`,
+        { headers: { 'Authorization': `Bearer ${accessToken}` } });
       setOpen(false);
       history.push('/');
     } catch (error){
@@ -211,15 +200,16 @@ export default function DetailedPost() {
   const handleCommentUpdate = async (commentId, newText) => {
     try {
       const accessToken = await getAccessTokenSilently({ audience: config.auth0ApiAudience });
-      const res = await axios.put(
-        `${apiBaseUrl}/posts/${id}/comments/${commentId}`,
+      const res = await restClient.put(`/posts/${id}/comments/${commentId}`,
         { text: newText },
-        { headers: { 'Authorization': `Bearer ${accessToken}` } },
-        { timeout: 20000 }
+        { headers: { 'Authorization': `Bearer ${accessToken}` } }
       );
-      const currentCommentIndex = comments.findIndex(c => c.id === commentId);
-      comments[currentCommentIndex] = res.data;
-      setComments([...comments]);
+      const currentCommentIndex = state.comments.findIndex(c => c.id === commentId);
+      state.comments[currentCommentIndex] = res.data;
+      setState({
+        ...state,
+        comments: [...state.comments]
+      });
     } catch(error) {
       console.log('error', error);
       alert('Lỗi: Không thể cập nhật bình luận');
@@ -229,13 +219,14 @@ export default function DetailedPost() {
   const handleCommentDelete = async (commentId) => {
     try {
       const accessToken = await getAccessTokenSilently({ audience: config.auth0ApiAudience });
-      await axios.delete(
-        `${apiBaseUrl}/posts/${id}/comments/${commentId}`,
-        { headers: { 'Authorization': `Bearer ${accessToken}` } },
-        { timeout: 20000 }
-      );
-      const newComments = comments.filter(c => c.id !== commentId);
-      setComments([...newComments]);
+      await restClient.delete(`/posts/${id}/comments/${commentId}`, {
+        headers: { 'Authorization': `Bearer ${accessToken}` }
+      });
+      const newComments = state.comments.filter(c => c.id !== commentId);
+      setState({
+        ...state,
+        comments: [...newComments]
+      });
     } catch(error) {
       console.log('error', error);
       alert('Lỗi: Không thể xóa bình luận');
@@ -254,12 +245,11 @@ export default function DetailedPost() {
           (
             <>
             {
-              post && (
+              state && state.post && (
                   <PostItem 
-                    post={post} 
+                    post={state.post} 
                     detailed={true} 
-                    handleUpVote={handleUpVote} 
-                    handleDownVote={handleDownVote}
+                    handleVoteAction={handleVoteAction} 
                     handlePostDelete={setOpen} />
                 )
             }
@@ -277,8 +267,8 @@ export default function DetailedPost() {
           (
             <>
               { isAuthenticated && <CommentInput onSubmit={handleSubmit} onChange={setNewComment}/> }
-              { count > 0 &&
-                comments.map(comment => {
+              { state && state.count > 0 &&
+                state && state.comments.map(comment => {
                   if (isAuthenticated && user[config.claimNamespace+'username'] === comment.author)
                     return <Comment 
                       editable={true} 
@@ -293,10 +283,10 @@ export default function DetailedPost() {
                 errors.comments && (<p className='detailed-post__error'>{errors.comments}</p>)
               }
               {
-                offset < count && (
+                state && state.offset < state.count && (
                   <div className="comment-loader detailed-post__load">
                     <div className="comment-loader__button comment-loader_text" onClick={loadComments}>Xem thêm bình luận</div>
-                    <div className="comment-loader_text">{offset}/{count}</div>
+                    <div className="comment-loader_text">{state.offset}/{state.count}</div>
                   </div>
                 )
               }
@@ -324,3 +314,26 @@ export default function DetailedPost() {
     </div>
   );
 }
+
+DetailedPost.propTypes = {
+  staticContext: PropTypes.object
+};
+
+DetailedPost.fetchPost = async (id) => {
+  const postResponse = await restClient.get(`/posts/${id}`);
+  return postResponse.data;
+};
+
+DetailedPost.fetchComments = async (id) => {
+  const commentsResponse = await restClient.get(`/posts/${id}/comments`);
+  return commentsResponse.data;
+};
+
+DetailedPost.fetchData = async (id) => {
+  const postResponse = await restClient.get(`/posts/${id}`);
+  const commentsResponse = await restClient.get(`/posts/${id}/comments`);
+  return {
+    post: postResponse.data,
+    comments: commentsResponse.data
+  };
+};

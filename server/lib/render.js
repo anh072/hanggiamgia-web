@@ -4,7 +4,6 @@ import { StaticRouter } from 'react-router-dom';
 import { readFileSync } from 'fs'
 import serialize from 'serialize-javascript';
 import { DataProvider } from '../../src/GlobalState';
-//import Auth0ProviderWithHistory from '../../src/auth/Auth0ProviderWithHistory';
 import { ServerStyleSheets } from '@material-ui/core/styles';
 import { indexFilePath } from '../files';
 
@@ -14,11 +13,9 @@ export const render = (ReactElement, path, context) => {
 
   const content = renderToString(
     sheets.collect(
-      <DataProvider>
+      <DataProvider initialProps={context.store}>
         <StaticRouter location={path} context={context}>
-          {/* //<Auth0ProviderWithHistory> */}
-            <ReactElement />
-          {/* </Auth0ProviderWithHistory> */}
+          <ReactElement />
         </StaticRouter>
       </DataProvider>
     )
@@ -28,9 +25,13 @@ export const render = (ReactElement, path, context) => {
 
   return html
     .replace('<div id="root"></div>', `<div id="root">${content}</div>`)
+    .replace('</head>', `<style id="jss-server-side">${css}</style></head>`)
     .replace(
-      '</body>', 
-      `<script>window.__INITIAL_DATA__ = ${context && context.data ? serialize(context.data) : null}</script></body>`
+      '</head>', 
+      `<script>window.__INITIAL_DATA__ = ${context && context.data ? serialize(context.data) : null}</script></head>`
     )
-    .replace('</head>', `<style id="jss-server-side">${css}</style></head>`);
+    .replace(
+      '</head>',
+      `<script>window.__INITIAL_STORE__ = ${serialize(context.store)}</script></head>`
+    );
 };

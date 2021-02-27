@@ -8,6 +8,7 @@ import Loading from '../../components/Loading/Loading';
 import PostItem from '../../components/PostItem/PostItem';
 import config from '../../lib/config';
 import { calculatePages, useQuery } from '../../lib/common';
+import { restClient } from '../../client/index';
 import './SearchResults.css';
 
 const useStyles = makeStyles({
@@ -64,51 +65,21 @@ function SearchResults() {
     searchPosts();
   }, [page, category, term]);
 
-  const handleUpVote = async (id) => {
+  const handleVoteAction = async (id, options) => {
     if (!isAuthenticated) alert("Bạn phải đăng nhập để bỏ phiếu");
     try {
       const accessToken = await getAccessTokenSilently({ audience: config.auth0ApiAudience });
-      await axios.put(
-        `${apiBaseUrl}/posts/${id}/votes`, 
-        { vote_action: 'increment' }, 
-        { 
-          headers: { 
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${accessToken}`
-          } 
-        },
-        { timeout: 20000 }
-      );
+      await restClient.put({
+        url: `/posts/${id}/votes`, 
+        data: { vote_action: options.type }, 
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`
+        } 
+      });
       const currentPostIndex = posts.findIndex(p => p.id === id);
-      posts[currentPostIndex].votes++;
-      setPosts([...posts]);
-    } catch (error) {
-      console.log('error', error);
-      if (error.response && error.response.status === 400) {
-        alert(error.response.data.message);
-      } else {
-        alert("Lỗi: Server bị lỗi");
-      }
-    }
-  }
-
-  const handleDownVote = async (id) => {
-    if (!isAuthenticated) alert("Bạn phải đăng nhập để bỏ phiếu");
-    try {
-      const accessToken = await getAccessTokenSilently({ audience: config.auth0ApiAudience });
-      await axios.put(
-        `${apiBaseUrl}/posts/${id}/votes`, 
-        { vote_action: 'decrement' }, 
-        { 
-          headers: { 
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${accessToken}`
-          } 
-        },
-        { timeout: 20000 }
-      );
-      const currentPostIndex = posts.findIndex(p => p.id === id);
-      posts[currentPostIndex].votes--;
+      if (options.type === 'increment') posts[currentPostIndex].votes++;
+      else posts[currentPostIndex].votes--;
       setPosts([...posts]);
     } catch (error) {
       console.log('error', error);
@@ -142,7 +113,7 @@ function SearchResults() {
       </div>
       <ul className="search-results__list">
         {posts.posts && posts.posts.map(post => 
-          <PostItem post={post} key={post.id} handleUpVote={handleUpVote} handleDownVote={handleDownVote} />)}
+          <PostItem post={post} key={post.id} handleVoteAction={handleVoteAction} />)}
         {errors.posts && (<p className='search-results__error'>{errors.posts}</p>)}
       </ul>
       <Pagination
