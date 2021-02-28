@@ -33,8 +33,9 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "build-server": "webpack --config webpack.server.config.js --mode=development",
-    "build-all": "npm-run-all --parallel build build-server"
+    "build-server": "webpack --config webpack.server.config.js --mode=production",
+    "build-all": "npm-run-all --parallel build build-server",
+    "start-server": "node server-build/index.js"
   },
   "eslintConfig": {
     "extends": [

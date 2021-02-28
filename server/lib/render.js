@@ -6,7 +6,6 @@ import serialize from 'serialize-javascript';
 import { DataProvider } from '../../src/GlobalState';
 import { ServerStyleSheets } from '@material-ui/core/styles';
 import { indexFilePath } from '../files';
-import InternalError from '../../src/pages/InternalError/InternalError';
 
 export const render = (ReactElement, path, context) => {
   const html = readFileSync(indexFilePath).toString();
@@ -35,14 +34,6 @@ export const render = (ReactElement, path, context) => {
       '</head>',
       `<script>window.__INITIAL_STORE__ = ${serialize(context.store)}</script></head>`
     );
-};
-
-export const renderError = () => {
-  const html = readFileSync(indexFilePath).toString();
-  const content = renderToString(<InternalError />);
-  return html
-    .replace('<div id="root"></div>', `<div id="root">${content}</div>`)
-    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
 };
 
 export const renderIndexHTML = () => {

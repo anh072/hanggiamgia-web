@@ -4,7 +4,7 @@ import App from './App';
 import { BrowserRouter } from 'react-router-dom';
 import { DataProvider } from './GlobalState';
 import Auth0ProviderWithHistory from './auth/Auth0ProviderWithHistory';
-import './index.css'
+import './index.css';
 
 function Main() {
   useEffect(() => {

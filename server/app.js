@@ -30,7 +30,9 @@ const handler = async (ctx) => {
   } catch (error) {
     console.error(error);
     ctx.status = 500;
-    ctx.body = renderError();
+    ctx.body = {
+      message: 'Internal Server Error'
+    };
     return;
   }
 
@@ -45,7 +47,9 @@ const handler = async (ctx) => {
     if (error && error.response.status === 500) {
       console.error(error);
       ctx.status = 500;
-      ctx.body = renderError();
+      ctx.body = {
+        message: 'Internal Server Error'
+      };
       return;
     }
   
