@@ -14,8 +14,8 @@ export default function CategoryAPI() {
   useEffect(() => {
     const getCategories = async () => {
       try {
-        const data = await CategoryAPI.fetchData();
-        setCategories(data);
+        const res = await restClient.get('/categories');
+        setCategories(res.data.categories);
       } catch (error) {
         console.log('error', error);
       }

@@ -28,18 +28,20 @@ const useStyles = makeStyles({
 export default function Home({ staticContext }) {
   const classes = useStyles();
   const query = useQuery();
-  const page = isNaN(query.get('page')) ? 1 : parseInt(query.get('page'));
+  const page = isNaN(query.get('page')) || !query.get('page') ? 1 : parseInt(query.get('page'));
   const { isAuthenticated, getAccessTokenSilently } = useAuth0();
   const history = useHistory();
 
   const [ posts, setPosts ] = useState(() => {
     if (staticContext && staticContext.data) {
       return staticContext.data;
-    } else {
+    } 
+    if (typeof window !== 'undefined' && window.__INITIAL_DATA__) {
       const initialData = window.__INITIAL_DATA__;
       delete window.__INITIAL_DATA__;
       return initialData;
     }
+    return null;
   });
   const [ isLoading, setIsLoading ] = useState(false);
   const [ errors, setErrors ] = useState({});
@@ -48,8 +50,8 @@ export default function Home({ staticContext }) {
     const getPosts = async () => {
       try {
         setIsLoading(true);
-        const posts = await Home.fetchData(page);
-        setPosts(posts);
+        const res = await restClient.get(`/posts?page=${page}`);
+        setPosts(res.data);
         setIsLoading(false);
         setErrors(prevErrors => ({
           ...prevErrors,
@@ -67,7 +69,10 @@ export default function Home({ staticContext }) {
   }, [posts, page]);
 
   const handleVoteAction = async (id, options) => {
-    if (!isAuthenticated) alert("Bạn phải đăng nhập để bỏ phiếu");
+    if (!isAuthenticated) {
+      alert("Bạn phải đăng nhập để bỏ phiếu");
+      return;
+    }
     try {
       const accessToken = await getAccessTokenSilently({ audience: config.auth0ApiAudience })
       await restClient.put(
@@ -136,11 +141,26 @@ export default function Home({ staticContext }) {
   return renderPostList();
 }
 
-Home.fetchData = async (page = 1) => {
-  const res = await restClient.get(`/posts?page=${page}`);
-  return res.data;
-};
-
 Home.propTypes = {
   staticContext: PropTypes.object
+};
+
+Home.fetchData = async (request) => {
+  const query = request.query;
+  let page;
+  const result = {
+    data: null,
+    error: null
+  };
+
+  if (isNaN(query.page)) page = 1;
+  else page = parseInt(query.page);
+  try {
+    const res = await restClient.get(`/posts?page=${page}`);
+    result.data = res.data;
+  } catch (error) {
+    result.err = error;
+  }
+  
+  return result;
 };

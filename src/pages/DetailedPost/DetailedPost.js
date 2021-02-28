@@ -29,18 +29,20 @@ export default function DetailedPost({ staticContext }) {
         offset: staticContext.data.comments.comments.length,
         count: staticContext.data.comments.count,
       };
-    } 
+    }
 
-    if (!window.__INITIAL_DATA__) return null;
-
-    const initialData = window.__INITIAL_DATA__;
-    delete window.__INITIAL_DATA__;
-    return {
-      post: initialData.post,
-      comments: initialData.comments.comments,
-      offset: initialData.comments.comments.length,
-      count: initialData.comments.count,
-    };
+    if (typeof window !== 'undefined' && window.__INITIAL_DATA__) {
+      console.log('try to read initial data');
+      const initialData = window.__INITIAL_DATA__;
+      delete window.__INITIAL_DATA__;
+      return {
+        post: initialData.post,
+        comments: initialData.comments.comments,
+        offset: initialData.comments.comments.length,
+        count: initialData.comments.count,
+      };
+    }
+    return null;
   });
 
   const [ newComment, setNewComment ] = useState('');
@@ -54,7 +56,8 @@ export default function DetailedPost({ staticContext }) {
     const getCommentsbyPostId = async (id) => {
       try {
         setIsLoadingComments(true);
-        const data = await DetailedPost.fetchComments(id);
+        const res = await restClient.get(`/posts/${id}/comments`);
+        const data = res.data;
         setState(prevState => ({
           ...prevState,
           comments: data.comments,
@@ -82,7 +85,8 @@ export default function DetailedPost({ staticContext }) {
     const getPostById = async (id) => {
       try {
         setIsLoadingPost(true);
-        const data = await DetailedPost.fetchPost(id);
+        const res = await restClient.get(`/posts/${id}`);
+        const data = res.data;
         setState(prevState => ({
           ...prevState,
           post: data
@@ -160,7 +164,10 @@ export default function DetailedPost({ staticContext }) {
   };
 
   const handleVoteAction = async (id, options) => {
-    if (!isAuthenticated) alert("Bạn phải đăng nhập để bỏ phiếu");
+    if (!isAuthenticated) {
+      alert("Bạn phải đăng nhập để bỏ phiếu");
+      return;
+    }
     try {
       const accessToken = await getAccessTokenSilently({ audience: config.auth0ApiAudience });
       await restClient.put(`/posts/${id}/votes`,
@@ -319,21 +326,24 @@ DetailedPost.propTypes = {
   staticContext: PropTypes.object
 };
 
-DetailedPost.fetchPost = async (id) => {
-  const postResponse = await restClient.get(`/posts/${id}`);
-  return postResponse.data;
-};
+DetailedPost.fetchData = async (request) => {
+  const path = request.path;
+  const id = path.split('/').slice(-1)[0];
+  let data;
+  let err;
+  try {
+    const postResponse = await restClient.get(`/posts/${id}`);
+    const commentsResponse = await restClient.get(`/posts/${id}/comments`);
+    data = {
+      post: postResponse.data,
+      comments: commentsResponse.data
+    };
+  } catch (error) {
+    err = error;
+  }
 
-DetailedPost.fetchComments = async (id) => {
-  const commentsResponse = await restClient.get(`/posts/${id}/comments`);
-  return commentsResponse.data;
-};
-
-DetailedPost.fetchData = async (id) => {
-  const postResponse = await restClient.get(`/posts/${id}`);
-  const commentsResponse = await restClient.get(`/posts/${id}/comments`);
   return {
-    post: postResponse.data,
-    comments: commentsResponse.data
+    data: data,
+    error: err
   };
 };

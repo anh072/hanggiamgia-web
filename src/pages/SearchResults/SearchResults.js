@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { useAuth0 } from '@auth0/auth0-react';
 import Pagination from '@material-ui/lab/Pagination';
 import { makeStyles } from '@material-ui/styles';
@@ -25,7 +24,7 @@ const useStyles = makeStyles({
 });
 
 function SearchResults() {
-  const apiBaseUrl = config.apiBaseUrl
+
   const classes = useStyles();
 
   const { isAuthenticated, getAccessTokenSilently } = useAuth0();
@@ -44,10 +43,7 @@ function SearchResults() {
     const searchPosts = async () => {
       try {
         setIsLoading(true);
-        const res = await axios.get(
-          `${apiBaseUrl}/posts/search?page=${page}&category=${category}&term=${term}`,
-          { timeout: 20000 }
-        );
+        const res = await restClient.get(`/posts/search?page=${page}&category=${category}&term=${term}`);
         setPosts(res.data);
         setIsLoading(false);
         setErrors(prevErrors => ({
@@ -66,17 +62,20 @@ function SearchResults() {
   }, [page, category, term]);
 
   const handleVoteAction = async (id, options) => {
-    if (!isAuthenticated) alert("Bạn phải đăng nhập để bỏ phiếu");
+    if (!isAuthenticated) {
+      alert("Bạn phải đăng nhập để bỏ phiếu");
+      return;
+    }
     try {
       const accessToken = await getAccessTokenSilently({ audience: config.auth0ApiAudience });
-      await restClient.put({
-        url: `/posts/${id}/votes`, 
-        data: { vote_action: options.type }, 
-        headers: { 
+      await restClient.put(
+        `/posts/${id}/votes`, 
+        { vote_action: options.type }, 
+        { headers: { 
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${accessToken}`
-        } 
-      });
+        } }
+      );
       const currentPostIndex = posts.findIndex(p => p.id === id);
       if (options.type === 'increment') posts[currentPostIndex].votes++;
       else posts[currentPostIndex].votes--;

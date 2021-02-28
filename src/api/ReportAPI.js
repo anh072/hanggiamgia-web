@@ -14,8 +14,8 @@ export default function ReasonAPI() {
   useEffect(() => {
     const getReasons = async () => {
       try {
-        const data = await ReasonAPI.fetchData();
-        setReasons(data);
+        const res = await restClient.get('/reasons');
+        setReasons(res.data.reasons);
       } catch (error) {
         console.log('error', error);
       }
