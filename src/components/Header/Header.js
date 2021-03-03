@@ -17,6 +17,11 @@ import config from '../../lib/config';
 import './Header.css';
 
 const useStyles = makeStyles({
+  inputLabel: {
+    '@media (max-width: 650px)': {
+      display: 'none'
+    },
+  },
   button: {
     color: 'white',
     width: '90px',
@@ -102,7 +107,6 @@ function Header() {
   const history = useHistory();
   const state = useDataProvider();
   const categories = state.categoryStore.data;
-  const shouldDisplayCategoryLabel = useMediaQuery({ query: `(max-width: 650px)` });
 
   // local state
   const [ selectedCategory, setSelectedCategory ] = useState('All');
@@ -191,7 +195,7 @@ function Header() {
 
           <form className="header__filter" onSubmit={handleSubmit}>
             <FormControl size="small" variant="filled" className={classes.formControl}>
-              <InputLabel style={{display: shouldDisplayCategoryLabel ? 'none' : 'block'}}>Hạng mục</InputLabel>
+              <InputLabel className={classes.inputLabel}>Hạng mục</InputLabel>
               <StyledSelect
                 value={selectedCategory}
                 open={openSelect}
