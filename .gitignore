@@ -24,7 +24,9 @@ yarn-debug.log*
 yarn-error.log*
 
 .eslintcache
-server-build/
+lambda-build/
+local-build/
 packaged.yaml
 .aws-sam/
 .vscode/
+bin/

@@ -28,7 +28,7 @@ export const render = (ReactElement, path, context) => {
     .replace('</head>', `<style id="jss-server-side">${css}</style></head>`)
     .replace(
       '</head>', 
-      `<script>window.__INITIAL_DATA__ = ${context.data ? serialize(context.data) : null}</script></head>`
+      `<script>window.__INITIAL_DATA__ = ${serialize(context.data)}</script></head>`
     )
     .replace(
       '</head>',

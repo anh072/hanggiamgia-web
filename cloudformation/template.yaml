@@ -21,10 +21,29 @@ Parameters:
   SSLCertificateArn:
     Type: String
 
-  LambdaEdgeArn:
-    Type: String
-
 Resources:
+  S3Bucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: !Sub 'giare-${Environment}-frontend'
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  ReadPolicy:
+    Type: 'AWS::S3::BucketPolicy'
+    Properties:
+      Bucket: !Ref S3Bucket
+      PolicyDocument:
+        Statement:
+        - Action: 's3:GetObject'
+          Effect: Allow
+          Resource: !Sub 'arn:aws:s3:::${S3Bucket}/*'
+          Principal:
+            CanonicalUser: !GetAtt CloudFrontOriginAccessIdentity.S3CanonicalUserId
+
   CDNLogBucket:
     Type: 'AWS::S3::Bucket'
     Properties:
@@ -35,6 +54,12 @@ Resources:
         IgnorePublicAcls: true
         RestrictPublicBuckets: true
 
+  CloudFrontOriginAccessIdentity:
+    Type: 'AWS::CloudFront::CloudFrontOriginAccessIdentity'
+    Properties:
+      CloudFrontOriginAccessIdentityConfig:
+        Comment: !Ref S3Bucket
+
   CloudFrontDistribution:
     Type: 'AWS::CloudFront::Distribution'
     Properties:
@@ -44,7 +69,7 @@ Resources:
           AcmCertificateArn: !Ref SSLCertificateArn
           MinimumProtocolVersion: TLSv1
           SslSupportMethod: sni-only
-        DefaultCacheBehavior:
+        DefaultCacheBehavior: # api gateway
           AllowedMethods:
           - GET
           - HEAD
@@ -53,19 +78,41 @@ Resources:
           ForwardedValues: # deprecated
             Cookies:
               Forward: none
-            QueryString: false
-          TargetOriginId: MyOrigin
+            QueryString: true
+          TargetOriginId: server
           ViewerProtocolPolicy: redirect-to-https
-          LambdaFunctionAssociations:
-          - EventType: origin-request
-            LambdaFunctionARN: !Ref LambdaEdgeArn
+        CacheBehaviors: # S3
+        - AllowedMethods:
+          - GET
+          - HEAD
+          - OPTIONS
+          CachedMethods:
+          - GET
+          - HEAD
+          - OPTIONS
+          TargetOriginId: s3origin
+          PathPattern: /*.*
+          ViewerProtocolPolicy: redirect-to-https
+          ForwardedValues: # deprecated
+            Cookies:
+              Forward: none
+            QueryString: true
         Enabled: true
-        HttpVersion: http1.1
+        HttpVersion: http2
         Origins:
-        - DomainName: aws.amazon.com
-          Id: MyOrigin
+        - DomainName: !GetAtt 'S3Bucket.RegionalDomainName'
+          Id: s3origin
+          S3OriginConfig:
+            OriginAccessIdentity: !Sub 'origin-access-identity/cloudfront/${CloudFrontOriginAccessIdentity}'
+        - Id: server
+          DomainName:
+            Fn::Join:
+            - ""
+            - - Ref: FrontEndApi
+              - ".execute-api."
+              - Ref: AWS::Region
+              - ".amazonaws.com"
           CustomOriginConfig:
-            HTTPPort: 80
             OriginProtocolPolicy: https-only
         PriceClass: 'PriceClass_200'
         Logging:
@@ -81,24 +128,23 @@ Resources:
   FrontEndApi:
     Type: AWS::Serverless::HttpApi
     Properties:
-      Name: !Sub 'giare-${Environment}-frontend-api'
-      StageName: live
       AccessLogSettings:
-        DestinationArn: !!GetAtt FrontEndApiLogGroup.Arn
+        DestinationArn: !GetAtt FrontEndApiLogGroup.Arn
+        Format: '{ "requestId":"$context.requestId", "ip": "$context.identity.sourceIp", "requestTime":"$context.requestTime", "httpMethod":"$context.httpMethod","routeKey":"$context.routeKey", "status":"$context.status","protocol":"$context.protocol", "responseLength":"$context.responseLength","latency":"$context.responseLatency","domainName":"$context.domainName"}'
 
-  FrontEndFunction: 
+  FrontEndFunction:
     Type: AWS::Serverless::Function
     Properties:
       Events:
         ApiEvent:
-          Type: Api
+          Type: HttpApi
           Properties:
-            Path: /
+            Path: /{proxy+}
             Method: get
-            RestApiId:
+            ApiId:
               Ref: FrontEndApi
       FunctionName: !Sub 'giare-${Environment}-frontend-function'
       Runtime: nodejs12.x
-      CodeUri: ../server-build
-      Handler: index.handler
+      CodeUri: ../bin/lambda.zip
+      Handler: app/index.handler
       Timeout: 5

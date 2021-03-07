@@ -4,9 +4,9 @@ import http from 'koa-route';
 import serve from 'koa-static';
 import { matchPath } from 'react-router-dom';
 import routes from '../src/pages/routes';
-import { render, renderError, renderIndexHTML } from './lib/render';
+import { render, renderIndexHTML } from './lib/render';
 import App from '../src/App';
-import { assets, images } from './files';
+import { assets } from './files';
 import ReasonAPI from '../src/api/ReportAPI';
 import CategoryAPI from '../src/api/CategoryAPI';
 import Home from '../src/pages/Home/Home';
@@ -72,7 +72,6 @@ const handler = async (ctx) => {
 
 app.use(http.get('/', handler));
 
-app.use(serve(images));
 app.use(serve(assets));
 
 app.use(http.get('*', handler));

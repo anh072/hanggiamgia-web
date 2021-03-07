@@ -51,7 +51,7 @@ function UserProfile({ staticContext }) {
         userInfo: initialData.user,
       };
     }
-    return null;
+    return {};
   });
 
   const [ page, setPage ] = useState(1);

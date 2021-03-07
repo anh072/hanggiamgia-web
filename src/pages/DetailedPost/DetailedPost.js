@@ -42,7 +42,7 @@ export default function DetailedPost({ staticContext }) {
         count: initialData.comments.count,
       };
     }
-    return null;
+    return {};
   });
 
   const [ newComment, setNewComment ] = useState('');
@@ -78,8 +78,8 @@ export default function DetailedPost({ staticContext }) {
         }));
       }
     };
-    if (!state || (state && !state.comments)) getCommentsbyPostId(id);
-  }, [state, id]);
+    if (!state.comments) getCommentsbyPostId(id);
+  }, [state.comments, id]);
 
   useEffect(() => {
     const getPostById = async (id) => {
@@ -112,8 +112,8 @@ export default function DetailedPost({ staticContext }) {
         }
       }
     };
-    if (!state || (state && !state.post)) getPostById(id);
-  }, [state, id]);
+    if (!state.post) getPostById(id);
+  }, [state.post, id]);
 
   const handleSubmit = async () => {
     try {

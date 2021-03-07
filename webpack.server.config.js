@@ -1,20 +1,11 @@
 const path = require("path");
 
-module.exports = {
-  entry: "./server/handler/local.js",
-
+const config = {
   target: "node",
 
   node: {
     __dirname: false,
     __filename: false,
-  },
-
-  output: {
-    path: path.resolve("server-build"),
-    filename: "index.js",
-    library: "index",
-    libraryTarget: "umd",
   },
 
   module: {
@@ -38,5 +29,29 @@ module.exports = {
         use: "css-loader",
       },
     ],
-  },
+  }
 };
+
+const lambdaConfig = Object.assign({}, config, {
+  entry: "./server/handler/lambda.js",
+
+  output: {
+    path: path.resolve("lambda-build/app"),
+    filename: "index.js",
+    library: "index",
+    libraryTarget: "umd",
+  },
+});
+
+const localConfig = Object.assign({}, config, {
+  entry: "./server/handler/local.js",
+
+  output: {
+    path: path.resolve("local-build"),
+    filename: "index.js",
+    library: "index",
+    libraryTarget: "umd",
+  },
+});
+
+module.exports = [ localConfig, lambdaConfig ];
