@@ -96,7 +96,7 @@ function ReportButton({ type, post_id, comment_id }) {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
+  const { isAuthenticated, getAccessTokenSilently } = useAuth0();
 
   const state = useDataProvider();
   const reasons = state.reasonStore.data;

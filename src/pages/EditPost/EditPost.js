@@ -3,7 +3,6 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { useParams, useHistory } from 'react-router-dom';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { Button, TextareaAutosize, Select, MenuItem, FormControl, TextField } from '@material-ui/core';
-import axios from 'axios';
 import moment from 'moment';
 import config from '../../lib/config';
 import { useDataProvider } from '../../GlobalState';
@@ -11,6 +10,7 @@ import Loading from '../../components/Loading/Loading';
 import NotFound from '../NotFound/NotFound';
 import Forbidden from '../Forbidden/Forbidden';
 import { validatePostForm } from '../../lib/common';
+import { restClient } from '../../client/index';
 import '../NewDeal/NewDeal.css';
 
 const useStyles = makeStyles({
@@ -82,7 +82,6 @@ const StyledMenuItem = withStyles({
 })(MenuItem);
 
 function EditPost() {
-  const apiBaseUrl = config.apiBaseUrl;
   const state = useDataProvider();
   const categories = state.categoryStore.data;
 
@@ -101,7 +100,7 @@ function EditPost() {
     const getPostById = async (id) => {
       try {
         setIsLoading(true);
-        const res = await axios.get(`${apiBaseUrl}/posts/${id}`);
+        const res = await restClient.get(`/posts/${id}`);
         const post = res.data;
         if (post.author !== user[config.claimNamespace+'username']) {
           setErrors(prevErrors => ({
@@ -145,7 +144,7 @@ function EditPost() {
       }
     };
     getPostById(id);
-  }, [id]);
+  }, [id, user]);
 
   const handleSelect = (e) => {
     setValues(prevValues => ({
@@ -197,13 +196,12 @@ function EditPost() {
       if (values.image) {
         const bodyFormData = new FormData();
         bodyFormData.append('image', values.image); 
-        const res = await axios.post(
-          `${apiBaseUrl}/users/${user[config.claimNamespace+'username']}/images/upload`,
+        const res = await restClient.post(
+          `/users/${user[config.claimNamespace+'username']}/images/upload`,
           bodyFormData,
           { headers: { 
             'Content-Type': 'multipart/form-data', 
-            'Authorization': `Bearer ${accessToken}` } },
-          { timeout: 20000 }
+            'Authorization': `Bearer ${accessToken}` } }
         );
         const imageUrl = res.data.image_url;
         data.image_url = imageUrl;
@@ -213,8 +211,8 @@ function EditPost() {
       if (values.url.length > 0) data.url = values.url;
 
       // create the actual post
-      const res = await axios.put(
-        `${apiBaseUrl}/posts/${id}`, 
+      const res = await restClient.put(
+        `/posts/${id}`, 
         data, 
         { headers: { 
           'Content-Type': 'application/json', 

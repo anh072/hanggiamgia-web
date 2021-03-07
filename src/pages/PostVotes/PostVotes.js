@@ -10,12 +10,12 @@ import AddIcon from '@material-ui/icons/Add';
 import RemoveIcon from '@material-ui/icons/Remove';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
-import axios from 'axios';
 import moment from 'moment';
 import { useAuth0 } from '@auth0/auth0-react';
 import Loading from '../../components/Loading/Loading';
 import config from '../../lib/config';
 import { isWithinAWeek } from '../../lib/common';
+import { restClient } from '../../client/index';
 import './PostVotes.css';
 
 
@@ -94,7 +94,6 @@ const useStyles = makeStyles({
 });
 
 function PostVotes() {
-  const apiBaseUrl = config.apiBaseUrl;
 
   const classes = useStyles();
 
@@ -112,15 +111,14 @@ function PostVotes() {
       try {
         setIsLoadingVotes(true);
         const accessToken = await getAccessTokenSilently({ audience: config.auth0ApiAudience });
-        const res = await axios.get(
-          `${apiBaseUrl}/posts/${id}/votes`,
+        const res = await restClient.get(
+          `/posts/${id}/votes`,
           { 
             headers: { 
               'Content-Type': 'application/json',
               'Authorization': `Bearer ${accessToken}`
             } 
-          },
-          { timeout: 20000 }
+          }
         );
         setVotes(res.data.votes);
         setIsLoadingVotes(false);
@@ -138,16 +136,13 @@ function PostVotes() {
       }
     };
     getVotesByPostId(id);
-  }, [id]);
+  }, [id, getAccessTokenSilently]);
 
   useEffect(() => {
     const getPostById = async (id) => {
       try {
         setIsLoadingPost(true);
-        const res = await axios.get(
-          `${apiBaseUrl}/posts/${id}`,
-          { timeout: 20000 }
-        );
+        const res = await restClient.get(`/posts/${id}`);
         setPost(res.data);
         setIsLoadingPost(false);
         setErrors(prevErrors => ({
@@ -170,10 +165,9 @@ function PostVotes() {
   const removeVote = async (voteId) => {
     try {
       const accessToken = await getAccessTokenSilently({ audience: config.auth0ApiAudience });
-      await axios.delete(
-        `${apiBaseUrl}/posts/${id}/votes/${voteId}`,
-        { headers: { 'Authorization': `Bearer ${accessToken}` } },
-        { timeout: 20000 }
+      await restClient.delete(
+        `/posts/${id}/votes/${voteId}`,
+        { headers: { 'Authorization': `Bearer ${accessToken}` } }
       );
       const newVotes = votes.filter(vote => vote.id !== voteId);
       setVotes([...newVotes]);

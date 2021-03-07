@@ -1,0 +1,18 @@
+{
+  "configurations": [
+    {
+      "type": "aws-sam",
+      "request": "direct-invoke",
+      "name": "cloudformation:LambdaEdgeFunction",
+      "invokeTarget": {
+        "target": "template",
+        "templatePath": "cloudformation/template.yaml",
+        "logicalId": "LambdaEdgeFunction"
+      },
+      "lambda": {
+        "payload": {},
+        "environmentVariables": {}
+      }
+    }
+  ]
+}

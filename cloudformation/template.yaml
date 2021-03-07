@@ -1,7 +1,9 @@
 ---
 AWSTemplateFormatVersion: 2010-09-09
 
-Description: CDN and S3 bucket for website
+Transform: AWS::Serverless-2016-10-31
+
+Description: CDN and SSR for the web
 
 Parameters:
   Environment:
@@ -30,16 +32,6 @@ Resources:
         IgnorePublicAcls: true
         RestrictPublicBuckets: true
 
-  CDNLogBucket:
-    Type: 'AWS::S3::Bucket'
-    Properties:
-      BucketName: !Sub 'giare-${Environment}-cdn-logs'
-      PublicAccessBlockConfiguration:
-        BlockPublicAcls: true
-        BlockPublicPolicy: true
-        IgnorePublicAcls: true
-        RestrictPublicBuckets: true
-
   ReadPolicy:
     Type: 'AWS::S3::BucketPolicy'
     Properties:
@@ -51,6 +43,16 @@ Resources:
           Resource: !Sub 'arn:aws:s3:::${S3Bucket}/*'
           Principal:
             CanonicalUser: !GetAtt CloudFrontOriginAccessIdentity.S3CanonicalUserId
+
+  CDNLogBucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: !Sub 'giare-${Environment}-cdn-logs'
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
 
   CloudFrontOriginAccessIdentity:
     Type: 'AWS::CloudFront::CloudFrontOriginAccessIdentity'
@@ -67,8 +69,20 @@ Resources:
           AcmCertificateArn: !Ref SSLCertificateArn
           MinimumProtocolVersion: TLSv1
           SslSupportMethod: sni-only
-        DefaultCacheBehavior:
+        DefaultCacheBehavior: # api gateway
           AllowedMethods:
+          - GET
+          - HEAD
+          - OPTIONS
+          Compress: true
+          ForwardedValues: # deprecated
+            Cookies:
+              Forward: none
+            QueryString: true
+          TargetOriginId: server
+          ViewerProtocolPolicy: redirect-to-https
+        CacheBehaviors: # S3
+        - AllowedMethods:
           - GET
           - HEAD
           - OPTIONS
@@ -76,17 +90,13 @@ Resources:
           - GET
           - HEAD
           - OPTIONS
-          Compress: true
-          DefaultTTL: 300 # deprecated use cache policy
+          TargetOriginId: s3origin
+          PathPattern: /*.*
+          ViewerProtocolPolicy: redirect-to-https
           ForwardedValues: # deprecated
             Cookies:
               Forward: none
-            QueryString: false
-          MaxTTL: 86400 # deprecated
-          MinTTL: 60 # deprecated
-          TargetOriginId: s3origin
-          ViewerProtocolPolicy: redirect-to-https
-        DefaultRootObject: index.html
+            QueryString: true
         Enabled: true
         HttpVersion: http2
         Origins:
@@ -94,12 +104,47 @@ Resources:
           Id: s3origin
           S3OriginConfig:
             OriginAccessIdentity: !Sub 'origin-access-identity/cloudfront/${CloudFrontOriginAccessIdentity}'
+        - Id: server
+          DomainName:
+            Fn::Join:
+            - ""
+            - - Ref: FrontEndApi
+              - ".execute-api."
+              - Ref: AWS::Region
+              - ".amazonaws.com"
+          CustomOriginConfig:
+            OriginProtocolPolicy: https-only
         PriceClass: 'PriceClass_200'
-        CustomErrorResponses:
-        - ErrorCachingMinTTL: 10
-          ErrorCode: 403
-          ResponseCode: 200
-          ResponsePagePath: /index.html
         Logging:
-          Bucket: !GetAtt 'S3Bucket.RegionalDomainName'
+          Bucket: !GetAtt 'CDNLogBucket.RegionalDomainName'
           Prefix: cdn
+
+  FrontEndApiLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub 'giare-${Environment}-frontend-api-logs'
+      RetentionInDays: 30
+
+  FrontEndApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      AccessLogSettings:
+        DestinationArn: !GetAtt FrontEndApiLogGroup.Arn
+        Format: '{ "requestId":"$context.requestId", "ip": "$context.identity.sourceIp", "requestTime":"$context.requestTime", "httpMethod":"$context.httpMethod","routeKey":"$context.routeKey", "status":"$context.status","protocol":"$context.protocol", "responseLength":"$context.responseLength","latency":"$context.responseLatency","domainName":"$context.domainName"}'
+
+  FrontEndFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Events:
+        ApiEvent:
+          Type: HttpApi
+          Properties:
+            Path: /{proxy+}
+            Method: get
+            ApiId:
+              Ref: FrontEndApi
+      FunctionName: !Sub 'giare-${Environment}-frontend-function'
+      Runtime: nodejs12.x
+      CodeUri: ../bin/lambda.zip
+      Handler: app/index.handler
+      Timeout: 5

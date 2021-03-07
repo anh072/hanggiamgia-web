@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { useAuth0 } from '@auth0/auth0-react';
 import Pagination from '@material-ui/lab/Pagination';
 import { makeStyles } from '@material-ui/styles';
@@ -8,6 +7,7 @@ import Loading from '../../components/Loading/Loading';
 import PostItem from '../../components/PostItem/PostItem';
 import config from '../../lib/config';
 import { calculatePages, useQuery } from '../../lib/common';
+import { restClient } from '../../client/index';
 import './SearchResults.css';
 
 const useStyles = makeStyles({
@@ -24,10 +24,10 @@ const useStyles = makeStyles({
 });
 
 function SearchResults() {
-  const apiBaseUrl = config.apiBaseUrl
+
   const classes = useStyles();
 
-  const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
+  const { isAuthenticated, getAccessTokenSilently } = useAuth0();
   const history = useHistory();
   const query = useQuery();
   const category = query.get('category');
@@ -43,10 +43,7 @@ function SearchResults() {
     const searchPosts = async () => {
       try {
         setIsLoading(true);
-        const res = await axios.get(
-          `${apiBaseUrl}/posts/search?page=${page}&category=${category}&term=${term}`,
-          { timeout: 20000 }
-        );
+        const res = await restClient.get(`/posts/search?page=${page}&category=${category}&term=${term}`);
         setPosts(res.data);
         setIsLoading(false);
         setErrors(prevErrors => ({
@@ -64,51 +61,24 @@ function SearchResults() {
     searchPosts();
   }, [page, category, term]);
 
-  const handleUpVote = async (id) => {
-    if (!isAuthenticated) alert("Bạn phải đăng nhập để bỏ phiếu");
-    try {
-      const accessToken = await getAccessTokenSilently({ audience: config.auth0ApiAudience });
-      await axios.put(
-        `${apiBaseUrl}/posts/${id}/votes`, 
-        { vote_action: 'increment' }, 
-        { 
-          headers: { 
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${accessToken}`
-          } 
-        },
-        { timeout: 20000 }
-      );
-      const currentPostIndex = posts.findIndex(p => p.id === id);
-      posts[currentPostIndex].votes++;
-      setPosts([...posts]);
-    } catch (error) {
-      console.log('error', error);
-      if (error.response && error.response.status === 400) {
-        alert(error.response.data.message);
-      } else {
-        alert("Lỗi: Server bị lỗi");
-      }
+  const handleVoteAction = async (id, options) => {
+    if (!isAuthenticated) {
+      alert("Bạn phải đăng nhập để bỏ phiếu");
+      return;
     }
-  }
-
-  const handleDownVote = async (id) => {
-    if (!isAuthenticated) alert("Bạn phải đăng nhập để bỏ phiếu");
     try {
       const accessToken = await getAccessTokenSilently({ audience: config.auth0ApiAudience });
-      await axios.put(
-        `${apiBaseUrl}/posts/${id}/votes`, 
-        { vote_action: 'decrement' }, 
-        { 
-          headers: { 
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${accessToken}`
-          } 
-        },
-        { timeout: 20000 }
+      await restClient.put(
+        `/posts/${id}/votes`, 
+        { vote_action: options.type }, 
+        { headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`
+        } }
       );
       const currentPostIndex = posts.findIndex(p => p.id === id);
-      posts[currentPostIndex].votes--;
+      if (options.type === 'increment') posts[currentPostIndex].votes++;
+      else posts[currentPostIndex].votes--;
       setPosts([...posts]);
     } catch (error) {
       console.log('error', error);
@@ -142,7 +112,7 @@ function SearchResults() {
       </div>
       <ul className="search-results__list">
         {posts.posts && posts.posts.map(post => 
-          <PostItem post={post} key={post.id} handleUpVote={handleUpVote} handleDownVote={handleDownVote} />)}
+          <PostItem post={post} key={post.id} handleVoteAction={handleVoteAction} />)}
         {errors.posts && (<p className='search-results__error'>{errors.posts}</p>)}
       </ul>
       <Pagination

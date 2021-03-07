@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
 import moment from 'moment';
 import Pagination from '@material-ui/lab/Pagination';
 import { makeStyles } from '@material-ui/styles';
 import { useAuth0 } from '@auth0/auth0-react';
+import PropTypes from 'prop-types';
 import config from '../../lib/config';
 import Tab from '../../components/Tab/Tab';
 import TabItem from "../../components/Tab/TabItem";
@@ -13,6 +13,7 @@ import Loading from "../../components/Loading/Loading";
 import { calculatePages } from '../../lib/common';
 import NotFound from '../NotFound/NotFound';
 import './UserProfile.css';
+import { restClient } from "../../client";
 
 
 const useStyles = makeStyles({
@@ -28,78 +29,46 @@ const useStyles = makeStyles({
   }
 });
 
-function UserProfile() {
-  const apiBaseUrl = config.apiBaseUrl;
+function UserProfile({ staticContext }) {
   const classes = useStyles();
 
   const { username } = useParams();
   const { isAuthenticated, user } = useAuth0();
 
-  const [ userInfo, setUserInfo ] = useState({});
+  const [ state, setState ] = useState(() => {
+    if (staticContext && staticContext.data) {
+      return {
+        posts: staticContext.data.posts,
+        userInfo: staticContext.data.user,
+      };
+    } 
+
+    if (typeof window !== 'undefined' && window.__INITIAL_DATA__) {
+      const initialData = window.__INITIAL_DATA__;
+      delete window.__INITIAL_DATA__;
+      return {
+        posts: initialData.posts,
+        userInfo: initialData.user,
+      };
+    }
+    return {};
+  });
+
   const [ page, setPage ] = useState(1);
   const [ selectedTab, setSelectedTab ] = useState('Posts');
-  const [ posts, setPosts ] = useState({});
   const [ errors, setErrors ] = useState({});
   const [ isLoadingPosts, setIsLoadingPosts ] = useState(false);
   const [ isLoadingUser, setIsLoadingUser ] = useState(false);
 
   useEffect(() => {
-    const getPostsByUsername = async (username) => {
-      try {
-        setIsLoadingPosts(true);
-        setPosts({});
-        const res = await axios.get(
-          `${apiBaseUrl}/users/${username}/posts?page=${page}`,
-          { timeout: 20000 }
-        );
-        setPosts(res.data);
-        setErrors(prevErrors => ({
-          ...prevErrors,
-          posts: ''
-        }));
-        setIsLoadingPosts(false);
-      } catch(error) {
-        console.error('error', error);
-        setIsLoadingPosts(false);
-        setErrors(prevErrors => ({
-          ...prevErrors,
-          posts: 'Lỗi: Không thể tải bài viết'
-        }));
-      }
-    };
-
-    const getCommentedPostsByUsername = async (username) => {
-      try {
-        setPosts({});
-        setIsLoadingPosts(true);
-        const res = await axios.get(
-          `${apiBaseUrl}/users/${username}/commented_posts?page=${page}`,
-          { timeout: 20000 }
-        );
-        setPosts(res.data);
-        setErrors(prevErrors => ({
-          ...prevErrors,
-          comments: ''
-        }));
-        setIsLoadingPosts(false);
-      } catch(error) {
-        console.error('error', error);
-        setIsLoadingPosts(false);
-        setErrors(prevErrors => ({
-          ...prevErrors,
-          comments: 'Lỗi: Không thể tải bài viết'
-        }));
-      }
-    };
-
     const getUserByUsername = async (username) => {
       try {
         setIsLoadingUser(true);
-        const res = await axios.get(
-          `${apiBaseUrl}/users/${username}`,
-          { timeout: 20000 }
-        );
-        setUserInfo(res.data.user);
+        const res = await restClient.get(`/users/${username}`);
+        setState(prevState => ({
+          ...prevState,
+          userInfo: res.data.user
+        }));
         setIsLoadingUser(false);
         setErrors(prevErrors => ({
           ...prevErrors,
@@ -121,7 +90,63 @@ function UserProfile() {
         setIsLoadingUser(false);
       }
     };
-    getUserByUsername(username);
+    if (!state.userInfo) getUserByUsername(username);
+  }, [state.userInfo, username]);
+  
+  useEffect(() => {
+    const getPostsByUsername = async (username) => {
+      try {
+        setIsLoadingPosts(true);
+        setState(prevState => ({
+          ...prevState,
+          posts: {}
+        }));
+        const res = await restClient.get(`/users/${username}/posts?page=${page}`);
+        setState(prevState => ({
+          ...prevState,
+          posts: res.data
+        }));
+        setErrors(prevErrors => ({
+          ...prevErrors,
+          posts: ''
+        }));
+        setIsLoadingPosts(false);
+      } catch(error) {
+        console.error('error', error);
+        setIsLoadingPosts(false);
+        setErrors(prevErrors => ({
+          ...prevErrors,
+          posts: 'Lỗi: Không thể tải bài viết'
+        }));
+      }
+    };
+
+    const getCommentedPostsByUsername = async (username) => {
+      try {
+        setState(prevState => ({
+          ...prevState,
+          posts: {}
+        }));
+        setIsLoadingPosts(true);
+        const res = await restClient.get(`/users/${username}/commented_posts?page=${page}`);
+        setState(prevState => ({
+          ...prevState,
+          posts: res.data
+        }));
+        setErrors(prevErrors => ({
+          ...prevErrors,
+          comments: ''
+        }));
+        setIsLoadingPosts(false);
+      } catch(error) {
+        console.error('error', error);
+        setIsLoadingPosts(false);
+        setErrors(prevErrors => ({
+          ...prevErrors,
+          comments: 'Lỗi: Không thể tải bài viết'
+        }));
+      }
+    };
 
     if (selectedTab === 'Posts') getPostsByUsername(username);
     else getCommentedPostsByUsername(username);
@@ -139,38 +164,56 @@ function UserProfile() {
     return <NotFound />;
   }
 
+  const renderUserInfo = () => {
+    if (!state.userInfo) return null;
+    return (
+      <div className='profile__details'>
+        <div className='profile__avatar-container'>
+          <img className='profile__avatar' src={state.userInfo.picture} alt={`${state.userInfo.username} avatar`} />
+        </div>
+        <table className='profile__userinfo'>
+          <tbody>
+            <tr>
+              <td align='left' className='profile__label'>Tên tài khoản</td>
+              <td align='left'>{state.userInfo.username}</td>
+            </tr>
+            {
+              isAuthenticated && user[config.claimNamespace+'username'] === state.userInfo.username && (
+                <tr>
+                  <td align='left' className='profile__label'>Email</td>
+                  <td align='left'>{state.userInfo.email}</td>
+              </tr>
+              )
+            }
+            <tr>
+              <td align='left' className='profile__label'>Ngày đăng ký</td>
+              <td align='left'>{moment(state.userInfo.created_time).format('YYYY/MM/DD')}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    );
+  };
+
+  const renderPosts = () => {
+    if (!state.posts) return null;
+    return (
+      <>
+      {
+        state.posts.posts.length > 0 && (
+          state.posts.posts.map(post => <SimplePostItem post={post} key={post.id} />)
+        )
+      }
+      </>
+    );
+  };
+
   return (
     <div className='profile'>
       <h2 className='profile__title'>Thông tin người dùng</h2>
       {
         isLoadingUser ? 
-          <Loading size='medium' /> : (
-            <div className='profile__details'>
-              <div className='profile__avatar-container'>
-                <img className='profile__avatar' src={userInfo.picture} alt={`${userInfo.username} avatar`} />
-              </div>
-              <table className='profile__userinfo'>
-                <tbody>
-                  <tr>
-                    <td align='left' className='profile__label'>Tên tài khoản</td>
-                    <td align='left'>{userInfo.username}</td>
-                  </tr>
-                  {
-                    isAuthenticated && user[config.claimNamespace+'username'] === userInfo.username && (
-                      <tr>
-                        <td align='left' className='profile__label'>Email</td>
-                        <td align='left'>{userInfo.email}</td>
-                    </tr>
-                    )
-                  }
-                  <tr>
-                    <td align='left' className='profile__label'>Ngày đăng ký</td>
-                    <td align='left'>{moment(userInfo.created_time).format('YYYY/MM/DD')}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          )
+          <Loading size='medium' /> : renderUserInfo()
       }
       <Tab value={selectedTab} onChange={handleSelectTab}>
         <TabItem value="Posts" label="Bài viết" />
@@ -180,30 +223,56 @@ function UserProfile() {
         {isLoadingPosts ?
           <Loading size='medium' /> : (
             <>
-            {
-              posts.posts && posts.posts.length > 0 && (
-                posts.posts.map(post => <SimplePostItem post={post} key={post.id} />)
-              )
-            }
+            { renderPosts() }
             { selectedTab === 'Posts' && errors.posts && (<p className='profile__error'>{errors.posts}</p>) }
             { selectedTab === 'Comments' && errors.comments && (<p className='profile__error'>{errors.comments}</p>) }
             </>
           )
         }
-        <Pagination
-          classes={{ul: classes.paginationList}}
-          className={classes.pagination}
-          count={calculatePages(posts.limit, posts.count)} 
-          shape="rounded"
-          variant="outlined"
-          color="secondary"
-          size="small"
-          page={page}
-          onChange={handlePageSelect}
-        />
+        {
+          state && state.posts && (
+            <Pagination
+              classes={{ul: classes.paginationList}}
+              className={classes.pagination}
+              count={calculatePages(state.posts.limit, state.posts.count)} 
+              shape="rounded"
+              variant="outlined"
+              color="secondary"
+              size="small"
+              page={page}
+              onChange={handlePageSelect}
+            />
+          )
+        }
       </div>
     </div>
   );
+};
+
+UserProfile.propTypes = {
+  staticContext: PropTypes.object
+};
+
+UserProfile.fetchData = async (request) => {
+  const path = request.path;
+  const username = path.split('/').slice(-1)[0];
+  let data;
+  let err;
+  try {
+    const userResponse = await restClient.get(`/users/${username}`);
+    const postsResponse = await restClient.get(`/users/${username}/posts`);
+    data = {
+      posts: postsResponse.data,
+      user: userResponse.data.user
+    };
+  } catch (error) {
+    err = error;
+  }
+
+  return {
+    data: data,
+    error: err
+  };
 };
 
 export default UserProfile;

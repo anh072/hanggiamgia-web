@@ -12,11 +12,16 @@ import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { Button } from '@material-ui/core';
 import { useMediaQuery } from 'react-responsive';
 import { useDataProvider } from '../../GlobalState';
-import logo from './logo192.png';
+import logo from '../../images/logo.png';
 import config from '../../lib/config';
 import './Header.css';
 
 const useStyles = makeStyles({
+  inputLabel: {
+    '@media (max-width: 650px)': {
+      display: 'none'
+    },
+  },
   button: {
     color: 'white',
     width: '90px',
@@ -102,7 +107,6 @@ function Header() {
   const history = useHistory();
   const state = useDataProvider();
   const categories = state.categoryStore.data;
-  const shouldDisplayCategoryLabel = useMediaQuery({ query: `(max-width: 650px)` });
 
   // local state
   const [ selectedCategory, setSelectedCategory ] = useState('All');
@@ -191,7 +195,7 @@ function Header() {
 
           <form className="header__filter" onSubmit={handleSubmit}>
             <FormControl size="small" variant="filled" className={classes.formControl}>
-              <InputLabel style={{display: shouldDisplayCategoryLabel ? 'none' : 'block'}}>Hạng mục</InputLabel>
+              <InputLabel className={classes.inputLabel}>Hạng mục</InputLabel>
               <StyledSelect
                 value={selectedCategory}
                 open={openSelect}
@@ -205,7 +209,7 @@ function Header() {
                   style: { width: "200px", height: "400px" }
                 }}>
                 <StyledMenuItem value="All">Tất cả</StyledMenuItem>
-                {categories.map((category, index) => 
+                {categories && categories.map((category, index) => 
                   <StyledMenuItem key={index} value={category}>{category}</StyledMenuItem>)}
               </StyledSelect>
             </FormControl>

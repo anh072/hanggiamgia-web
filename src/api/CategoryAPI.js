@@ -1,30 +1,34 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import config from '../lib/config';
+import { useState, useEffect } from 'react';
+import { restClient } from '../client';
 
 export default function CategoryAPI() {
-  const [ categories, setCategories ] = useState([]);
-  const [ error, setError ] = useState(null);
-  const apiBaseUrl = config.apiBaseUrl;
+  const [categories, setCategories] = useState(() => {
+    if(window && window.__INITIAL_STORE__) {
+      const data = window.__INITIAL_STORE__.categories;
+      delete window.__INITIAL_STORE__.categories;
+      return data;
+    }
+    return null;
+  });
 
   useEffect(() => {
     const getCategories = async () => {
       try {
-        const res = await axios.get(
-          `${apiBaseUrl}/categories`,
-          { timeout: 20000 }
-        );
+        const res = await restClient.get('/categories');
         setCategories(res.data.categories);
       } catch (error) {
         console.log('error', error);
-        setError({ error: 'Unable to get categories' });
       }
     }
-    getCategories();
-  }, []);
+    if (!categories) getCategories();
+  }, [categories]);
 
   return {
     data: categories,
-    error: error
   };
 }
+
+CategoryAPI.fetchData = async () => {
+  const res = await restClient.get('/categories');
+  return res.data.categories;
+};

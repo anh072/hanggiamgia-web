@@ -8,9 +8,9 @@ COMPOSE_RUN_AWS = docker-compose run --rm aws
 COMPOSE_RUN_LINT = docker-compose run --rm lint
 COMPOSE_RUN_NPM = docker-compose run --rm npm
 
-S3_BUCKET ?= giare-test-frontend
 SSL_CERT_ARN ?= arn:aws:acm:us-east-1:838080186947:certificate/17f91a87-af18-4c7d-ad93-d89a3c601671
-
+LAMBDA_ARTIFACT = bin/lambda.zip
+S3_BUCKET ?= giare-test-frontend
 
 lint: dotenv
 	$(COMPOSE_RUN_LINT) yamllint cloudformation/template.yaml
@@ -21,16 +21,12 @@ validate: dotenv
 .PHONY: validate
 
 build: dotenv
-	$(COMPOSE_RUN_NPM) make _build
+	make _build
 .PHONY: build
 
-deployInfra: dotenv
-	$(COMPOSE_RUN_AWS) make _deployInfra
-.PHONY: deployInfra
-
-deployApp: dotenv
-	$(COMPOSE_RUN_AWS) make _deployApp
-.PHONY: deployApp
+deploy: dotenv
+	$(COMPOSE_RUN_AWS) make _deploy
+.PHONY: deploy
 
 # replaces .env with DOTENV if the variable is specified
 dotenv:
@@ -48,18 +44,24 @@ _validate: _assumeRole
 	aws --region $(APP_REGION) cloudformation validate-template --template-body file://cloudformation/template.yaml; \
 
 _build:
-	cd hangiamgia && npm run build
+	npm run build-all
+	mkdir -p bin
+	cp -r build lambda-build
+	cd lambda-build && zip -r ../$(LAMBDA_ARTIFACT) .
 
-_deployInfra: _assumeRole
-	aws --region $(APP_REGION) cloudformation deploy \
-		--template-file ./cloudformation/template.yaml \
-		--stack-name "$(SERVICE_NAME)-$(ENV)-frontend" \
-		--capabilities CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND \
-		--no-fail-on-empty-changeset \
-		--parameter-overrides SSLCertificateArn=$(SSL_CERT_ARN)
+_package: _assumeRole
+	aws cloudformation package --template-file cloudformation/template.yaml \
+		--s3-bucket "$(SERVICE_NAME)-$(ENV)-sam-deployments" \
+		--output-template-file packaged.yaml
 
-_deployApp: _assumeRole
+_deploy: _assumeRole _package
 	aws s3 cp ./build s3://$(S3_BUCKET) --recursive
+	aws --region $(APP_REGION) cloudformation deploy \
+		--template-file ./packaged.yaml \
+		--stack-name "$(SERVICE_NAME)-$(ENV)-frontend" \
+		--capabilities CAPABILITY_NAMED_IAM \
+		--no-fail-on-empty-changeset \
+		--parameter-overrides SSLCertificateArn=$(SSL_CERT_ARN) 
 
 _assumeRole:
 ifndef AWS_SESSION_TOKEN
