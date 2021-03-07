@@ -81,6 +81,8 @@ Resources:
             QueryString: true
           TargetOriginId: server
           ViewerProtocolPolicy: redirect-to-https
+          MaxTTL: 0
+          MinTTL: 0
         CacheBehaviors: # S3
         - AllowedMethods:
           - GET
@@ -97,6 +99,10 @@ Resources:
             Cookies:
               Forward: none
             QueryString: true
+          MaxTTL: 86400 # deprecated
+          MinTTL: 60 # deprecated
+          Compress: true
+          DefaultTTL: 300
         Enabled: true
         HttpVersion: http2
         Origins:
