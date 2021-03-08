@@ -54,9 +54,9 @@ function Comment({ comment, editable, onDelete, onUpdate }) {
 
   const handleUpdate = (e) => {
     onUpdate(comment.id, text);
+    setText(comment.text);
     setEditing(false);
     setAnchorEl(null);
-    setText(comment.text);
   };
 
   const handleCancel = (e) => {

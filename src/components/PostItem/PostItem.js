@@ -197,9 +197,9 @@ function PostItem({ post, detailed, handleVoteAction, handlePostDelete }) {
           </div>
         }
 
-        <p className={`post__description ${detailed ? `post__description--${modifier}` : ''}`}>
+        <pre className={`post__description ${detailed ? `post__description--${modifier}` : ''}`}>
           {post.description}
-        </p>
+        </pre>
 
         <div className="post__footer">
           { 

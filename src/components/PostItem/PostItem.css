@@ -132,17 +132,18 @@
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   text-align: justify;
+  font-family: inherit;
 }
 
 .post__description--display-detailed {
   overflow: visible;
-  white-space: normal;
   text-overflow: unset;
   font-size: 1rem;
   margin-top: 10px;
   margin-bottom: 10px;
-  line-height: 1.8rem;
+  line-height: 1.5rem;
   display: block;
+  white-space: pre-wrap;
 }
 
 .post__content a {
@@ -168,7 +169,7 @@
 
 .post__image-wrapper {
   float: right;
-  margin-left: 5px;
+  margin-left: 10px;
 }
 
 .post__personal-buttons {
@@ -214,6 +215,10 @@
   .post__image {
     width: 70px;
     height: 70px;
+  }
+
+  .post__image-wrapper {
+    margin-left: 5px;
   }
 
   .post__title {
