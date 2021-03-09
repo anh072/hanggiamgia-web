@@ -7,6 +7,7 @@ import axios from 'axios';
 import config from '../../lib/config';
 import { useDataProvider } from '../../GlobalState';
 import { validatePostForm } from '../../lib/common';
+import MetaDecorator from '../../components/MetaDecorator/MetaDecorator';
 import './NewDeal.css';
 
 const useStyles = makeStyles({
@@ -190,6 +191,7 @@ function NewDeal() {
 
   return (
     <form className='deal'>
+      <MetaDecorator title='Giá Rẻ Việt Nam -  Tạo bài mới' description='Đăng thêm hàng giảm giá mới' />
       <h2 className="deal__header">Tạo bài</h2>
       <div className="deal__fields">
         <label htmlFor="title">Tiêu đề <span>&#42;</span></label> <br />

@@ -12,8 +12,9 @@ import SimplePostItem from "../../components/SimplePostItem/SimplePostItem";
 import Loading from "../../components/Loading/Loading";
 import { calculatePages } from '../../lib/common';
 import NotFound from '../NotFound/NotFound';
-import './UserProfile.css';
 import { restClient } from "../../client";
+import MetaDecorator from '../../components/MetaDecorator/MetaDecorator';
+import './UserProfile.css';
 
 
 const useStyles = makeStyles({
@@ -210,6 +211,7 @@ function UserProfile({ staticContext }) {
 
   return (
     <div className='profile'>
+      <MetaDecorator title={`Giá Rẻ Việt Nam - ${username}`} description={`Hồ sơ của ${username}`}/>
       <h2 className='profile__title'>Thông tin người dùng</h2>
       {
         isLoadingUser ? 

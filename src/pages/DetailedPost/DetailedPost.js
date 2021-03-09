@@ -13,6 +13,7 @@ import CommentInput from '../../components/CommentInput/CommentInput';
 import PostItem from '../../components/PostItem/PostItem';
 import Loading from '../../components/Loading/Loading';
 import NotFound from '../NotFound/NotFound';
+import MetaDecorator from '../../components/MetaDecorator/MetaDecorator';
 import './DetailedPost.css';
 
 export default function DetailedPost({ staticContext }) {
@@ -251,6 +252,11 @@ export default function DetailedPost({ staticContext }) {
           <Loading size='medium' /> : 
           (
             <>
+            {
+              state && state.post && (
+                <MetaDecorator title={`Giá Rẻ Việt Nam - ${state.post.title}`} description={state.post.title}/>
+              ) 
+            }
             {
               state && state.post && (
                   <PostItem 

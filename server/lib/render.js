@@ -1,4 +1,5 @@
 import React from 'react';
+import { Helmet } from "react-helmet";
 import { renderToString } from 'react-dom/server'
 import { StaticRouter } from 'react-router-dom';
 import { readFileSync } from 'fs'
@@ -21,9 +22,13 @@ export const render = (ReactElement, path, context) => {
     )
   );
 
+  const helmet = Helmet.renderStatic();
+
   const css = sheets.toString();
 
   return html
+    .replace('<title>Giá Rẻ</title>', `${helmet.title.toString()}`)
+    .replace('<meta name="description" content="" data-react-helmet="true"/>', `${helmet.meta.toString()}`)
     .replace('<div id="root"></div>', `<div id="root">${content}</div>`)
     .replace('</head>', `<style id="jss-server-side">${css}</style></head>`)
     .replace(

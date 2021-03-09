@@ -16,6 +16,7 @@ import Loading from '../../components/Loading/Loading';
 import config from '../../lib/config';
 import { isWithinAWeek } from '../../lib/common';
 import { restClient } from '../../client/index';
+import MetaDecorator from '../../components/MetaDecorator/MetaDecorator';
 import './PostVotes.css';
 
 
@@ -184,6 +185,9 @@ function PostVotes() {
           <Loading size='large' /> :
           (
             <>
+            {
+              post && (<MetaDecorator title={`Giá Rẻ Việt Nam - Bình chọn`} description={`${post.title}`}/>)
+            }
             {
               post && (<h2 className="vote__title">{post.title}</h2>)
             }

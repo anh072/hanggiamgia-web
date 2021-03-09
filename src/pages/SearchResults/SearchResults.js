@@ -8,6 +8,7 @@ import PostItem from '../../components/PostItem/PostItem';
 import config from '../../lib/config';
 import { calculatePages, useQuery } from '../../lib/common';
 import { restClient } from '../../client/index';
+import MetaDecorator from '../../components/MetaDecorator/MetaDecorator';
 import './SearchResults.css';
 
 const useStyles = makeStyles({
@@ -103,6 +104,7 @@ function SearchResults() {
 
   return (
     <div className='search-results'>
+      <MetaDecorator title='Giá Rẻ Việt Nam - Tìm kiếm' description='Tìm kiếm hàng hóa' />
       <div className='search-results__header'>
         <h2 className='search-results__title'>Kết quả tìm kiếm</h2>
         <p className='search-results__info'>

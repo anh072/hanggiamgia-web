@@ -11,6 +11,7 @@ import NotFound from '../NotFound/NotFound';
 import Forbidden from '../Forbidden/Forbidden';
 import { validatePostForm } from '../../lib/common';
 import { restClient } from '../../client/index';
+import MetaDecorator from '../../components/MetaDecorator/MetaDecorator';
 import '../NewDeal/NewDeal.css';
 
 const useStyles = makeStyles({
@@ -244,6 +245,7 @@ function EditPost() {
 
   const renderForm = () => (
     <form className='deal'>
+      <MetaDecorator title='Giá Rẻ Việt Nam - Chỉnh sửa bài' description='Trang chỉnh sửa bài viết'/>
       <h2 className="deal__header">Cập nhật bài viết</h2>
       <div className="deal__fields">
         <label htmlFor="title">Tiêu đề <span>&#42;</span></label> <br />

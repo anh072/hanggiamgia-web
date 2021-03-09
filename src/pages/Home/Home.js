@@ -9,6 +9,7 @@ import PostItem from '../../components/PostItem/PostItem';
 import config from '../../lib/config';
 import { calculatePages, useQuery } from '../../lib/common';
 import { restClient } from '../../client/index';
+import MetaDecorator from '../../components/MetaDecorator/MetaDecorator';
 import './Home.css';
 
 
@@ -116,6 +117,7 @@ export default function Home({ staticContext }) {
     if (!posts) return null;
     return (
       <div className='post-list'>
+        <MetaDecorator title='Giá Rẻ Việt Nam' description='Cung cấp thông tin về hàng giảm giá trên khắp Việt Nam' />
         <ul className="post-list__list">
           {posts.posts && posts.posts.map(post => 
             <PostItem post={post} key={post.id} handleVoteAction={handleVoteAction} />)}
