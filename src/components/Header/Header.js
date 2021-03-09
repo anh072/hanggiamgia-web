@@ -154,7 +154,7 @@ function Header() {
   return (
     <ClickAwayListener onClickAway={handleClickAway}>
       <header className="header">
-        <Link to="/">
+        <Link to="/?page=1">
           <img className="logo" alt="gia re logo" src={logo} />
         </Link>
         

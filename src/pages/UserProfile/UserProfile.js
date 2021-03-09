@@ -169,6 +169,12 @@ function UserProfile({ staticContext }) {
     if (!state.userInfo) return null;
     return (
       <div className='profile__details'>
+        <MetaDecorator 
+          title={`Giá Rẻ Việt Nam - ${username}`} 
+          description={`Hồ sơ của ${username}`}
+          imageUrl={state.userInfo.picture}
+          pageUrl={`/users/${username}`}
+        />
         <div className='profile__avatar-container'>
           <img className='profile__avatar' src={state.userInfo.picture} alt={`${state.userInfo.username} avatar`} />
         </div>
@@ -211,7 +217,6 @@ function UserProfile({ staticContext }) {
 
   return (
     <div className='profile'>
-      <MetaDecorator title={`Giá Rẻ Việt Nam - ${username}`} description={`Hồ sơ của ${username}`}/>
       <h2 className='profile__title'>Thông tin người dùng</h2>
       {
         isLoadingUser ? 

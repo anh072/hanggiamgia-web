@@ -29,7 +29,7 @@ const useStyles = makeStyles({
 export default function Home({ staticContext }) {
   const classes = useStyles();
   const query = useQuery();
-  const page = isNaN(query.get('page')) || !query.get('page') ? 1 : parseInt(query.get('page'));
+  const page = isNaN(query.get('page')) || !query.get('page') ? 1 : parseInt(query.get('page')); //make this a state
   const { isAuthenticated, getAccessTokenSilently } = useAuth0();
   const history = useHistory();
 
@@ -117,7 +117,12 @@ export default function Home({ staticContext }) {
     if (!posts) return null;
     return (
       <div className='post-list'>
-        <MetaDecorator title='Giá Rẻ Việt Nam' description='Cung cấp thông tin về hàng giảm giá trên khắp Việt Nam' />
+        <MetaDecorator 
+          title='Giá Rẻ Việt Nam' 
+          description='Cung cấp thông tin về hàng giảm giá trên khắp Việt Nam' 
+          imageUrl={`${config.hostname}/logo.png`}
+          pageUrl={`/?page=${page}`}
+        />
         <ul className="post-list__list">
           {posts.posts && posts.posts.map(post => 
             <PostItem post={post} key={post.id} handleVoteAction={handleVoteAction} />)}

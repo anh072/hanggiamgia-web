@@ -191,7 +191,12 @@ function NewDeal() {
 
   return (
     <form className='deal'>
-      <MetaDecorator title='Giá Rẻ Việt Nam -  Tạo bài mới' description='Đăng thêm hàng giảm giá mới' />
+      <MetaDecorator 
+        title='Giá Rẻ Việt Nam -  Tạo bài mới' 
+        description='Đăng thêm hàng giảm giá mới'
+        imageUrl={`${config.hostname}/logo.png`}
+        pageUrl='/posts/submit'
+      />
       <h2 className="deal__header">Tạo bài</h2>
       <div className="deal__fields">
         <label htmlFor="title">Tiêu đề <span>&#42;</span></label> <br />

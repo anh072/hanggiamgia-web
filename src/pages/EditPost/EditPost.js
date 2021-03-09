@@ -124,6 +124,7 @@ function EditPost() {
           url: post.product_url || '',
           start: moment(post.start_date).format('YYYY-MM-DD'),
           end: moment(post.end_date).format('YYYY-MM-DD'),
+          postImage: post.image_url,
           image: '',
           description: post.description
         });
@@ -245,7 +246,12 @@ function EditPost() {
 
   const renderForm = () => (
     <form className='deal'>
-      <MetaDecorator title='Giá Rẻ Việt Nam - Chỉnh sửa bài' description='Trang chỉnh sửa bài viết'/>
+      <MetaDecorator 
+        title='Giá Rẻ Việt Nam - Chỉnh sửa bài' 
+        description='Trang chỉnh sửa bài viết'
+        imageUrl={values.postImage}
+        pageUrl={`/posts/${id}/edit`}
+      />
       <h2 className="deal__header">Cập nhật bài viết</h2>
       <div className="deal__fields">
         <label htmlFor="title">Tiêu đề <span>&#42;</span></label> <br />

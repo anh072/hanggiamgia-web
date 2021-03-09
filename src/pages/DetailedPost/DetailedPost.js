@@ -254,7 +254,12 @@ export default function DetailedPost({ staticContext }) {
             <>
             {
               state && state.post && (
-                <MetaDecorator title={`Giá Rẻ Việt Nam - ${state.post.title}`} description={state.post.title}/>
+                <MetaDecorator 
+                  title={`Giá Rẻ Việt Nam - ${state.post.title}`} 
+                  description={state.post.description}
+                  imageUrl={state.post.image_url ? state.post.image_url : `${config.hostname}/logo.png`}
+                  pageUrl={`/posts/${state.post.id}`}
+                />
               ) 
             }
             {

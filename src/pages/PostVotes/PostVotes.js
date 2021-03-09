@@ -186,7 +186,14 @@ function PostVotes() {
           (
             <>
             {
-              post && (<MetaDecorator title={`Giá Rẻ Việt Nam - Bình chọn`} description={`${post.title}`}/>)
+              post && (
+                <MetaDecorator 
+                  title='Giá Rẻ Việt Nam - Bình chọn' 
+                  description={post.title}
+                  imageUrl={post.image_url}
+                  pageUrl={`/posts/${id}/votes`}
+                />
+              )
             }
             {
               post && (<h2 className="vote__title">{post.title}</h2>)

@@ -104,7 +104,12 @@ function SearchResults() {
 
   return (
     <div className='search-results'>
-      <MetaDecorator title='Giá Rẻ Việt Nam - Tìm kiếm' description='Tìm kiếm hàng hóa' />
+      <MetaDecorator 
+        title='Giá Rẻ Việt Nam - Tìm kiếm' 
+        description='Tìm kiếm hàng hóa'
+        imageUrl={`${config.hostname}/logo.png`}
+        pageUrl='/posts/search'
+      />
       <div className='search-results__header'>
         <h2 className='search-results__title'>Kết quả tìm kiếm</h2>
         <p className='search-results__info'>
