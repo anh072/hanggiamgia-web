@@ -30,3 +30,4 @@ packaged.yaml
 .aws-sam/
 .vscode/
 bin/
+public/sitemap.xml

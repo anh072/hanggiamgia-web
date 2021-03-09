@@ -44,6 +44,7 @@ _validate: _assumeRole
 	aws --region $(APP_REGION) cloudformation validate-template --template-body file://cloudformation/template.yaml; \
 
 _build:
+	npm run sitemap
 	npm run build-all
 	mkdir -p bin
 	cp -r build lambda-build
