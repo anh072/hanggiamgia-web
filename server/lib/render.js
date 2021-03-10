@@ -28,7 +28,10 @@ export const render = (ReactElement, path, context) => {
 
   return html
     .replace('<title>Giá Rẻ</title>', `${helmet.title.toString()}`)
-    .replace('<meta name="description" content="" data-react-helmet="true"/>', `${helmet.meta.toString()}`)
+    .replace(
+      '<meta name="description" content="Cung cấp thông tin hàng giảm giá" data-react-helmet="true"/>', 
+      `${helmet.meta.toString()}`
+    )
     .replace('<div id="root"></div>', `<div id="root">${content}</div>`)
     .replace('</head>', `<style id="jss-server-side">${css}</style></head>`)
     .replace(

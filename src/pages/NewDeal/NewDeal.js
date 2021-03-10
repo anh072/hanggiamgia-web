@@ -45,7 +45,6 @@ const useStyles = makeStyles({
   }
 });
 
-
 const StyledSelect = withStyles({
   root: {
     backgroundColor: 'white',

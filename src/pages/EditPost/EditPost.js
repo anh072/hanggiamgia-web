@@ -9,6 +9,7 @@ import { useDataProvider } from '../../GlobalState';
 import Loading from '../../components/Loading/Loading';
 import NotFound from '../NotFound/NotFound';
 import Forbidden from '../Forbidden/Forbidden';
+import InternalError from '../../pages/InternalError/InternalError';
 import { validatePostForm } from '../../lib/common';
 import { restClient } from '../../client/index';
 import MetaDecorator from '../../components/MetaDecorator/MetaDecorator';
@@ -106,7 +107,7 @@ function EditPost() {
         if (post.author !== user[config.claimNamespace+'username']) {
           setErrors(prevErrors => ({
             ...prevErrors,
-            forbidden: 'Lỗi: Bạn không được phép cchi3nh sửa bài viết'
+            forbidden: 'Lỗi: Bạn không được phép chỉnh sửa bài viết'
           }));
           setIsLoading(false);
           return;
@@ -412,21 +413,13 @@ function EditPost() {
     </form>
   );
 
-  if (isLoading) {
-    return <Loading size='large' />;
-  } 
+  if (isLoading) return <Loading size='large' />;
   
-  if (errors.notfound) {
-    return <NotFound />;
-  }
+  if (errors && errors.notfound) return <NotFound />;
   
-  if (errors.forbidden) {
-    return <Forbidden />;
-  } 
+  if (errors && errors.forbidden) return <Forbidden />;
   
-  if (errors.post) {
-    return <p className="deal__form-error" style={{padding: '20px'}}>{errors.post}</p>;
-  }
+  if (errors && errors.post) return <InternalError/>;
 
   return (
     <div>

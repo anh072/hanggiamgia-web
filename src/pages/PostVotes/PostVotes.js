@@ -13,6 +13,7 @@ import { withStyles, makeStyles } from '@material-ui/core/styles';
 import moment from 'moment';
 import { useAuth0 } from '@auth0/auth0-react';
 import Loading from '../../components/Loading/Loading';
+import InternalError from '../InternalError/InternalError';
 import config from '../../lib/config';
 import { isWithinAWeek } from '../../lib/common';
 import { restClient } from '../../client/index';
@@ -178,6 +179,8 @@ function PostVotes() {
     }
   };
 
+  if (errors && (errors.post || errors.votes)) return <InternalError/>;
+
   return (
     <div className="vote">
       {
@@ -241,9 +244,6 @@ function PostVotes() {
                   </Table>
                 </TableContainer>
               )
-            }
-            {
-              errors.votes && (<p className='vote__error'>{errors.votes}</p>)
             }
             </>
           )

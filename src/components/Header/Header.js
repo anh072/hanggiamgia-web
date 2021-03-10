@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
@@ -154,9 +154,9 @@ function Header() {
   return (
     <ClickAwayListener onClickAway={handleClickAway}>
       <header className="header">
-        <Link to="/?page=1">
+        <a href="/">
           <img className="logo" alt="gia re logo" src={logo} />
-        </Link>
+        </a>
         
         <div className={`header-nav ${openBurger ? 'header-nav--active' : ''}`}>
           {isAuthenticated ? 

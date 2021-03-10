@@ -6,6 +6,7 @@ import { makeStyles } from '@material-ui/styles';
 import PropTypes from 'prop-types';
 import Loading from '../../components/Loading/Loading';
 import PostItem from '../../components/PostItem/PostItem';
+import InternalError from '../../pages/InternalError/InternalError';
 import config from '../../lib/config';
 import { calculatePages, useQuery } from '../../lib/common';
 import { restClient } from '../../client/index';
@@ -29,7 +30,7 @@ const useStyles = makeStyles({
 export default function Home({ staticContext }) {
   const classes = useStyles();
   const query = useQuery();
-  const page = isNaN(query.get('page')) || !query.get('page') ? 1 : parseInt(query.get('page')); //make this a state
+  let page = isNaN(query.get('page')) || !query.get('page') ? 1 : parseInt(query.get('page'));
   const { isAuthenticated, getAccessTokenSilently } = useAuth0();
   const history = useHistory();
 
@@ -66,6 +67,7 @@ export default function Home({ staticContext }) {
         }));
       }
     };
+
     if (!posts) getPosts();
   }, [posts, page]);
 
@@ -106,6 +108,7 @@ export default function Home({ staticContext }) {
 
   const handlePageSelect = (e, newPage) => {
     if (parseInt(newPage) !== parseInt(page)) {
+      setPosts(null);
       history.push({
         pathname: '/',
         search: `?page=${newPage}`
@@ -114,19 +117,18 @@ export default function Home({ staticContext }) {
   };
 
   const renderPostList = () => {
-    if (!posts) return null;
+    if (!posts || !posts.posts || posts.posts.length === 0) return null;
     return (
       <div className='post-list'>
         <MetaDecorator 
           title='Giá Rẻ Việt Nam' 
           description='Cung cấp thông tin về hàng giảm giá trên khắp Việt Nam' 
           imageUrl={`${config.hostname}/logo.png`}
-          pageUrl={`/?page=${page}`}
+          pageUrl='/'
         />
         <ul className="post-list__list">
-          {posts.posts && posts.posts.map(post => 
-            <PostItem post={post} key={post.id} handleVoteAction={handleVoteAction} />)}
-          {errors.posts && (<p className='post-list__error'>{errors.posts}</p>)}
+          { posts.posts.map(post => (
+            <PostItem post={post} key={post.id} handleVoteAction={handleVoteAction} />)) }
         </ul>
         <Pagination
           classes={{ul: classes.paginationList}}
@@ -142,6 +144,8 @@ export default function Home({ staticContext }) {
       </div>
     );
   };
+
+  if (errors && errors.posts) return <InternalError/>;
 
   if (isLoading) return <Loading size='large' />;
 

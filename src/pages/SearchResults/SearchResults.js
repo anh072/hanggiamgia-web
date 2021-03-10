@@ -5,6 +5,7 @@ import { makeStyles } from '@material-ui/styles';
 import { useHistory } from 'react-router-dom';
 import Loading from '../../components/Loading/Loading';
 import PostItem from '../../components/PostItem/PostItem';
+import InternalError from '../../pages/InternalError/InternalError';
 import config from '../../lib/config';
 import { calculatePages, useQuery } from '../../lib/common';
 import { restClient } from '../../client/index';
@@ -100,6 +101,8 @@ function SearchResults() {
     }
   };
 
+  if (errors && errors.posts) return <InternalError/>;
+
   if (isLoading) return <Loading size='large' />;
 
   return (
@@ -120,7 +123,6 @@ function SearchResults() {
       <ul className="search-results__list">
         {posts.posts && posts.posts.map(post => 
           <PostItem post={post} key={post.id} handleVoteAction={handleVoteAction} />)}
-        {errors.posts && (<p className='search-results__error'>{errors.posts}</p>)}
       </ul>
       <Pagination
         classes={{ul: classes.paginationList}}

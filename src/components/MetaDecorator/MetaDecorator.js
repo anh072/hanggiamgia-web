@@ -11,8 +11,8 @@ function MetaDecorator({ title, description, imageUrl, pageUrl }) {
       <meta property='og:description' content={description}/>
       <meta property='og:title' content={title}/>
       <meta property='og:image' content={imageUrl}/>
-      <meta property='og:image:width' content='600'/>
-      <meta property='og:image:height' content='600'/>
+      <meta property='og:image:width' content='500'/>
+      <meta property='og:image:height' content='500'/>
       <meta property='og:url' content={`${config.hostname}${pageUrl}`}/>
       <meta property='og:type' content='website'/>
     </Helmet>

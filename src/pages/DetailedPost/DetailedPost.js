@@ -13,6 +13,7 @@ import CommentInput from '../../components/CommentInput/CommentInput';
 import PostItem from '../../components/PostItem/PostItem';
 import Loading from '../../components/Loading/Loading';
 import NotFound from '../NotFound/NotFound';
+import InternalError from '../../pages/InternalError/InternalError';
 import MetaDecorator from '../../components/MetaDecorator/MetaDecorator';
 import './DetailedPost.css';
 
@@ -241,9 +242,9 @@ export default function DetailedPost({ staticContext }) {
     }
   };
 
-  if (errors.notfound) {
-    return <NotFound />;
-  }
+  if (errors && errors.notfound) return <NotFound />;
+
+  if (errors && errors.post) return <InternalError />;
 
   return (
     <div className="detailed-post">
@@ -270,9 +271,6 @@ export default function DetailedPost({ staticContext }) {
                     handleVoteAction={handleVoteAction} 
                     handlePostDelete={setOpen} />
                 )
-            }
-            {
-              errors.post && (<p className='detailed-post__error'>{errors.post}</p>)
             }
             </>
           )

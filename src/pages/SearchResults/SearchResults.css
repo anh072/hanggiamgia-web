@@ -10,10 +10,6 @@
   max-width: 100%;
 }
 
-.search-results__error {
-  color: red;
-}
-
 .search-results__title {
   padding: 0 0;
 }

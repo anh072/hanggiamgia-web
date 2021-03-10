@@ -12,6 +12,7 @@ import SimplePostItem from "../../components/SimplePostItem/SimplePostItem";
 import Loading from "../../components/Loading/Loading";
 import { calculatePages } from '../../lib/common';
 import NotFound from '../NotFound/NotFound';
+import InternalError from '../../pages/InternalError/InternalError';
 import { restClient } from "../../client";
 import MetaDecorator from '../../components/MetaDecorator/MetaDecorator';
 import './UserProfile.css';
@@ -161,9 +162,9 @@ function UserProfile({ staticContext }) {
     setPage(page);
   };
 
-  if (errors.notfound) {
-    return <NotFound />;
-  }
+  if (errors && errors.notfound) return <NotFound />;
+
+  if (errors && errors.user) return <InternalError/>;
 
   const renderUserInfo = () => {
     if (!state.userInfo) return null;
