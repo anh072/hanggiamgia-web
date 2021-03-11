@@ -27,18 +27,37 @@ function validImageType(file) {
   return validTypes.includes(file.type);
 }
 
+function loadImage(file) {
+  return new Promise((resolve, reject) => {
+    const _URL = window.URL || window.webkitURL;
+    let img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = _URL.createObjectURL(file);
+  });
+}
+
+async function isImageSmall(file) {
+  const image = await loadImage(file);
+  console.log(image.width);
+  return image.width <= 200 && image.height <= 200;
+}
+
 export function validatePostForm(values) {
   let errors = {};
-  if (!values.title.trim()) errors.title = "Title is required";
-  if (!values.category) errors.category = "Category is required";
-  if (!values.start) errors.start = "Start date is required";
-  if (!values.end) errors.end = "Expiry date is required";
+  if (!values.title.trim()) errors.title = "Phải có tiêu đề";
+  if (!values.category) errors.category = "Phải có hạng mục";
+  if (!values.start) errors.start = "Phải có ngày bắt đầu";
+  if (!values.end) errors.end = "Phải có ngày kết thúc";
   var startDate = Date.parse(values.start);
   var endDate = Date.parse(values.end);
-  if (startDate > endDate) errors.start = "Start date must be before expiry date";
-  if (values.url.length > 0 && !validURL(values.url.trim())) errors.url = "Invalid link format";
-  if (values.image && !validImageType(values.image)) errors.image = "Image must be jpeg, png or jpg";
-  if (values.description.length < 20) errors.description = "Description must be at least 20 characters";
+  if (startDate > endDate) errors.start = "Ngày bắt đầu phải trước ngày kết thúc";
+  if (values.url.length > 0 && !validURL(values.url.trim())) errors.url = "Link không hợp lệ";
+  if (values.image) {
+    if (!validImageType(values.image)) errors.image = "Ảnh phải thuộc loại jpeg, png, hoặc jpg";
+    else if (isImageSmall(values.image)) errors.image = 'Ảnh phải lớn hơn 200x200';
+  }
+  if (values.description.length < 30) errors.description = "Mô tả phải ít nhất 30 kí tự";
   return errors;
 };
 
