@@ -39,11 +39,10 @@ function loadImage(file) {
 
 async function isImageSmall(file) {
   const image = await loadImage(file);
-  console.log(image.width);
-  return image.width <= 200 && image.height <= 200;
+  return parseInt(image.width) <= 200 && parseInt(image.height) <= 200;
 }
 
-export function validatePostForm(values) {
+export async function validatePostForm(values) {
   let errors = {};
   if (!values.title.trim()) errors.title = "Phải có tiêu đề";
   if (!values.category) errors.category = "Phải có hạng mục";
@@ -55,7 +54,7 @@ export function validatePostForm(values) {
   if (values.url.length > 0 && !validURL(values.url.trim())) errors.url = "Link không hợp lệ";
   if (values.image) {
     if (!validImageType(values.image)) errors.image = "Ảnh phải thuộc loại jpeg, png, hoặc jpg";
-    else if (isImageSmall(values.image)) errors.image = 'Ảnh phải lớn hơn 200x200';
+    else if (await isImageSmall(values.image)) errors.image = 'Ảnh phải lớn hơn 200x200';
   }
   if (values.description.length < 30) errors.description = "Mô tả phải ít nhất 30 kí tự";
   return errors;

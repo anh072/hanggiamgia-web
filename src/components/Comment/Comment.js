@@ -29,6 +29,12 @@ const useStyles = makeStyles({
     marginTop: '10px',
     marginBottom: '10px',
     marginRight: '10px'
+  },
+  menuItem: {
+    fontSize: '1rem',
+    '@media (max-width: 450px)': {
+      fontSize: '0.8rem'
+    }
   }
 });
 
@@ -126,7 +132,10 @@ function Comment({ comment, editable, onDelete, onUpdate }) {
             {
               editable && (
                 <div className='comment__popper'>
-                  <IconButton aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
+                  <IconButton 
+                    aria-controls="simple-menu" 
+                    aria-haspopup="true" 
+                    onClick={handleClick}>
                     <MoreHorizIcon />
                   </IconButton>
                   <Menu
@@ -136,8 +145,16 @@ function Comment({ comment, editable, onDelete, onUpdate }) {
                     open={Boolean(anchorEl)}
                     onClose={handleClose}
                   >
-                    <MenuItem onClick={() => setEditing(true)}>Sửa</MenuItem>
-                    <MenuItem onClick={handleDelete}>Xóa</MenuItem>
+                    <MenuItem 
+                      className={classes.menuItem} 
+                      onClick={() => setEditing(true)}>
+                        Sửa
+                    </MenuItem>
+                    <MenuItem 
+                      className={classes.menuItem} 
+                      onClick={handleDelete}>
+                        Xóa
+                    </MenuItem>
                   </Menu>
                 </div>
               )

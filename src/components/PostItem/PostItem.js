@@ -141,12 +141,12 @@ function PostItem({ post, detailed, handleVoteAction, handlePostDelete }) {
             className={classes.downvote} 
             onClick={() => handleVoteAction && handleVoteAction(post.id, { type: 'decrement' })} />
         </div>
-        <div className='post__vote-count'>{post.votes} phiếu</div>
+        <div className='post__vote-count'>{post.votes} bình chọn</div>
         {
           detailed && post.votes > 0 && 
             (
               <Link to={{pathname: `/posts/${post.id}/votes`}}>
-                <div className="post__see-votes">Xem phiếu</div>
+                <div className="post__see-votes">Xem bình chọn</div>
               </Link>
             ) 
         }

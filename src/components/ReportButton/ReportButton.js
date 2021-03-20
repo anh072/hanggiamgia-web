@@ -37,6 +37,8 @@ const useStyles = makeStyles({
     width: 'calc(100% - 40px)',
     padding: '5px',
     fontSize: '1rem',
+    resize: 'none',
+    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
     '@media (max-width: 450px)': {
       fontSize: '0.8rem'
     }

@@ -202,10 +202,12 @@ function NewDeal() {
         <TextField 
           id="title" 
           name="title" 
+          variant="outlined"
           required 
           value={values.title}
           onChange={handleChange} 
           className={classes.textField}
+          size='small'
           InputProps={{
             classes: {
               input: classes.inputField
@@ -220,10 +222,12 @@ function NewDeal() {
         <TextField 
           id="url"
           name="url"
+          variant="outlined"
           placeholder="Link đến sản phẩm e.g https://ebay.com.au"
           value={values.url}
           onChange={handleChange} 
           className={classes.textField}
+          size='small'
           InputProps={{
             classes: {
               input: classes.inputField
@@ -238,9 +242,11 @@ function NewDeal() {
         <TextField 
           id="image"
           name="image"
-          type="file" 
+          type="file"
+          variant='outlined'
           onChange={handleChange} 
           className={classes.textField}
+          size='small'
           InputProps={{
             classes: {
               input: classes.inputField
@@ -255,10 +261,12 @@ function NewDeal() {
         <TextField 
           id="coupon"
           name="coupon"
+          variant='outlined'
           placeholder="Điền mã giảm giá..."
           value={values.coupon}
           onChange={handleChange} 
           className={classes.textField}
+          size='small'
           InputProps={{
             classes: {
               input: classes.inputField
@@ -272,10 +280,12 @@ function NewDeal() {
         <TextField
           id="start"
           name="start"
+          variant='outlined'
           value={values.start}
           required
           type="date"
           className={classes.dateField}
+          size='small'
           InputLabelProps={{
             shrink: true,
           }}
@@ -294,10 +304,12 @@ function NewDeal() {
         <TextField
           id="expiry"
           name="end"
+          variant='outlined'
           value={values.end}
           required
           type="date"
           className={classes.dateField}
+          size='small'
           InputLabelProps={{
             shrink: true,
           }}
